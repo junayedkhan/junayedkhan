@@ -1,0 +1,17 @@
+body.dark {
+    background: $background_color_2;
+}
+
+.dark_and_light_btn{
+    position: fixed;
+    top: 20%;
+    left: 0;
+    font-size: 23px;
+    padding: 6px 11px 5px 11px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border: none;
+    background: $gradient_red_hover;
+    color: $color_white;
+    z-index: 1000;
+}

@@ -1,0 +1,109 @@
+
+// themes color
+$color_primary: #ff014f;
+$color_secondary: #f4f5f6;
+$color_tertiary: #0d1013;
+$color_gray: #f6f6f6;
+$color_subtitle: #f9004d;
+
+// background-color
+$background_color_1: linear-gradient(145deg, #1e2024, #23272b);
+$background_color_2: #212428;
+$background_color_3: #ECF0F3;
+$background_color_4: #1b1c1d;
+$color_title_bg_1: rgba(30, 37, 48, 0.07);
+$color_title_bg_2: rgba(211, 218, 231, 0.07);
+// $color_title_bg_2: rgba(161, 166, 175, 0.07);
+    
+// box-shadow
+$shadow_1: 10px 10px 19px #1c1e22, -10px -10px 19px #262a2e;
+$shadow_2: inset 21px 21px 19px #181a1d, inset -21px -21px 19px #202225;
+$inner_shadow: 1px 4px 2px -3px rgba(0, 0, 0, 0.7) inset, -1px -3px 3px -2px rgba(255, 255, 255, 0.2) inset;
+$shadow_white_3: 5px 5px 15px #D1D9E6, -5px -5px 15px #ffffff;
+$shadow_white_3_inset: inset 5px 5px 15px #D1D9E6, inset -5px -5px 15px #ffffff;
+
+// Gradient
+$gradient_box_w: linear-gradient(145deg, #e2e8ec, #ffffff);
+$gradient_red_hover: linear-gradient(145deg, #ff014f, #d11414);
+$gradient_black_hover: linear-gradient(to right bottom, #212428, #16181c);
+
+// typo Color
+$color_1: #7c838e;
+$color_heading: #ffffff;
+$color_heading_wv: #1e2125;
+$color_body: #878e99;
+$color_body_white: #3c3e41;
+$color_lightn: #c4cfde;
+
+// Gery Colors 
+$color_midgray: #9F9F9F;
+$color_midgray: #878787;
+$color_light: #E4E6EA;
+$color_lighter: #CED0D4;
+$color_lightest: #F0F2F5;
+$color_border: #E6E6E6;
+$color_white: #ffffff;
+$color_white_75: rgba(255, 255, 255, 0.75);
+
+// notify Colors
+$color_success: #3EB75E;
+$color_danger: #FF0003;
+$color_warning: #FF8F3C;
+$color_info: #1BA2DB;
+
+//Social icon colors
+$color_facebook: #3B5997;
+$color_twitter: #1BA1F2;
+$color_youtube: #ED4141;
+$color_linkedin: #0077B5;
+$color_pinterest: #E60022;
+$color_instagram: #C231A1;
+$color_vimeo: #00ADEF;
+$color_twitch: #6441A3;
+$color_discord: #7289da;
+
+// Font weight
+$p_light: 300;
+$p_regular: 400;
+$p_medium: 500;
+$p_semi_bold: 600;
+$p_bold: 700;
+$p_extra_bold: 800;
+$p_black: 900;
+
+//transition easing
+$transition: 0.4s ease-in-out;
+
+// Font Family
+$font_primary: 'Poppins', sans-serif;
+$font_secondary: 'Montserrat', sans-serif;
+
+//Fonts Size
+$font_size_b1: 18px;
+$font_size_b2: 22px;
+$font_size_b3: 14px;
+$font_size_b4: 13px;
+$font_size_b5: 16px;
+
+//Line Height
+$line_height_b1: 1.50;
+$line_height_b2: 1.6;
+$line_height_b3: 1.7;
+
+// Heading Font
+$h1: 70px;
+$h2: 60px;
+$h3: 50px;
+$h4: 40px;
+$h5: 30px;
+$h6: 20px;
+
+// Layouts Variation
+$lg_device: 'only screen and (min-width: 1199px)';
+$extra_device: 'only screen and (min-width: 1600px) and (max-width: 1919px)';
+$laptop_device: 'only screen and (min-width: 1200px) and (max-width: 1599px)';
+$lg_layout: 'only screen and (min-width: 992px) and (max-width: 1199px)';
+$md_layout:'only screen and (min-width: 768px) and (max-width: 991px)';
+$sm_layout:'only screen and (max-width: 767px)';
+$large_mobile: 'only screen and (max-width: 575px)';
+$small_mobile: 'only screen and (max-width: 479px)';

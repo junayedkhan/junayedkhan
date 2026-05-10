@@ -1,0 +1,455 @@
+.about .main_content .tabs .tablist{
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    border-radius: 10px;
+    margin-bottom: 50px;
+    margin-top: 20px;
+    margin-right: calc(var(--bs-gutter-x) * .0);
+    margin-left: calc(var(--bs-gutter-x) * .0);
+}
+
+.about .main_content .tabs .tablist 
+.react-tabs__tab--selected{
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    border-radius: 10px;
+}  
+
+.about .main_content .tabs .tablist 
+.react-tabs__tab--selected span{
+    color: $color_primary;
+}
+
+.about .main_content .tabs .tablist .tab{
+    text-align: center;
+    color: $color_heading_wv;
+    font-family: $font-primary;
+    padding: 30px 10px;
+    text-transform: capitalize;
+    font-size: 18px;
+    font-weight: 600;
+    outline: none;
+    border: 0 none;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    @include transition;
+
+    &:hover{
+        color: $color_primary;
+    }
+
+    @media #{$md_layout} {
+        font-size: 15px;
+    }
+
+    @media #{$large_mobile} {
+        font-size: 15px;
+    }
+}
+
+.about .main_content .tabs .personal_info .main_title{
+    @include main_title;
+}
+
+.about .main_content .tabs .personal_info .about_list{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.about .main_content .tabs .personal_info li{
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.about .main_content .tabs .personal_info li:not(:last-child) {
+    padding-bottom: 20px;
+}
+
+.about .main_content .tabs .personal_info li .title{
+    text-transform: capitalize;
+    font-size: $font_size_b5;
+    font-weight: 600;
+    opacity: .7;
+    font-size: 15px;
+}
+
+.about .main_content .tabs .personal_info li .value{
+    color: $color_heading_wv;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.about .main_content .tabs .personal_info .stats_box{
+    padding: 20px 30px 25px 40px;
+    border-radius: 11px;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    margin-bottom: 20px;
+
+    @media #{$large_mobile} {
+        padding: 15px 20px 20px 25px;
+    }
+}
+
+.about .main_content .tabs .personal_info .stats_box h3{
+    display: inline-block;
+    margin: 0;
+    font-size: 50px;
+    font-weight: $p_bold;
+    color: $color_primary;
+    text-transform: uppercase;
+    position: relative;
+
+    &::after{
+        content: '+';
+        position: absolute;
+        right: -24px;
+        font-size: 33px;
+        font-weight: $p_regular;
+        top: 2px;
+    }
+}
+
+.about .main_content .tabs .personal_info .stats_box p{
+    font-size: 18px;
+    color: $color_heading_wv;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: .7;
+    padding-left: 45px;
+    position: relative;
+
+    &::before{
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 13px;
+        width: 30px;
+        height: 2px;
+        background: $color_primary;
+    }
+
+    @media #{$sm_layout} {
+        font-size: 17px;
+    }
+
+    @media #{$large_mobile} {
+        padding-left: 0;
+        font-size: 17px;
+
+        &::before{
+            display: none;
+        }
+    }
+
+    @media #{$small_mobile} {
+        font-size: 13px;
+        font-weight: 700;
+    }
+}
+
+.about .main_content .tabs .education .inner .subtitle,
+.about .main_content .tabs .experience .inner .subtitle{
+    @include subtitle;
+}
+
+.about .main_content .tabs .education .inner .main_title,
+.about .main_content .tabs .experience .inner .main_title{
+    @include main_title;
+}
+
+.about .main_content .tabs .education .inner .inner_list,
+.about .main_content .tabs .experience .inner .inner_list{
+    border-left: 5px solid #d9dee2;
+    padding-left: 31px;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item,
+.about .main_content .tabs .experience .inner .inner_list .item{
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    padding: 45px 25px 30px;
+    border-radius: 10px;
+    margin-top: 50px;
+    position: relative;
+    @include transition;
+
+    @media #{$large_mobile} {
+        padding: 45px 20px 25px;
+    }
+
+    &::before{
+        position: absolute;
+        content: "";
+        width: 28px;
+        height: 5px;
+        right: 100%;
+        top: 63px;
+        transform: translateY(-7px);
+        background: #d9dee2;
+        z-index: 0;
+    }
+
+    &::after{
+        position: absolute;
+        content: "";
+        width: 20px;
+        height: 20px;
+        border: 5px solid #d9dee2;
+        border-radius: 100%;
+        left: -43px;
+        top: 55px;
+        transform: translateY(-7px);
+        background: $background_color_3;
+        transition: $transition;
+    }         
+}
+
+.about .main_content .tabs .education .inner .inner_list .item .heading, 
+.about .main_content .tabs .experience .inner .inner_list .item .heading{
+    border-bottom: 1px solid #e3e9ed;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item .heading .title, 
+.about .main_content .tabs .experience .inner .inner_list .item .heading .title{
+    margin-bottom: 15px;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item .heading .title h4, 
+.about .main_content .tabs .experience .inner .inner_list .item .heading .title h4{
+    @include title;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item .heading .title span, 
+.about .main_content .tabs .experience .inner .inner_list .item .heading .title span{
+    display: block;
+    font-size: $font_size_b3;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item .heading .date_of_time span, 
+.about .main_content .tabs .experience .inner .inner_list .item .heading .date_of_time span{
+    color: $color_primary;
+    font-size: 14px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    background: $color_white;
+    box-shadow: $shadow_white_3;
+    @include transition;
+    font-weight: $p_medium;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item .description, 
+.about .main_content .tabs .experience .inner .inner_list .item .description{
+    color: $color_body_white;
+    font-size: $font_size_b5;
+    @include transition;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item:hover,
+.about .main_content .tabs .experience .inner .inner_list .item:hover{
+    background: $gradient_red_hover;
+    color: $color_secondary;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item:hover::after,
+.about .main_content .tabs .experience .inner .inner_list .item:hover::after{
+    background: $gradient_red_hover;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item:hover .heading .date_of_time span,
+.about .main_content .tabs .experience .inner .inner_list .item:hover .heading .date_of_time span{
+    color: $color_secondary;
+    background: $gradient_red_hover;
+    box-shadow: none;
+}
+
+.about .main_content .tabs .education .inner .inner_list .item:hover .description,
+.about .main_content .tabs .experience .inner .inner_list .item:hover .description{
+    color: $color_secondary;
+}
+
+.about .main_content .tabs .skill .inner .subtitle{
+    @include subtitle;
+}
+
+.about .main_content .tabs .skill .inner .main_title{
+    @include main_title;
+    margin-bottom: 30px; 
+}
+
+.about .main_content .tabs .skill .inner .skill_charts{
+    margin-top: 20px;
+}
+
+.about .main_content .tabs .skill .inner .skill_charts_inner{
+    margin-bottom: 22px;
+}
+
+.about .main_content .tabs .skill .inner .skill_charts_inner .heading{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    color: $color_heading_wv;
+    opacity: 0.9;
+}
+
+.about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar{
+    width: 100%;
+    height: 12px;
+    border-radius: 10px;
+    background: #dce1e4;
+    display: flex;
+    align-items: center;
+    padding-left: 2px;
+}
+
+.about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar .progress_bar_inner{
+    width: 70%;
+    height: 8px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #fff 0%, $color-primary 100%);
+}
+
+
+// ===== dark mode ===== //
+body.dark .about .main_content .tabs .tablist{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .about .main_content .tabs .tablist .react-tabs__tab--selected{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .about .main_content .tabs .tablist .react-tabs__tab--selected span{
+    color: $color_primary;
+}
+
+body.dark .about .main_content .tabs .tablist .tab{
+    color: $color_lightn;
+
+    &:hover{
+        color: $color_primary;
+    }
+}
+
+body.dark .about .main_content .tabs .personal_info .main_title{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .personal_info .about_list .title{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .personal_info .about_list .value{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .personal_info .stats_box{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .about .main_content .tabs .personal_info .stats_box p{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .education .inner .subtitle,
+body.dark .about .main_content .tabs .experience .inner .subtitle{
+    @include subtitle;
+}
+
+body.dark .about .main_content .tabs .education .inner .main_title,
+body.dark .about .main_content .tabs .experience .inner .main_title{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list,
+body.dark .about .main_content .tabs .experience .inner .inner_list{
+    border-left: 5px solid $background_color_4;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item,
+body.dark .about .main_content .tabs .experience .inner .inner_list .item{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+
+    &::before{
+        background: $background_color_4;
+    }
+
+    &::after{
+        background: $background_color_1;
+        border: 5px solid $background_color_4;
+    }
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item .heading,
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading{
+    border-bottom: 1px solid $background_color_4;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item .heading .title h4, 
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .title h4{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item .heading .title span, 
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .title span{
+    color: $color_1;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item .heading .date_of_time span, 
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .date_of_time span{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item .description, 
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .description{
+    color: $color_body;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item:hover,
+body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover{
+    background: $gradient_black_hover;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item:hover::after,
+body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover::after{
+    background: $gradient_black_hover;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item:hover .heading .date_of_time span,
+body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover .heading .date_of_time span{
+    color: $color_primary;
+    background: $background_color_1;
+    box-shadow: $shadow_1;;
+}
+
+body.dark .about .main_content .tabs .education .inner .inner_list .item:hover .description,
+body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover .description{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .skill .inner .main_title{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .heading{
+    color: $color_lightn;
+}
+
+body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar{
+    background: #212428;
+    box-shadow: inset 8px 8px 16px #00000075, inset -8px -8px 16px #383e4575;
+}
+
+body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar .progress_bar_inner{
+    background: linear-gradient(145deg, #f02981 0%, #c81901 100%);
+}

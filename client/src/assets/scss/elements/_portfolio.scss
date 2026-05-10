@@ -1,0 +1,136 @@
+.portfolio .main_content{
+    margin-bottom: 3rem;
+} 
+
+.portfolio .main_content .portfolio_tags{
+    margin-top: 20px;
+    margin-bottom: 40px;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    border-radius: 10px;
+    width: fit-content;
+}
+
+.portfolio .main_content .portfolio_tags .tag{
+    background: none;
+    border: none;
+    outline: none;
+    padding: 15px 35px;
+    border-radius: 10px;
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: $color_heading_wv;
+    @include transition;
+
+    &:hover{
+        color: $color_primary;
+    }
+
+    @media #{$sm_layout} {
+        width: 100%;
+    }
+}
+
+.portfolio .main_content .portfolio_tags .tag.active{
+    color: $color_primary;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+}
+
+
+// == portfolio details == //
+.porfolio_details .main_content .thumbnail .inner{
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.porfolio_details .main_content .thumbnail .inner img{
+    border: 0;
+    vertical-align: middle;
+    width: 100%;
+    height: auto;
+}
+
+.porfolio_details .main_content .text_content{
+    margin-top: 20px;
+}
+
+.porfolio_details .main_content .text_content .inner .subtitle{
+    @include subtitle;
+}
+
+.porfolio_details .main_content .text_content .inner .title{
+    @include main_title;
+    font-size: 28px;
+}
+
+.porfolio_details .main_content .text_content .inner .description_1,
+.porfolio_details .main_content .text_content .inner .description_2{
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: $color_body_white;
+}
+
+.porfolio_details .main_content .btn_group{
+    margin-left: -10px;
+}
+
+.porfolio_details .main_content .btn_group .button{
+    @include button;
+    margin: 0 10px;
+
+    &:hover{
+        background: $gradient_red_hover;
+        transform: translateY(-5px);
+        color: $color_heading;
+    }
+}
+
+
+// ===== dark mode ===== //
+body.dark .portfolio{
+    background: $background_color_2;
+}
+
+body.dark .portfolio .main_content .portfolio_tags{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .portfolio .main_content .portfolio_tags .tag{
+    color: $color_lightn;
+
+    &:hover{
+        color: $color_primary;
+    }
+}
+
+body.dark .portfolio .main_content .portfolio_tags .tag.active{
+    color: $color_primary;
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .porfolio_details .text_content .inner .title{
+    color: $color_lightn;
+}
+
+body.dark .porfolio_details .main_content .text_content .inner .description_1,
+body.dark .porfolio_details .main_content .text_content .inner .description_2{
+    color: $color_body;
+}
+
+body.dark .porfolio_details .main_content .btn_group .button{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+
+    &:hover{
+        background: $gradient_black_hover;
+        color: $color_primary;
+    }
+}
+
+
+
+

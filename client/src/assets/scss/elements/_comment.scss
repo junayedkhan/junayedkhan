@@ -1,0 +1,59 @@
+.comment .inner .title{
+    font-size: 32px;
+    font-weight: $p_semi_bold;
+    color: $color_heading_wv;
+    margin: 40px 0; 
+}
+
+.comment .inner .form_group{
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.comment .inner .form_group input{
+    @include input;
+}
+
+.comment .inner .form_group textarea{
+    @include textarea;
+    height: 205px;
+}
+
+.comment .inner .form_group .errors{
+    @include errors;
+    top: -43px;
+}
+
+.comment .inner .form_group_btn button{
+    @include button;
+}
+
+
+// == dark mode == //
+body.dark .comment .inner .title{
+    color: $color_lightn;
+}
+
+body.dark .comment .inner .form_group input{
+    background: #191b1e;
+    color: $color_lightn;
+    box-shadow: $inner_shadow;
+    border: none;
+}
+
+body.dark .comment .inner .form_group textarea{
+    background: #191b1e;
+    color: $color_lightn;
+    box-shadow: $inner_shadow;
+    border: none;
+}
+
+body.dark .comment .inner .form_group_btn button{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+
+    &:hover{
+        background: $gradient_black_hover;
+        color: $color_primary;
+    }
+}

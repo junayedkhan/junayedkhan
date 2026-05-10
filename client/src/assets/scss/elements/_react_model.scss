@@ -1,0 +1,79 @@
+.react_model{
+    display: block;
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.react_model.overlay{
+    z-index: -1;
+    background: $gradient_box_w;
+}
+
+.react_model .react_model_inner{
+    position: fixed;
+    width: 968px;
+    height: 80vh;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    border-radius: 10px;
+    padding: 60px 35px 40px;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    overflow-y: auto;
+    @include transition;
+
+    @media #{$md_layout} {
+        width: 730px;
+        padding: 60px 35px 40px;
+    }
+
+    @media #{$sm_layout} {
+        width: 530px;
+        padding: 60px 30px 40px;
+    }
+
+    @media #{$large_mobile} {
+        width: 350px;
+        padding: 60px 25px 40px;
+    }
+
+}
+
+.react_model_close{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    color: $color_primary;
+    font-size: 25px;
+    border: none;
+    z-index: 1001;
+}
+
+
+
+// ===== dark mode ===== //
+body.dark .react_model.overlay{
+    background: $background_color_2;
+}
+
+body.dark .react_model_inner{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark  .react_model_close{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}

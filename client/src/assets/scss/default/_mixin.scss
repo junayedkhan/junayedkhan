@@ -1,0 +1,139 @@
+
+// == main title == //
+@mixin main_title {
+    font-size: 30px;
+    font-weight: $p_bold;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: $color_heading_wv;
+
+    @media #{$large_mobile} {
+        font-size: 26px;
+    }
+
+}
+
+//  == tiltle == //
+@mixin title {
+    font-family: $font_primary;
+    font-size: 24px;
+    line-height: 39px;
+    margin-bottom: 7px;
+    font-weight: $p_semi_bold;
+    text-transform: capitalize;
+
+    @media #{$large_mobile} {
+        font-size: 23px;
+    }
+}
+
+// == transtion == //
+@mixin transition {
+    -webkit-transition: all 0.3s ease-in-out;
+    transition:  all 0.3s ease-in-out;
+}
+
+// == subtitle == //
+@mixin subtitle {
+    font-size: 14px;
+    font-family: $font_secondary;
+    color: $color_primary;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: $p_medium;
+    display: block;
+    margin-bottom: 20px;
+}
+
+// == input == //
+@mixin input {
+    background: #fdfefe;
+    border-radius: 6px;
+    height: 55px;
+    width: 100%;
+    transition: $transition;
+    border: 2px solid #dadada;
+    padding: 0 15px;
+    font-size: 14px;
+    font-family: $font_primary;
+    color: #3c3e41;
+    letter-spacing: 1px;
+    outline: none;
+
+    &:focus{
+        border: 2px solid $color_primary!important;
+    }
+}
+
+// == text area == //
+@mixin textarea {
+    background: #fdfefe;
+    border: 2px solid #dadada;
+    font-family: $font_secondary;
+    color: $color_body_white;
+    height: 200px;
+    width: 100%;
+    border-radius: 6px;
+    padding: 0;
+    transition: $transition;
+    padding: 15px 15px;
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 1px;
+    resize: none;
+    outline: none;
+
+    &:focus{
+        border: 2px solid $color_primary!important;
+    }
+}
+
+// == contact errors == //
+@mixin errors {
+    background: $color_danger;
+    color: $color_heading;
+    text-align: center;
+    border-radius: 6px;
+    padding: 1px 17px;
+    text-transform: capitalize;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+
+    &::before{
+        content: "";
+        width: 13px;
+        height: 13px;
+        transform: rotate(45deg);
+        background: $color_danger;
+        position: absolute;
+        bottom: -5px;
+        right: 10px;
+    }
+}
+
+// == button == //
+@mixin button {
+    padding: 15px 35px;
+    border: none;
+    outline: none;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    color: $color_primary;
+    border-radius: 6px;
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: 600;
+    @include transition;
+
+    &:hover{
+        background: $gradient_red_hover;
+        color: $color_secondary;
+        transform: translateY(-5px);
+    }
+}
+

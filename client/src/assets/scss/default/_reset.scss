@@ -1,0 +1,58 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-size: 15px;
+  line-height: 30px;
+  letter-spacing: .5px;
+  word-wrap: break-word;
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  background: $background_color_3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+p {
+  margin: 0;
+  margin-bottom: 0;
+}
+
+ol, ul, dl {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6{
+    margin: 0;
+    padding: 0;
+}
+
+img{
+  border: 0;
+  vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+}
+
+.websfolio_th{
+    position: relative;
+}
+
+::-webkit-scrollbar{
+  width: 8px;
+  background: $background_color_3;
+}
+
+::-webkit-scrollbar-thumb{
+  border-radius: 6px;
+  background-color: $color_primary;
+}

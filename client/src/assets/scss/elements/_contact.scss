@@ -1,0 +1,189 @@
+.contact .main_content{
+    padding-bottom: 3rem;
+}
+
+.contact .main_content .contact_about_area{
+    padding: 45px 25px 40px;
+    border-radius: 10px;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    height: 100%;
+    
+    @media #{$large_mobile} {
+        padding: 45px 20px 40px;
+    }
+}
+
+.contact .main_content .contact_about_area .thumbnail{
+    margin-bottom: 28px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.contact .main_content .contact_about_area .thumbnail img{
+    width: 100%;
+    height: auto;
+    @include transition;
+}
+
+.contact .main_content .contact_about_area .title_area{
+    margin-bottom: 15px;
+}
+
+.contact .main_content .contact_about_area .title_area .title{
+    @include main_title;
+    text-transform: capitalize;
+    margin-bottom: 9px;
+}
+
+.contact .main_content .contact_about_area .title_area span{
+    color: $color_primary;
+    font-weight: $p_semi_bold;
+    opacity: .9;
+    text-transform: capitalize;
+}
+
+.contact .main_content .contact_about_area .description{
+    margin-bottom: 39px;
+
+}
+
+.contact .main_content .contact_about_area .description p{
+    color: $color_body_white;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 30px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.contact .main_content .contact_about_area .description .mail,
+.contact .main_content .contact_about_area .description .phone{
+    display: block;
+    font-size: 16px;
+    font-weight: $p_semi_bold;
+}
+
+.contact .main_content .contact_about_area .description .mail:hover a,
+.contact .main_content .contact_about_area .description .phone:hover a{
+    @include transition;
+}
+
+.contact .main_content .contact_about_area .description .mail:hover a,
+.contact .main_content .contact_about_area .description .phone:hover a{
+    color: $color_primary;
+}
+
+.contact .main_content .contact_about_area .social_share{
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.contact .main_content .contact_form_wrapper{
+    padding: 45px 25px 30px;
+    border-radius: 10px;
+    margin-left: 20px;
+    height: 100%;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+
+    @media #{$md_layout, $sm_layout} {
+        margin-left: 0px;
+    }
+
+    @media #{$large_mobile} {
+        padding: 45px 20px 40px;
+    }
+}
+
+.contact .main_content .contact_form_wrapper .form_group{
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.contact .main_content .contact_form_wrapper .form_group label{
+    font-size: 12px;
+    color: $color_body_white;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: var(--font-secondary);
+    margin-bottom: 14px;
+    text-align: left;
+    display: block;
+    opacity: .9;
+}
+
+.contact .main_content .contact_form_wrapper .form_group input{
+    @include input;
+}
+
+.contact .main_content .contact_form_wrapper .form_group textarea{
+    @include textarea;
+}
+
+.contact .main_content .contact_form_wrapper .form_group .errors{
+    @include errors;
+}
+
+.contact .main_content .contact_form_wrapper .contact_btn{
+    @include button;
+    width: 100%;
+}
+
+.contact .main_content .contact_form_wrapper .contact_btn span{
+    margin-right: 5px;
+}
+
+
+// ===== dark mode ===== //
+body.dark .contact .main_content .contact_about_area{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .contact .main_content .contact_about_area .title_area .title{
+    color: $color_lightn;
+}
+
+body.dark .contact .main_content .contact_about_area .description p{
+    color: $color_body;
+}
+
+body.dark .contact .main_content .contact_about_area .description .mail,
+body.dark .contact .main_content .contact_about_area .description .phone{
+    color: $color_lightn;
+}
+
+body.dark .contact .main_content .contact_form_wrapper{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .contact .main_content .contact_form_wrapper .form_group label{
+    color: $color_body;
+}
+
+body.dark .contact .main_content .contact_form_wrapper .form_group input{
+    background: #191b1e;
+    color: $color_lightn;
+    box-shadow: $inner_shadow;
+    border: none;
+}
+
+body.dark .contact .main_content .contact_form_wrapper .form_group textarea{
+    background: #191b1e;
+    color: $color_lightn;
+    box-shadow: $inner_shadow;
+    border: none;
+}
+
+body.dark .contact .main_content .contact_form_wrapper .contact_btn{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+
+    &:hover{
+        background: $gradient_black_hover;
+        color: $color_primary;
+    }
+}

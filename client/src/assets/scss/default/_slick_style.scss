@@ -1,0 +1,89 @@
+.slick_next, .slick_prev{
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    top: -40px;
+    right: -80px;
+    left: 0;
+    margin: 0 auto;
+    border-radius: 6px;
+    color: $color_primary;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    color: $color_primary;
+    @include transition;
+
+    &:hover{
+        background: $gradient_red_hover;
+        color: $color_white;
+    }
+    
+}
+
+.slick_prev{
+    right: 80px;
+}
+
+.slick-dots{
+    bottom: -10px;
+}
+
+.slick-dots li {
+    width: auto;
+    height: auto;
+    padding: 10px;
+    margin: 0;
+}
+
+.slick-dots li button {
+    font-size: 0;
+    line-height: 0;
+    width: 11px;
+    height: 11px;
+    padding: 0;
+    cursor: pointer;
+    border: 0;
+    box-shadow: none;
+    background: #ced2d5;
+    border-radius: 50%;
+    @include transition;
+
+
+    &::before{
+        display: none;
+    }
+}
+
+.slick-dots li.slick-active button {
+    background: $color_primary;
+}
+
+
+
+// ===== dark mode ===== //
+body.dark{
+
+    .slick_next, .slick_prev{
+        background: $background_color_1;
+        box-shadow: $shadow_1;
+
+        &:hover{
+            background: $gradient_black_hover;
+            color: $color_primary;
+        }
+    }
+
+    .slick-dots li button {
+        background: $background_color_1;
+        box-shadow: $inner_shadow;
+    }
+
+    .slick-dots li.slick-active button {
+        background: $color_primary;
+    }
+}

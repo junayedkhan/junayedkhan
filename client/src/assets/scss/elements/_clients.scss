@@ -1,0 +1,64 @@
+.client_area{
+    padding-bottom: 3rem;
+}
+
+.client_area .client_slider .inner .client{
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    border-radius: 10px;
+    margin: 0 15px;
+    margin-bottom: 35px;
+    margin-top: 15px;
+}
+
+.client_area .client_slider .inner .client .thumbnail{
+    height: 120px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+}
+
+.client_area .client_slider .inner .client .thumbnail img{
+    max-height: 90px;
+}
+
+.client_area .client_slider .inner .client .client_name{
+    text-align: center;
+    padding: 16px;
+    position: relative;
+
+    &::before{
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 3px;
+        left: 0px;
+        top: 0px;
+        background: #d9dee2;
+        z-index: 0;  
+    }
+}
+
+.client_area .client_slider .inner .client .client_name span{
+    color: #7c838e;
+    font-size: 15px;
+}
+
+
+// ===== dark mode ===== //
+body.dark .client_slider .inner .client{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .client_slider .inner .client .thumbnail img{
+    -webkit-filter: invert(1);
+    filter: invert(1);
+}
+
+body.dark .client_slider .inner .client .client_name{
+    &::before{
+        background: $background_color_4;
+    }
+}

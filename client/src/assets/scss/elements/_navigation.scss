@@ -1,0 +1,140 @@
+.hamburger{
+    display: none;
+    position: fixed;
+    right: 18px;
+    top: 20px;
+    width: 50px;
+    height: 50px;
+    background: $gradient_box_w;
+    // box-shadow: $shadow_white_3;
+    border-radius: 50%;
+    border: none;
+
+    @media #{$lg_layout, $md_layout, $sm_layout} {
+        display: block;
+        z-index: 1000;
+        cursor: pointer;
+    } 
+}
+
+.hamburger .bar{
+    display: block;
+    width: 25px;
+    height: 5px;
+    margin: 3px auto;
+    background-color: $color_tertiary;
+    @include transition;
+}
+
+.hamburger.active{
+    background: $gradient_red_hover;
+}
+
+.hamburger.active .bar:nth-child(1){
+    background-color: $color_secondary;
+    -webkit-transform: translateY(8.2px) rotate(45deg);
+    transform: translateY(8.2px) rotate(45deg);  
+}
+
+.hamburger.active .bar:nth-child(2){
+    opacity: 0;
+}
+
+.hamburger.active .bar:nth-child(3){
+    background-color: $color_secondary;
+    -webkit-transform: translateY(-8px) rotate(-45deg);
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+.nav_menu{
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    right: 0;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    z-index: 1000;
+    font-family: 'Poppins', sans-serif;
+
+    @media #{$lg_layout, $md_layout, $sm_layout}{
+        right: -220px;
+    }
+}
+
+.nav_menu.active{
+    right: -5px;
+}
+
+.nav_menu .react-tabs__tab--selected{
+    color: $color_primary !important;
+}
+
+.nav_menu .nav_item{
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+    background: $gradient_box_w;
+    border-radius: 50%;
+    color: $color_tertiary;
+    font-size: $font_size_b1;
+    cursor: pointer;
+    position: relative; 
+    @include transition; 
+}
+
+.nav_menu .nav_item .tooltiptext{
+    visibility: hidden;
+    width: 130px;
+    background: $gradient_red_hover;
+    color: $color_white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 6px;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: 600;
+    position: absolute;
+    z-index: 1;
+    top: 5px;
+    right: 113%;
+}
+
+.nav_item:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
+}
+
+.nav_item:hover .tooltiptext{
+    visibility: visible;
+}
+
+
+// ===== dark mode ===== //
+body.dark .hamburger{
+    background: $background_color_1;
+}
+
+body.dark .hamburger .bar{
+    background: $color_primary;
+}
+
+body.dark .hamburger.active{
+    background: $gradient_red_hover;
+}
+
+body.dark .nav_menu .nav_item{
+    background: $background_color_1;
+    color: $color_white;
+}
+
+body.dark .nav_menu .nav_item:hover{
+    background: $gradient_black_hover;
+}
+
+body.dark .nav_menu .nav_item .tooltiptext{
+    background: $gradient_black_hover;
+    color: $color_white;
+}

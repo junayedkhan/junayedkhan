@@ -1,0 +1,113 @@
+.tm_error{
+    height: 100vh;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.tm_error .tm_error_inner h1{
+    font-size: 120px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: $color_heading_wv;
+
+    @media #{$sm_layout} {
+        font-size: 60px;
+    }
+}
+
+.tm_error .tm_error_inner h3{
+    font-size: 35px;
+    line-height: 1.3;
+    margin-bottom: 15px;
+    color: $color_heading_wv;
+
+    @media #{$sm_layout} {
+        font-size: 26px;
+    }
+}
+
+.tm_error .tm_error_inner p{
+    font-size: 18px;
+    margin-bottom: 25px;
+    color: $color_heading_wv;
+    opacity: 0.8;
+}
+
+.tm_button{
+    @include button;
+}
+
+
+.tm_error{
+    height: 100vh;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+
+    .tm_error_inner{
+        
+        h1{
+            font-size: 120px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: $color_heading_wv;
+
+            @media #{$sm_layout} {
+                font-size: 60px;
+            }
+        }
+
+        h3{
+            font-size: 35px;
+            line-height: 1.3;
+            margin-bottom: 15px;
+            color: $color_heading_wv;
+
+            @media #{$sm_layout} {
+                font-size: 26px;
+            }
+        }
+
+        p{
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: $color_heading_wv;
+            opacity: 0.8;
+        }
+
+        .tm_button{
+            @include button;
+        }
+    }
+}
+
+
+// === dark mode === //
+body.dark .tm_error .tm_error_inner h1{
+    color: $color_heading;
+}
+
+body.dark .tm_error .tm_error_inner h3{
+    color: $color_heading;
+}
+
+body.dark .tm_error .tm_error_inner p{
+    color: $color_heading;
+}
+
+body.dark .tm_error .tm_error_inner .tm_button{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .tm_error .tm_error_inner .tm_button:hover{
+    background: $gradient_black_hover;
+    color: $color_primary;
+}

@@ -1,0 +1,82 @@
+.card{
+    text-align: left;
+    padding: 45px 25px 25px;
+    position: relative;
+    border-radius: 10px;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: inline-block;
+    border: none;
+    @include transition;
+}
+
+.card .inner .card_thumbnail{
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card .inner .card_thumbnail img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    cursor: pointer;
+    @include transition;
+}
+
+.card .inner .card_content{
+    padding-top: 18px;
+}
+
+.card .inner .card_content .category_info{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.card .inner .card_content .category_list{
+    text-transform: uppercase;
+    color: $color_primary;
+    font-weight: 600; 
+}
+
+.card .inner .card_content .meta{
+    font-weight: 600;
+    font-family: $font_primary;
+    font-size: 13px;
+}
+
+.card .inner .card_content .meta i{
+    color: $color_primary
+}
+
+.card .inner .card_content .title{
+    @include title;
+    cursor: pointer;
+    @include transition;
+    
+    &:hover{
+        color: $color_primary;
+    }
+}
+
+
+// ===== dark mode ===== //
+body.dark .card{
+    background: $background_color_1;
+    box-shadow: $shadow_1; 
+}
+
+body.dark .card .inner .card_content .category_info .meta{
+    color: $color_lightn;
+}
+
+body.dark .card .inner .card_content .title{
+    color: $color_lightn;
+
+    &:hover{
+        color: $color_primary;
+    }
+}

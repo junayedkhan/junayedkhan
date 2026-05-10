@@ -1,0 +1,59 @@
+/*---------------------------
+ CSS Index  
+****************************
+01. Variables
+02. Reset
+03. Forms
+04. Shortcode
+05. Animations
+06. Header
+07. Nav
+08. Mobilemenu
+09. Button
+10. Section Title
+11. Modal
+12. Skill
+13. Testimonial
+14. Clients
+15. Contact
+16. About
+17. Portfolio
+18. Slickstyle
+19. White Version
+20. Dark Version
+----------------------------*/
+
+
+// ===== bootstrap ===== //
+@import "bootstrap/scss/bootstrap";
+
+
+// ===== default ===== //
+@import "default/veriables";
+@import "default/reset";
+@import "default/shortcode";
+@import "default/mixin";
+@import "default/slick_style";
+@import "default/social_share";
+
+
+// ===== elements ===== //
+@import "elements/home";
+@import "elements/navigation";
+@import "elements/section_title";
+@import "elements/hero";
+@import "elements/about";
+@import "elements/testimonial";
+@import "elements/clients";
+@import "elements/card";
+@import "elements/comment";
+@import "elements/react_model";
+@import "elements/portfolio";
+@import "elements/blogs";
+@import "elements/contact";
+@import "elements/not_found";
+
+
+// ===== dark mode ===== //
+@import "default/dark_mode";
+
