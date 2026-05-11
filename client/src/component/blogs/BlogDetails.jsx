@@ -1,7 +1,23 @@
 import React from 'react'
 import Comment from './Comment'
+import { ImageWithLoader } from '../ImageWithLoader'
 
 const BlogDetails = ({ setopenModel, data }) => {
+    const shareUrl = `${window.location.origin}/blogs`;
+    const shareText = `${data.title} - ${shareUrl}`;
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            await navigator.share({
+                title: data.title,
+                text: data.excerpt,
+                url: shareUrl
+            });
+            return;
+        }
+
+        await navigator.clipboard.writeText(shareText);
+    };
 
     return (
         <>
@@ -11,7 +27,7 @@ const BlogDetails = ({ setopenModel, data }) => {
             <div className="main_content">
                 <div className="thumbnail">
                     <div className="inner">
-                        <img src={data.img} alt="blog" />
+                        <ImageWithLoader src={data.img} alt={data.title || "blog"} />
                     </div>
                 </div>
                 {/* == image area end */}
@@ -41,7 +57,37 @@ const BlogDetails = ({ setopenModel, data }) => {
                     </div>
                 </div>
                 {/* == text area end == */}
-                <Comment />
+                <div className="blog_share">
+                    <span>Share</span>
+                    <button type="button" onClick={handleShare} aria-label="Share blog">
+                        <i className="fas fa-share-alt"></i>
+                    </button>
+                    <a
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Share on Facebook"
+                    >
+                        <i className="fab fa-facebook-f"></i>
+                    </a>
+                    <a
+                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(shareUrl)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Share on Twitter"
+                    >
+                        <i className="fab fa-twitter"></i>
+                    </a>
+                    <a
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Share on LinkedIn"
+                    >
+                        <i className="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+                <Comment blogId={data.id} />
                 {/* == comment area end == */}
             </div>
         </article>

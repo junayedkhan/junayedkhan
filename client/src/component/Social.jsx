@@ -25,7 +25,7 @@ const Social = () => {
                 {social_share.map((val, index) => {
                     return(
                     <li key={index}>
-                        <a href={`${val.link}`} target="blank" className="social_icon">
+                        <a href={`${val.link}`} target="_blank" rel="noreferrer" className="social_icon">
                             <i className={val.iconName}></i>
                         </a>
                     </li>

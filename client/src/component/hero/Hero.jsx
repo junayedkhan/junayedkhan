@@ -1,6 +1,7 @@
 import React from 'react'
 import { Typewriter } from 'react-simple-typewriter'
 import Social from '../Social'
+import { BackgroundImageWithLoader } from '../ImageWithLoader'
 
 const heroContent = {
     name: "Junayed",
@@ -47,7 +48,7 @@ const Hero = () => {
                         <div className="col-lg-5 col-md-12 col-12 order-1 order-lg-2 justify-content-center">
                             <div className="thumbnail">
                                 <i></i>
-                                <div className="inner" style={{backgroundImage: `url(${heroContent.image})`}}></div>
+                                <BackgroundImageWithLoader className="inner" src={heroContent.image}></BackgroundImageWithLoader>
                             </div>
                             {/* == thumbnail area end == */}
                         </div>

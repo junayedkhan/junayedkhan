@@ -1,136 +1,219 @@
 .portfolio .main_content{
     margin-bottom: 3rem;
-} 
-
-.portfolio .main_content .portfolio_tags{
-    margin-top: 20px;
-    margin-bottom: 40px;
-    background: $gradient_box_w;
-    box-shadow: $shadow_white_3;
-    border-radius: 10px;
-    width: fit-content;
 }
 
-.portfolio .main_content .portfolio_tags .tag{
-    background: none;
-    border: none;
-    outline: none;
-    padding: 15px 35px;
-    border-radius: 10px;
-    font-size: 15px;
-    text-transform: uppercase;
-    font-weight: 600;
-    color: $color_heading_wv;
-    @include transition;
-
-    &:hover{
-        color: $color_primary;
-    }
-
-    @media #{$sm_layout} {
-        width: 100%;
-    }
+.portfolio .gallery_card{
+    display: block;
+    padding: 25px;
 }
 
-.portfolio .main_content .portfolio_tags .tag.active{
-    color: $color_primary;
-    background: $gradient_box_w;
-    box-shadow: $shadow_white_3;
+.portfolio .gallery_card .inner{
+    position: relative;
 }
 
-
-// == portfolio details == //
-.porfolio_details .main_content .thumbnail .inner{
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.porfolio_details .main_content .thumbnail .inner img{
-    border: 0;
-    vertical-align: middle;
+.portfolio .gallery_card .gallery_thumbnail{
     width: 100%;
+    border: none;
+    padding: 0;
+    display: block;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+}
+
+.portfolio .gallery_card .gallery_thumbnail img{
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    display: block;
+    object-fit: cover;
+}
+
+.portfolio .gallery_card .gallery_thumbnail .image_loader{
+    aspect-ratio: 16 / 11;
     height: auto;
 }
 
-.porfolio_details .main_content .text_content{
-    margin-top: 20px;
+.portfolio .gallery_card .gallery_thumbnail .image_loader img{
+    object-fit: cover;
 }
 
-.porfolio_details .main_content .text_content .inner .subtitle{
-    @include subtitle;
+.portfolio .gallery_card:hover .gallery_thumbnail img{
+    transform: scale(1.06);
 }
 
-.porfolio_details .main_content .text_content .inner .title{
-    @include main_title;
-    font-size: 28px;
+.portfolio .gallery_card .gallery_like{
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    min-width: 74px;
+    min-height: 38px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    color: $color_heading_wv;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    z-index: 2;
+    @include transition;
 }
 
-.porfolio_details .main_content .text_content .inner .description_1,
-.porfolio_details .main_content .text_content .inner .description_2{
-    margin-bottom: 20px;
-    font-size: 16px;
+.portfolio .gallery_card .gallery_like i{
+    color: $color_primary;
+}
+
+.portfolio .gallery_card .gallery_like:hover,
+.portfolio .gallery_card .gallery_like.active{
+    background: $gradient_red_hover;
+    color: $color_white;
+}
+
+.portfolio .gallery_card .gallery_like:hover i,
+.portfolio .gallery_card .gallery_like.active i{
+    color: $color_white;
+}
+
+.portfolio .main_content .gallery_actions{
+    display: flex;
+    justify-content: center;
+    margin-top: 34px;
+}
+
+.portfolio .main_content .gallery_load_more{
+    border: none;
+    border-radius: 8px;
+    min-width: 150px;
+    min-height: 48px;
+    padding: 0 26px;
+    background: $gradient_box_w;
+    color: $color_primary;
+    box-shadow: $shadow_white_3;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    cursor: pointer;
+    @include transition;
+}
+
+.portfolio .main_content .gallery_load_more:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
+    transform: translateY(-3px);
+}
+
+.portfolio .main_content .gallery_end{
+    min-width: 150px;
+    min-height: 48px;
+    margin: 0;
+    border-radius: 8px;
+    background: $gradient_box_w;
     color: $color_body_white;
+    box-shadow: $shadow_white_3_inset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
-.porfolio_details .main_content .btn_group{
-    margin-left: -10px;
+.gallery_details .main_content .thumbnail .inner{
+    border-radius: 10px;
+    overflow: hidden;
+    background: #111111;
+    cursor: zoom-in;
 }
 
-.porfolio_details .main_content .btn_group .button{
-    @include button;
-    margin: 0 10px;
-
-    &:hover{
-        background: $gradient_red_hover;
-        transform: translateY(-5px);
-        color: $color_heading;
-    }
+.gallery_details .main_content .thumbnail .inner img{
+    border: 0;
+    width: 100%;
+    max-height: 78vh;
+    display: block;
+    object-fit: contain;
+    transform-origin: center center;
+    @include transition;
 }
 
+.gallery_details .main_content .thumbnail .inner .image_loader{
+    min-height: 320px;
+    height: auto;
+}
+
+.gallery_details .gallery_zoom_controls{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.gallery_details .gallery_zoom_controls button{
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: $gradient_box_w;
+    color: $color_primary;
+    box-shadow: $shadow_white_3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    @include transition;
+}
+
+.gallery_details .gallery_zoom_controls button:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
+}
 
 // ===== dark mode ===== //
 body.dark .portfolio{
     background: $background_color_2;
 }
 
-body.dark .portfolio .main_content .portfolio_tags{
+body.dark .portfolio .main_content .gallery_load_more{
     background: $background_color_1;
-    box-shadow: $shadow_1;
-}
-
-body.dark .portfolio .main_content .portfolio_tags .tag{
-    color: $color_lightn;
-
-    &:hover{
-        color: $color_primary;
-    }
-}
-
-body.dark .portfolio .main_content .portfolio_tags .tag.active{
     color: $color_primary;
-    background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-body.dark .porfolio_details .text_content .inner .title{
+body.dark .portfolio .main_content .gallery_load_more:hover{
+    background: $gradient_black_hover;
+    color: $color_white;
+}
+
+body.dark .portfolio .main_content .gallery_end{
+    background: $background_color_1;
     color: $color_lightn;
+    box-shadow: $inner_shadow;
 }
 
-body.dark .porfolio_details .main_content .text_content .inner .description_1,
-body.dark .porfolio_details .main_content .text_content .inner .description_2{
-    color: $color_body;
-}
-
-body.dark .porfolio_details .main_content .btn_group .button{
+body.dark .portfolio .gallery_card .gallery_like{
     background: $background_color_1;
+    color: $color_lightn;
     box-shadow: $shadow_1;
-
-    &:hover{
-        background: $gradient_black_hover;
-        color: $color_primary;
-    }
 }
 
+body.dark .portfolio .gallery_card .gallery_like:hover,
+body.dark .portfolio .gallery_card .gallery_like.active{
+    background: $gradient_black_hover;
+    color: $color_primary;
+}
 
+body.dark .gallery_details .gallery_zoom_controls button{
+    background: $background_color_1;
+    color: $color_primary;
+    box-shadow: $shadow_1;
+}
 
-
+body.dark .gallery_details .gallery_zoom_controls button:hover{
+    background: $gradient_black_hover;
+    color: $color_white;
+}

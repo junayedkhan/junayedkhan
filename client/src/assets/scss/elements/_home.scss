@@ -1,8 +1,118 @@
-.websfolio_th.preloaderShow{
-    width: 100%;
-    height: 100vh;
+.modern_loader{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 1, 79, 0.12), transparent 28%),
+        radial-gradient(circle at 80% 18%, rgba(27, 162, 219, 0.12), transparent 28%),
+        rgba(236, 240, 243, 0.96);
+    backdrop-filter: blur(14px);
     display: flex;
-    justify-content: center;
     align-items: center;
-    background: #fff;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modern_loader_card{
+    width: min(360px, 100%);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: $shadow_white_3;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 58px 1fr;
+    align-items: center;
+    gap: 18px;
+}
+
+.modern_loader_logo{
+    width: 58px;
+    height: 58px;
+    border-radius: 12px;
+    background: $gradient_red_hover;
+    color: $color_white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 800;
+    box-shadow: 0 16px 35px rgba(255, 1, 79, 0.28);
+}
+
+.modern_loader_text{
+    display: grid;
+    gap: 4px;
+}
+
+.modern_loader_text strong{
+    color: $color_heading_wv;
+    font-size: 22px;
+    line-height: 1.15;
+    font-weight: 800;
+}
+
+.modern_loader_text span{
+    color: $color_body_white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.modern_loader_bar{
+    grid-column: 1 / -1;
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #dde3ea;
+    margin-top: 8px;
+}
+
+.modern_loader_bar span{
+    display: block;
+    width: 45%;
+    height: 100%;
+    border-radius: inherit;
+    background: $gradient_red_hover;
+    animation: modernLoaderBar 1s ease-in-out infinite;
+}
+
+@keyframes modernLoaderBar {
+    0%{
+        transform: translateX(-120%);
+    }
+
+    100%{
+        transform: translateX(240%);
+    }
+}
+
+html.dark,
+html.dark body{
+    background: #212428;
+}
+
+html.dark .modern_loader,
+body.dark .modern_loader{
+    background: #212428;
+}
+
+html.dark .modern_loader_card,
+body.dark .modern_loader_card{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+html.dark .modern_loader_text strong,
+body.dark .modern_loader_text strong{
+    color: $color_lightn;
+}
+
+html.dark .modern_loader_text span,
+body.dark .modern_loader_text span{
+    color: $color_body;
+}
+
+html.dark .modern_loader_bar,
+body.dark .modern_loader_bar{
+    background: #191b1e;
 }

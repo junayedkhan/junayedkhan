@@ -5,8 +5,6 @@ import Achievement from './Achievement';
 import Education from './Education';
 import Experience from './Experience';
 import Skills from './Skills';
-import Testimonial from './Testimonial';
-import Clients from './Clients';
 
 const About = () => {
     return (
@@ -74,28 +72,6 @@ const About = () => {
                 </div>
             </section>
             {/* == resume area end */}
-            <section>
-                <div className="title_section">
-                    <span className="title_bg">Clients</span>
-                    <h1 className="title" >Testimo<span>nial</span></h1>
-                </div>
-                {/* == title area end == */}
-                <div className="container">
-                    <Testimonial />
-                </div>
-            </section>
-            {/* == testimonial area start == */}
-            <section>
-                <div className="title_section">
-                    <span className="title_bg">some</span>
-                    <h1 className="title" >Client<span>s</span></h1>
-                </div>
-                {/* == title area end == */}
-                <div className="container">
-                    <Clients /> 
-                </div>
-            </section>
-            {/* == client area start == */}
         </main>
     )
 }

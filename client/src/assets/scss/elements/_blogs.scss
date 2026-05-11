@@ -2,6 +2,121 @@
     padding-bottom: 3rem;
 }
 
+.blogs .blog_card{
+    display: block;
+}
+
+.blogs .blog_card .blog_thumbnail{
+    width: 100%;
+    border: none;
+    padding: 0;
+    display: block;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+}
+
+.blogs .blog_card .blog_thumbnail img{
+    aspect-ratio: 16 / 10;
+}
+
+.blogs .blog_card .blog_thumbnail .image_loader{
+    aspect-ratio: 16 / 10;
+    height: auto;
+}
+
+.blogs .blog_card .blog_thumbnail .image_loader img{
+    object-fit: cover;
+}
+
+.blogs .blog_card .blog_excerpt{
+    color: $color_body_white;
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.blogs .blog_card .blog_footer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid #d9dee2;
+    padding-top: 18px;
+    font-size: 12px;
+    font-weight: 700;
+    color: $color_body_white;
+    text-transform: uppercase;
+
+    @media #{$large_mobile} {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+.blogs .blog_card .read_more_btn{
+    border: none;
+    background: transparent;
+    color: $color_primary;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    @include transition;
+}
+
+.blogs .blog_card .read_more_btn:hover{
+    transform: translateX(4px);
+}
+
+.blogs .blog_actions{
+    display: flex;
+    justify-content: center;
+    margin-top: 34px;
+}
+
+.blogs .blog_load_more{
+    border: none;
+    border-radius: 8px;
+    min-width: 150px;
+    min-height: 48px;
+    padding: 0 26px;
+    background: $gradient_box_w;
+    color: $color_primary;
+    box-shadow: $shadow_white_3;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    cursor: pointer;
+    @include transition;
+}
+
+.blogs .blog_load_more:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
+    transform: translateY(-3px);
+}
+
+.blogs .blog_end{
+    min-width: 150px;
+    min-height: 48px;
+    margin: 0;
+    border-radius: 8px;
+    background: $gradient_box_w;
+    color: $color_body_white;
+    box-shadow: $shadow_white_3_inset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
 .blog_details .main_content .thumbnail .inner{
     border-radius: 10px;
     overflow: hidden;
@@ -12,6 +127,15 @@
     vertical-align: middle;
     width: 100%;
     height: auto;
+}
+
+.blog_details .main_content .thumbnail .inner .image_loader{
+    aspect-ratio: 16 / 10;
+    height: auto;
+}
+
+.blog_details .main_content .thumbnail .inner .image_loader img{
+    object-fit: cover;
 }
 
 .blog_details .main_content .details{
@@ -31,6 +155,46 @@
     @include main_title;
     font-size: 28px;
     margin-top: 15px;
+}
+
+.blog_details .main_content .blog_share{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0 8px;
+    padding-top: 24px;
+    border-top: 1px solid #d9dee2;
+}
+
+.blog_details .main_content .blog_share span{
+    color: $color_body_white;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.blog_details .main_content .blog_share button,
+.blog_details .main_content .blog_share a{
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 8px;
+    background: $gradient_box_w;
+    color: $color_primary;
+    box-shadow: $shadow_white_3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    @include transition;
+}
+
+.blog_details .main_content .blog_share button:hover,
+.blog_details .main_content .blog_share a:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
+    transform: translateY(-3px);
 }
 
 .blog_details .main_content .text_content .description .bigger{
@@ -75,8 +239,54 @@ body.dark .blog_details .main_content .details .meta{
     border-bottom: 1px solid $background_color_4;
 }
 
+body.dark .blogs .blog_card .blog_excerpt{
+    color: $color_body;
+}
+
+body.dark .blogs .blog_card .blog_footer{
+    border-top: 1px solid $background_color_4;
+    color: $color_lightn;
+}
+
+body.dark .blogs .blog_load_more{
+    background: $background_color_1;
+    color: $color_primary;
+    box-shadow: $shadow_1;
+}
+
+body.dark .blogs .blog_load_more:hover{
+    background: $gradient_black_hover;
+    color: $color_white;
+}
+
+body.dark .blogs .blog_end{
+    background: $background_color_1;
+    color: $color_lightn;
+    box-shadow: $inner_shadow;
+}
+
 body.dark .blog_details .main_content .details .title{
     color: $color_lightn;
+}
+
+body.dark .blog_details .main_content .blog_share{
+    border-top: 1px solid $background_color_4;
+}
+
+body.dark .blog_details .main_content .blog_share span{
+    color: $color_body;
+}
+
+body.dark .blog_details .main_content .blog_share button,
+body.dark .blog_details .main_content .blog_share a{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .blog_details .main_content .blog_share button:hover,
+body.dark .blog_details .main_content .blog_share a:hover{
+    background: $gradient_black_hover;
+    color: $color_primary;
 }
 
 body.dark .blog_details .main_content .text_content .description .bigger{

@@ -1,13 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Social from '../Social'
+import { ImageWithLoader } from '../ImageWithLoader'
 import img from "../../assets/image/contact1.png"
 
 const Contact = () => {
 
+    const [successMessage, setSuccessMessage] = useState("")
     const { register, handleSubmit, formState: { errors }, reset } = useForm()
     const onSubmit = (data) => {
         reset()
+        setSuccessMessage("Thanks! Your message has been received.")
         console.log("massage: ", JSON.stringify(data));
     }
 
@@ -24,7 +27,7 @@ const Contact = () => {
                         <div className="col-lg-5 col-12 _mb_50">
                             <div className="contact_about_area">
                                 <div className="thumbnail">
-                                    <img src={img} alt="contact" />
+                                    <ImageWithLoader src={img} alt="contact" />
                                 </div>
                                 {/* == imgage area end == */}
                                 <div className="title_area">
@@ -130,6 +133,7 @@ const Contact = () => {
                                             <span>SEND MESSAGE</span>
                                             <i className="fas fa-arrow-right"></i>
                                         </button>
+                                        {successMessage && <p className="success_message">{successMessage}</p>}
                                         {/* == button area end == */}
                                     </div>
                                 </form>

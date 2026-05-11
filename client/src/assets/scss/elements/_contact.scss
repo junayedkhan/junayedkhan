@@ -26,6 +26,15 @@
     @include transition;
 }
 
+.contact .main_content .contact_about_area .thumbnail .image_loader{
+    aspect-ratio: 4 / 3;
+    height: auto;
+}
+
+.contact .main_content .contact_about_area .thumbnail .image_loader img{
+    object-fit: cover;
+}
+
 .contact .main_content .contact_about_area .title_area{
     margin-bottom: 15px;
 }
@@ -133,6 +142,13 @@
 
 .contact .main_content .contact_form_wrapper .contact_btn span{
     margin-right: 5px;
+}
+
+.contact .main_content .contact_form_wrapper .success_message{
+    color: $color_success;
+    font-weight: $p_semi_bold;
+    margin-top: 16px;
+    margin-bottom: 0;
 }
 
 

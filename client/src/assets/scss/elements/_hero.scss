@@ -147,6 +147,17 @@
     overflow: hidden;
 }
 
+.hero .main_content .thumbnail .background_image_loader{
+    position: absolute;
+    inset: 10px;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: cover;
+}
+
 // ===== dark mode ===== //
 body.dark .hero .main_content .about_content .text_content .subtitle {
     color: $color_lightn;

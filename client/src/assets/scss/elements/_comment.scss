@@ -5,6 +5,184 @@
     margin: 40px 0; 
 }
 
+.comment .inner .comment_list_area .title{
+    margin-bottom: 24px;
+}
+
+.comment .inner .comment_list{
+    display: grid;
+    gap: 18px;
+}
+
+.comment .inner .comment_item{
+    display: flex;
+    gap: 16px;
+}
+
+.comment .inner .comment_avatar{
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: $gradient_red_hover;
+    color: $color_white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 48px;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.comment .inner .comment_body{
+    min-width: 0;
+    flex: 1;
+}
+
+.comment .inner .comment_bubble{
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
+}
+
+.comment .inner .comment_meta{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.comment .inner .comment_meta h4{
+    margin: 0;
+    color: $color_heading_wv;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.comment .inner .comment_meta span{
+    color: $color_body_white;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.comment .inner .comment_body p{
+    margin: 0;
+    color: $color_body_white;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.comment .inner .comment_actions{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 9px;
+    padding-left: 6px;
+}
+
+.comment .inner .comment_actions button{
+    border: none;
+    background: transparent;
+    color: $color_body_white;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    @include transition;
+}
+
+.comment .inner .comment_actions button:hover,
+.comment .inner .comment_actions button.active{
+    color: $color_primary;
+}
+
+.comment .inner .comment_actions span{
+    color: $color_body_white;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.comment .inner .comment_replies{
+    display: grid;
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.comment .inner .comment_reply{
+    display: flex;
+    gap: 12px;
+}
+
+.comment .inner .comment_avatar.small{
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+    font-size: 14px;
+}
+
+.comment .inner .comment_reply_form{
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.comment .inner .comment_reply_form input{
+    width: 100%;
+    height: 42px;
+    border: none;
+    border-radius: 8px;
+    background: $gradient_box_w;
+    color: $color_heading_wv;
+    box-shadow: $shadow_white_3_inset;
+    padding: 0 16px;
+}
+
+.comment .inner .comment_reply_form button{
+    border: none;
+    border-radius: 8px;
+    min-width: 82px;
+    background: $gradient_box_w;
+    color: $color_primary;
+    box-shadow: $shadow_white_3;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    @include transition;
+}
+
+.comment .inner .comment_reply_form button:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
+}
+
+.comment .inner .comment_load_more{
+    border: none;
+    border-radius: 8px;
+    min-width: 180px;
+    min-height: 46px;
+    margin-top: 24px;
+    padding: 0 24px;
+    background: $gradient_box_w;
+    color: $color_primary;
+    box-shadow: $shadow_white_3;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    @include transition;
+}
+
+.comment .inner .comment_load_more:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
+    transform: translateY(-3px);
+}
+
 .comment .inner .form_group{
     margin-bottom: 20px;
     position: relative;
@@ -28,10 +206,64 @@
     @include button;
 }
 
+.comment .inner .form_group_btn .success_message{
+    color: $color_success;
+    font-weight: $p_semi_bold;
+    margin-top: 16px;
+    margin-bottom: 0;
+}
+
 
 // == dark mode == //
 body.dark .comment .inner .title{
     color: $color_lightn;
+}
+
+body.dark .comment .inner .comment_bubble{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .comment .inner .comment_meta h4{
+    color: $color_lightn;
+}
+
+body.dark .comment .inner .comment_meta span,
+body.dark .comment .inner .comment_body p,
+body.dark .comment .inner .comment_actions button,
+body.dark .comment .inner .comment_actions span{
+    color: $color_body;
+}
+
+body.dark .comment .inner .comment_actions button:hover,
+body.dark .comment .inner .comment_actions button.active{
+    color: $color_primary;
+}
+
+body.dark .comment .inner .comment_reply_form input{
+    background: #191b1e;
+    color: $color_lightn;
+    box-shadow: $inner_shadow;
+}
+
+body.dark .comment .inner .comment_reply_form button{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .comment .inner .comment_reply_form button:hover{
+    background: $gradient_black_hover;
+    color: $color_primary;
+}
+
+body.dark .comment .inner .comment_load_more{
+    background: $background_color_1;
+    box-shadow: $shadow_1;
+}
+
+body.dark .comment .inner .comment_load_more:hover{
+    background: $gradient_black_hover;
+    color: $color_primary;
 }
 
 body.dark .comment .inner .form_group input{
