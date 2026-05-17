@@ -7,10 +7,19 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const User = require("./models/User");
 
 const app = express();
 
-connectDB();
+const requiredEnv = ["MONGO_URI", "JWT_SECRET"];
+
+const validateEnv = () => {
+  const missing = requiredEnv.filter((key) => !process.env[key]);
+
+  if (missing.length) {
+    throw new Error(`Missing required environment variables: ${missing.join(", ")}`);
+  }
+};
 
 app.use(cors({
   origin(origin, callback) {
@@ -29,6 +38,12 @@ app.use(express.json());
 
 app.use("/api/auth", require("./routes/auth"));
 
+app.get("/api/health", (req, res) => {
+  res.json({
+    ok: true,
+    database: User.db.readyState === 1 ? "connected" : "disconnected",
+  });
+});
 
 app.get("/api/protected", require("./middleware/authMiddleware"), (req, res) => {
   res.json("You are authenticated!");
@@ -49,6 +64,16 @@ app.get(/^\/(?!api).*/, (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+const startServer = async () => {
+  validateEnv();
+  await connectDB();
+
+  app.listen(PORT, () => {
+    console.log("Server running on port", PORT);
+  });
+};
+
+startServer().catch((error) => {
+  console.error("Server failed to start:", error.message);
+  process.exit(1);
 });

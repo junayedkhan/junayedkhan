@@ -2,12 +2,13 @@ const router = require('express').Router()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
+const authMiddleware = require('../middleware/authMiddleware')
 
 const signToken = (userId) => {
-  return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '7d' })
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
 }
+
+const normalizeUsername = (username) => username?.trim().toLowerCase()
 
 router.get('/status', async (req, res) => {
   try {
@@ -22,7 +23,7 @@ router.get('/status', async (req, res) => {
 router.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body
-    const normalizedUsername = username?.trim()
+    const normalizedUsername = normalizeUsername(username)
 
     if (!normalizedUsername || !password) {
       return res.status(400).json({ message: 'Username and password are required' })
@@ -47,21 +48,15 @@ router.post('/register', async (req, res) => {
   }
 })
 
-router.get('/me', async (req, res) => {
+router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization || ''
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader
-
-    if (!token) return res.status(401).json({ message: 'No token' })
-
-    const verified = jwt.verify(token, JWT_SECRET)
-    const user = await User.findById(verified.id).select('-password')
+    const user = await User.findById(req.user.id).select('-password')
 
     if (!user) return res.status(404).json({ message: 'User not found' })
 
     res.json({ user })
   } catch (err) {
-    res.status(403).json({ message: 'Invalid token' })
+    res.status(500).json({ message: 'Unable to verify session' })
   }
 })
 
@@ -69,17 +64,17 @@ router.get('/me', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body
-    const normalizedUsername = username?.trim()
+    const normalizedUsername = normalizeUsername(username)
 
     if (!normalizedUsername || !password) {
       return res.status(400).json({ message: 'Username and password are required' })
     }
 
     const user = await User.findOne({ username: normalizedUsername })
-    if (!user) return res.status(404).json({ message: 'User not found' })
+    if (!user) return res.status(401).json({ message: 'Invalid username or password' })
 
     const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch) return res.status(400).json({ message: 'Wrong password' })
+    if (!isMatch) return res.status(401).json({ message: 'Invalid username or password' })
 
     const token = signToken(user._id)
     res.json({
