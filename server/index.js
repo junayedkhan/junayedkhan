@@ -2,6 +2,7 @@ const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 require("dotenv").config();
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
@@ -34,11 +35,16 @@ app.get("/api/protected", require("./middleware/authMiddleware"), (req, res) => 
 });
 
 const clientDistPath = path.join(__dirname, "..", "client", "dist");
+const clientIndexPath = path.join(clientDistPath, "index.html");
 
 app.use(express.static(clientDistPath));
 
 app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(clientDistPath, "index.html"));
+  if (!fs.existsSync(clientIndexPath)) {
+    return res.status(503).send("Frontend build missing. Run `npm run build` before starting the server.");
+  }
+
+  res.sendFile(clientIndexPath);
 });
 
 const PORT = process.env.PORT || 5000;
