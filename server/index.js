@@ -23,10 +23,13 @@ const validateEnv = () => {
 
 app.use(cors({
   origin(origin, callback) {
-    const allowedOrigin = process.env.CLIENT_URL?.replace(/\/$/, "");
+    const allowedOrigins = (process.env.CLIENT_URL || "")
+      .split(",")
+      .map((url) => url.trim().replace(/\/$/, ""))
+      .filter(Boolean);
     const isLocalDev = !origin || /^http:\/\/localhost:\d+$/.test(origin) || /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
 
-    if (!allowedOrigin || origin === allowedOrigin || isLocalDev) {
+    if (!allowedOrigins.length || allowedOrigins.includes(origin) || isLocalDev) {
       return callback(null, true);
     }
 
