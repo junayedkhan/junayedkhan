@@ -2,6 +2,7 @@ const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -12,7 +13,7 @@ connectDB();
 
 app.use(cors({
   origin(origin, callback) {
-    const allowedOrigin = process.env.CLIENT_URL;
+    const allowedOrigin = process.env.CLIENT_URL?.replace(/\/$/, "");
     const isLocalDev = !origin || /^http:\/\/localhost:\d+$/.test(origin) || /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
 
     if (!allowedOrigin || origin === allowedOrigin || isLocalDev) {
@@ -30,6 +31,14 @@ app.use("/api/auth", require("./routes/auth"));
 
 app.get("/api/protected", require("./middleware/authMiddleware"), (req, res) => {
   res.json("You are authenticated!");
+});
+
+const clientDistPath = path.join(__dirname, "..", "client", "dist");
+
+app.use(express.static(clientDistPath));
+
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(clientDistPath, "index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
