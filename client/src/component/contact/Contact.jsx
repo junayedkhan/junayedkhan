@@ -9,9 +9,17 @@ const Contact = () => {
     const [successMessage, setSuccessMessage] = useState("")
     const { register, handleSubmit, formState: { errors }, reset } = useForm()
     const onSubmit = (data) => {
+        const mailtoBody = [
+            `Name: ${data.name}`,
+            `Phone: ${data.phone || "Not provided"}`,
+            `Email: ${data.email}`,
+            "",
+            data.message
+        ].join("\n");
+
+        window.location.href = `mailto:junayedkhan@example.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(mailtoBody)}`;
         reset()
-        setSuccessMessage("Thanks! Your message has been received.")
-        console.log("massage: ", JSON.stringify(data));
+        setSuccessMessage("Thanks! Your email app is ready with the message.")
     }
 
     return (
@@ -31,14 +39,14 @@ const Contact = () => {
                                 </div>
                                 {/* == imgage area end == */}
                                 <div className="title_area">
-                                    <h4 className="title">Nevine Acotanza</h4>
-                                    <span>Chief Operating Officer</span>
+                                    <h4 className="title">Junayed Khan</h4>
+                                    <span>Frontend Developer</span>
                                 </div>
                                 {/* == autor area end == */}
                                 <div className="description">
-                                    <p>I am available for freelance work. Connect with me via and call in to my account.</p>
-                                    <span className="phone">Phone: <a href="tel:00000000000">+01234567890</a></span>
-                                    <span className="mail">Email: <a href="mailto:admin@example.com">admin@example.com</a></span>
+                                    <p>I am available for freelance and frontend work. Share your project details and I will get back to you.</p>
+                                    <span className="phone">Phone: <span>Available on request</span></span>
+                                    <span className="mail">Email: <a href="mailto:junayedkhan@example.com">junayedkhan@example.com</a></span>
                                 </div>
                                 {/* == number, email area end == */}
                                 <Social />
@@ -52,9 +60,8 @@ const Contact = () => {
                                     {/* == name == */}
                                     <div className="col-lg-6">
                                         <div className="form_group">
-                                            <label>Your Name</label>
+                                            <label htmlFor="name">Your Name</label>
                                             <input
-                                                name="phone"
                                                 type="text"
                                                 id="name"
                                                 {...register("name", { required: "Name is required." })}
@@ -65,7 +72,7 @@ const Contact = () => {
                                     {/* == phone == */}
                                     <div className="col-lg-6">
                                         <div className="form_group">
-                                            <label>Phone Number</label>
+                                            <label htmlFor="phone">Phone Number</label>
                                             <input
                                                 name="phone"
                                                 id="phone"
@@ -85,7 +92,7 @@ const Contact = () => {
                                     {/* == email == */}
                                     <div className="col-lg-12">
                                         <div className="form_group">
-                                            <label>Email</label>
+                                            <label htmlFor="email">Email</label>
                                             <input
                                                 id="email"
                                                 name="email"
@@ -105,7 +112,7 @@ const Contact = () => {
                                     {/* == subject == */}
                                     <div className="col-lg-12">
                                         <div className="form_group">
-                                            <label>subject</label>
+                                            <label htmlFor="subject">Subject</label>
                                             <input
                                                 id="subject"
                                                 name="subject"
@@ -115,23 +122,23 @@ const Contact = () => {
                                             {errors.subject?.message && <p className="errors">{errors.subject.message}</p>}
                                         </div>
                                     </div>
-                                    {/* == massage == */}
+                                    {/* == message == */}
                                     <div className="col-lg-12">
                                         <div className="form_group">
-                                            <label>Your Message</label>
+                                            <label htmlFor="message">Your Message</label>
                                             <textarea
                                                 name="message"
                                                 id="message"
-                                                {...register("massage", { required: "Massage is required." })}
+                                                {...register("message", { required: "Message is required." })}
                                             >
                                             </textarea>
-                                            {errors.massage?.message && <p className="errors">{errors.massage.message}</p>}
+                                            {errors.message?.message && <p className="errors">{errors.message.message}</p>}
                                         </div>
                                     </div>
                                     <div className="col-lg-12">
                                         <button name="submit" type="submit" id="submit" className="contact_btn">
                                             <span>SEND MESSAGE</span>
-                                            <i className="fas fa-arrow-right"></i>
+                                            <i className="fas fa-arrow-right" aria-hidden="true"></i>
                                         </button>
                                         {successMessage && <p className="success_message">{successMessage}</p>}
                                         {/* == button area end == */}

@@ -1,21 +1,37 @@
 .card{
     text-align: left;
-    padding: 45px 25px 25px;
-    position: relative;
-    border-radius: 10px;
-    background: $gradient_box_w;
-    box-shadow: $shadow_white_3;
     position: relative;
     z-index: 1;
     height: 100%;
-    display: inline-block;
+    display: block;
+    width: 100%;
     border: none;
+    padding: 0;
+    overflow: hidden;
+    border-radius: $radius_surface;
+    background: $gradient_box_w;
+    box-shadow: $shadow_white_3;
     @include transition;
+
+    &:hover{
+        transform: translateY(-6px);
+    }
+}
+
+html:not(.dark) .card:hover{
+    box-shadow: $shadow_hover_light;
+}
+
+.card .inner{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .card .inner .card_thumbnail{
-    border-radius: 10px;
+    border-radius: 0;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .card .inner .card_thumbnail img{
@@ -27,36 +43,54 @@
 }
 
 .card .inner .card_content{
-    padding-top: 18px;
+    padding: 22px 26px 26px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .card .inner .card_content .category_info{
     display: flex;
     justify-content: space-between;
-    padding-bottom: 10px;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
 }
 
 .card .inner .card_content .category_list{
     text-transform: uppercase;
     color: $color_primary;
-    font-weight: 600; 
+    font-weight: $p_semi_bold;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    margin: 0;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(118, 200, 59, 0.12);
 }
 
 .card .inner .card_content .meta{
-    font-weight: 600;
+    font-weight: $p_medium;
     font-family: $font_primary;
-    font-size: 13px;
+    font-size: 12px;
+    color: $color_body_white;
+    opacity: 0.88;
+    letter-spacing: 0.02em;
 }
 
 .card .inner .card_content .meta i{
-    color: $color_primary
+    color: $color_primary;
 }
 
 .card .inner .card_content .title{
     @include title;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    color: $color_heading_wv;
     cursor: pointer;
     @include transition;
-    
+
     &:hover{
         color: $color_primary;
     }
@@ -64,16 +98,19 @@
 
 
 // ===== dark mode ===== //
-body.dark .card{
-    background: $background_color_1;
-    box-shadow: $shadow_1; 
-}
-
-body.dark .card .inner .card_content .category_info .meta{
+body.dark .card .inner .card_content .category_info .meta,
+html.dark .card .inner .card_content .category_info .meta{
     color: $color_lightn;
+    opacity: 0.9;
 }
 
-body.dark .card .inner .card_content .title{
+body.dark .card .inner .card_content .category_list,
+html.dark .card .inner .card_content .category_list{
+    background: rgba(118, 200, 59, 0.18);
+}
+
+body.dark .card .inner .card_content .title,
+html.dark .card .inner .card_content .title{
     color: $color_lightn;
 
     &:hover{

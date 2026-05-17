@@ -4,9 +4,9 @@
     z-index: 9999;
     min-height: 100vh;
     background:
-        radial-gradient(circle at 20% 20%, rgba(255, 1, 79, 0.12), transparent 28%),
+        radial-gradient(circle at 20% 20%, rgba(118, 200, 59, 0.14), transparent 28%),
         radial-gradient(circle at 80% 18%, rgba(27, 162, 219, 0.12), transparent 28%),
-        rgba(236, 240, 243, 0.96);
+        rgba(244, 243, 238, 0.97);
     backdrop-filter: blur(14px);
     display: flex;
     align-items: center;
@@ -16,7 +16,7 @@
 
 .modern_loader_card{
     width: min(360px, 100%);
-    border-radius: 12px;
+    border-radius: $radius_surface;
     background: rgba(255, 255, 255, 0.88);
     box-shadow: $shadow_white_3;
     padding: 30px;
@@ -29,7 +29,7 @@
 .modern_loader_logo{
     width: 58px;
     height: 58px;
-    border-radius: 12px;
+    border-radius: $radius_surface_sm;
     background: $gradient_red_hover;
     color: $color_white;
     display: inline-flex;
@@ -37,7 +37,7 @@
     justify-content: center;
     font-size: 28px;
     font-weight: 800;
-    box-shadow: 0 16px 35px rgba(255, 1, 79, 0.28);
+    box-shadow: $shadow_loader_logo;
 }
 
 .modern_loader_text{

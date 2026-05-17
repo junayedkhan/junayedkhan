@@ -37,7 +37,7 @@ const About = () => {
                                 <div className="col-12 col-lg-5 _mb_60">
                                     <div className="row">
                                         <div className="col-12">
-                                            <h4 className="main_title">porsonal info</h4>
+                                            <h4 className="main_title">personal info</h4>
                                         </div>
                                         <PersonalInfo />
                                     </div>

@@ -1,40 +1,28 @@
 import React, { useState } from 'react';
 import { ImageWithLoader } from '../ImageWithLoader';
+import img01 from "../../assets/image/portfolio-01.jpg";
+import img02 from "../../assets/image/portfolio-02.jpg";
+import img03 from "../../assets/image/portfolio-03.jpg";
+import img04 from "../../assets/image/portfolio-04.jpg";
+import img05 from "../../assets/image/portfolio-05.jpg";
+import img06 from "../../assets/image/portfolio-06.jpg";
 
 const galleryImages = [
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=80",
-    "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=900&q=80"
+    img01,
+    img02,
+    img03,
+    img04,
+    img05,
+    img06
 ];
 
 const galleryAlts = [
-    "green mountain valley",
-    "lake and mountain landscape",
-    "forest path in nature",
-    "calm lake at sunrise",
-    "mountain ridge travel view",
-    "field under dramatic sky",
-    "waterfall and green hills",
-    "wide mountain lake",
-    "desert road landscape",
-    "misty forest trees"
+    "portfolio project preview one",
+    "portfolio project preview two",
+    "portfolio project preview three",
+    "portfolio project preview four",
+    "portfolio project preview five",
+    "portfolio project preview six"
 ];
 
 const galleryContent = Array.from({ length: 40 }, (_, index) => ({
@@ -148,19 +136,19 @@ const Portfolio = () => {
             {openModel ? <div onClick={() => setopenModel(false)} className="react_model overlay"></div> : null}
             <div className="react_model_inner">
                 <article className="gallery_details">
-                    <button onClick={() => setopenModel(false)} className="react_model_close">
-                        <i className="fas fa-times"></i>
+                    <button type="button" onClick={() => setopenModel(false)} className="react_model_close" aria-label="Close image preview">
+                        <i className="fas fa-times" aria-hidden="true"></i>
                     </button>
                     <div className="main_content">
                         <div className="gallery_zoom_controls">
-                            <button type="button" onClick={() => setZoom((current) => Math.max(current - 0.25, 1))}>
-                                <i className="fas fa-search-minus"></i>
+                            <button type="button" onClick={() => setZoom((current) => Math.max(current - 0.25, 1))} aria-label="Zoom out">
+                                <i className="fas fa-search-minus" aria-hidden="true"></i>
                             </button>
                             <button type="button" onClick={() => setZoom(1)} aria-label="Reset zoom">
-                                <i className="fas fa-compress-arrows-alt"></i>
+                                <i className="fas fa-compress-arrows-alt" aria-hidden="true"></i>
                             </button>
-                            <button type="button" onClick={() => setZoom((current) => Math.min(current + 1, 100))}>
-                                <i className="fas fa-search-plus"></i>
+                            <button type="button" onClick={() => setZoom((current) => Math.min(current + 1, 100))} aria-label="Zoom in">
+                                <i className="fas fa-search-plus" aria-hidden="true"></i>
                             </button>
                         </div>
                         <div className="thumbnail">

@@ -1,130 +1,82 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api, { authHeaders, clearToken } from "../utils/api";
+
+const statCards = [
+  { label: "Total Users", value: "120", icon: "fas fa-users" },
+  { label: "Projects", value: "15", icon: "fas fa-layer-group" },
+  { label: "Messages", value: "08", icon: "fas fa-envelope" },
+];
 
 export default function AdminDashboard() {
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/admin-login";
-    }
-  }, []);
+    let active = true;
+
+    api
+      .get("/auth/me", { headers: authHeaders() })
+      .then((res) => {
+        if (active) setUser(res.data.user);
+      })
+      .catch(() => {
+        clearToken();
+        navigate("/admin-login", { replace: true });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [navigate]);
 
   const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/admin-login";
+    clearToken();
+    navigate("/admin-login");
   };
 
   return (
-    <>
-      <style>{css}</style>
+    <main className="admin_dashboard">
+      <aside className="admin_sidebar">
+        <span className="admin_auth_logo">J</span>
+        <nav aria-label="Admin navigation">
+          <button type="button" className="active">
+            <i className="fas fa-chart-line" aria-hidden="true"></i>
+            <span>Dashboard</span>
+          </button>
+          <button type="button">
+            <i className="fas fa-images" aria-hidden="true"></i>
+            <span>Projects</span>
+          </button>
+          <button type="button">
+            <i className="fas fa-comments" aria-hidden="true"></i>
+            <span>Messages</span>
+          </button>
+        </nav>
+      </aside>
 
-      <div className="container">
-        {/* Top Bar */}
-        <div className="topbar">
-          <h3>Admin Panel</h3>
-          <button onClick={() => setOpen(!open)}>Menu</button>
-        </div>
-
-        {/* Sidebar */}
-        <div className={`sidebar ${open ? "show" : ""}`}>
-          <p>Dashboard</p>
-          <p>Users</p>
-          <p>Projects</p>
-          <p>Messages</p>
-          <p className="logout" onClick={logout}>
-            Logout
-          </p>
-        </div>
-
-        {/* Main */}
-        <div className="main">
-          <h2>Welcome Admin</h2>
-
-          <div className="box">
-            <p>Total Users: 120</p>
+      <section className="admin_main">
+        <header className="admin_header">
+          <div>
+            <p className="admin_auth_kicker">Admin panel</p>
+            <h1>Welcome{user?.username ? `, ${user.username}` : ""}</h1>
           </div>
+          <button type="button" className="admin_logout" onClick={logout}>
+            <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
+            <span>Logout</span>
+          </button>
+        </header>
 
-          <div className="box">
-            <p>Total Projects: 15</p>
-          </div>
+        <div className="admin_stats">
+          {statCards.map((card) => (
+            <article className="admin_stat_card" key={card.label}>
+              <i className={card.icon} aria-hidden="true"></i>
+              <span>{card.label}</span>
+              <strong>{card.value}</strong>
+            </article>
+          ))}
         </div>
-      </div>
-    </>
+      </section>
+    </main>
   );
 }
-
-/* ===== CSS ===== */
-const css = `
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
-}
-
-.container {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* Topbar */
-.topbar {
-  display: none;
-  width: 100%;
-  background: #333;
-  color: white;
-  padding: 10px;
-  justify-content: space-between;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 200px;
-  background: #222;
-  color: white;
-  padding: 15px;
-}
-
-.sidebar p {
-  padding: 10px 0;
-  cursor: pointer;
-}
-
-.logout {
-  color: red;
-  margin-top: 20px;
-}
-
-/* Main */
-.main {
-  flex: 1;
-  padding: 20px;
-}
-
-.box {
-  background: #f3f3f3;
-  padding: 15px;
-  margin-top: 10px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-
-  .topbar {
-    display: flex;
-  }
-
-  .sidebar {
-    display: none;
-    width: 100%;
-  }
-
-  .sidebar.show {
-    display: block;
-  }
-}
-`;

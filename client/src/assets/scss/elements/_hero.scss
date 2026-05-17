@@ -1,24 +1,66 @@
 .hero .main_content .about_content {
-    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: clamp(76px, 10vh, 92px) 0 clamp(18px, 3vh, 30px);
+
+    @media only screen and (min-width: 1200px) {
+        min-height: 100svh;
+        max-height: 100svh;
+        overflow: hidden;
+    }
 
     @media #{$md_layout, $sm_layout} {
-        height: auto;
-        padding: 20px 0 40px 0;
+        min-height: 100svh;
+        padding: clamp(76px, 10vh, 92px) $section_space_x clamp(18px, 3vh, 30px);
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .websfolio_th .react-tabs__tab-panel:has(.hero),
+    .websfolio_th .react-tabs__tab-panel--selected:has(.hero) {
+        margin-top: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        overflow: hidden;
+        max-height: 100svh;
+    }
+
+    .hero {
+        min-height: 100svh;
+        height: 100svh;
+        max-height: 100svh;
+        overflow: hidden;
+        overscroll-behavior: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hero .main_content {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        overscroll-behavior: auto;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero .main_content .container {
+        width: 100%;
     }
 }
 
 .hero .main_content .about_content .text_content {
-    margin-bottom: 70px;
+    margin-bottom: clamp(10px, 2vh, 18px);
 
     @media #{$lg_layout} {
-        margin-bottom: 50px;
+        margin-bottom: 15px;
     }
 
     @media #{$md_layout, $sm_layout} {
-        margin-top: 50px;
+        margin-top: 0;
+        margin-bottom: 15px;
     }
 }
 
@@ -28,10 +70,11 @@
 }
 
 .hero .main_content .about_content .text_content .title {
+    color: $color_heading_wv;
     font-weight: 800;
     font-size: 70px;
     line-height: 80px;
-    margin-bottom: 22px;
+    margin-bottom: clamp(10px, 2vh, 18px);
     margin-left: -5px;
     font-family: $font_secondary;
 
@@ -61,6 +104,22 @@
     }
 }
 
+.websfolio_th .react-tabs__tab-panel:not(.react-tabs__tab-panel--selected){
+    display: none;
+}
+
+.websfolio_th .react-tabs__tab-panel--selected:has(.hero){
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+@media only screen and (min-width: 1200px) and (max-height: 760px) {
+    .hero .main_content .about_content .text_content .title{
+        font-size: 60px;
+        line-height: 68px;
+    }
+}
+
 .hero .main_content .about_content .text_content .title .text {
     color: $color_primary;
 }
@@ -70,7 +129,7 @@
     font-weight: 800;
     margin-left: -3px;
     font-family: $font_secondary;
-    padding-bottom: 22px;
+    padding-bottom: clamp(4px, 1vh, 8px);
 
     @media #{$lg_layout} {
         font-size: 35px;
@@ -89,12 +148,18 @@
     }
 }
 
+@media only screen and (min-width: 1200px) and (max-height: 760px) {
+    .hero .main_content .about_content .text_content .designation{
+        font-size: 34px;
+    }
+}
+
 .hero .main_content .about_content .text_content .description {
     font-size: 16px;
-    line-height: 30px;
+    line-height: 25px;
     color: $color_body_white;
     font-family: $font_secondary;
-    padding-right: 16%;
+    padding-right: 10%;
     opacity: 0.9;
 
     @media #{$md_layout, $sm_layout} {
@@ -103,81 +168,118 @@
 
     @media #{$sm_layout} {
         font-size: 15px;
+        line-height: 24px;
     }
 }
 
-.hero .main_content .thumbnail {
-    width: auto;
-    height: 80vh;
-    position: relative;
-    border-radius: 10px;
-    
+@media only screen and (min-width: 1200px) and (max-height: 760px) {
+    .hero .main_content .about_content .text_content .description{
+        font-size: 15px;
+        line-height: 23px;
+    }
+}
+
+// Hero photo uses same gallery card shell as Portfolio (see _portfolio.scss)
+.hero .hero_gallery_card{
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+
+    @media only screen and (min-width: 992px) {
+        margin-right: clamp(10px, 2.5vw, 28px);
+    }
+
+    @media only screen and (min-width: 1200px) {
+        max-width: min(380px, 30vw);
+        margin-right: clamp(14px, 3vw, 36px);
+    }
+
     @media #{$md_layout, $sm_layout} {
-        height: 60vh;
+        max-width: 360px;
+        margin-bottom: 8px;
     }
 
-    &::before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        width: 100%;
-        height: 100%;
-        left: 50%;
-        bottom: 0;
-        border-radius: 10px;
-        -webkit-transform: translateX(-50%);
-        -ms-transform: translateX(-50%);
-        transform: translateX(-50%);
-        background: $background_color_3;
-        box-shadow: $shadow_white_3;
+    @media #{$large_mobile} {
+        max-width: 300px;
     }
 }
 
-.hero .main_content .thumbnail .inner {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 10px;
-    border-radius: 10px;
-    background-repeat: no-repeat;
-    background-position: 50%;
-    background-size: cover;
-    overflow: hidden;
+@media only screen and (min-width: 1200px) and (max-height: 760px) {
+    .hero .hero_gallery_card{
+        max-width: min(340px, 28vw);
+    }
+
+    .hero .social_share .title{
+        margin-bottom: 12px;
+    }
+
+    .hero .social_share .social_share_inner .social_icon{
+        width: 54px;
+        height: 54px;
+        line-height: 54px;
+    }
 }
 
-.hero .main_content .thumbnail .background_image_loader{
-    position: absolute;
-    inset: 10px;
-    width: auto;
-    height: auto;
-    border-radius: 10px;
-    background-repeat: no-repeat;
-    background-position: 50%;
-    background-size: cover;
+// Profile frame: outer .card hover was lifting + clipping shadow — keep shadow on .inner only
+.hero .hero_gallery_card.card{
+    overflow: visible;
+    background: transparent;
+    // box-shadow: none;
+}
+
+.hero .hero_gallery_card.card:hover,
+html:not(.dark) .hero .hero_gallery_card.card:hover{
+    transform: none;
+    box-shadow: none;
+}
+
+.hero .hero_gallery_card:hover .inner{
+    box-shadow: $shadow_hover_light;
+    border-color: rgba(11, 44, 31, 0.1);
+}
+
+.hero .hero_gallery_card:hover .gallery_thumbnail .background_image_loader.hero_gallery_bg{
+    transform: scale(1.02);
+}
+
+body.dark .hero .hero_gallery_card.card,
+html.dark .hero .hero_gallery_card.card{
+    background: transparent;
+    box-shadow: none;
+}
+
+body.dark .hero .hero_gallery_card.card:hover,
+html.dark .hero .hero_gallery_card.card:hover{
+    transform: none;
+    box-shadow: none;
+}
+
+body.dark .hero .hero_gallery_card:hover .inner,
+html.dark .hero .hero_gallery_card:hover .inner{
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.38);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 // ===== dark mode ===== //
-body.dark .hero .main_content .about_content .text_content .subtitle {
+body.dark .hero .main_content .about_content .text_content .subtitle,
+html.dark .hero .main_content .about_content .text_content .subtitle {
     color: $color_lightn;
     opacity: 0.9;
 }
 
-body.dark .hero .main_content .about_content .text_content .title {
+body.dark .hero .main_content .about_content .text_content .title,
+html.dark .hero .main_content .about_content .text_content .title {
     color: $color_heading;
 }
 
-body.dark .hero .main_content .about_content .text_content .title .text {
+body.dark .hero .main_content .about_content .text_content .title .text,
+html.dark .hero .main_content .about_content .text_content .title .text {
     color: $color_primary;
 }
 
-body.dark .hero .main_content .about_content .text_content .description {
+body.dark .hero .main_content .about_content .text_content .description,
+html.dark .hero .main_content .about_content .text_content .description {
     color: $color_lightn;
     opacity: 0.9;
-}
-
-body.dark .hero .main_content .thumbnail::before {
-    background: $background_color_1;
-    box-shadow: $shadow_1;
 }

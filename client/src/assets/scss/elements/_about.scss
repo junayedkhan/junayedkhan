@@ -1,22 +1,31 @@
 .about .main_content{
-    padding-bottom: 3rem;
+    padding: clamp(20px, 3vw, 40px) $section_space_x;
 }
 
 .about .main_content .tabs .tablist{
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
-    border-radius: 10px;
-    margin-bottom: 50px;
-    margin-top: 20px;
+    border-radius: $radius_surface;
+    margin-bottom: 30px;
+    margin-top: 15px;
     margin-right: calc(var(--bs-gutter-x) * .0);
     margin-left: calc(var(--bs-gutter-x) * .0);
+    @include transition;
+
+    &:hover{
+        transform: translateY(-4px);
+    }
+}
+
+html:not(.dark) .about .main_content .tabs .tablist:hover{
+    box-shadow: $shadow_hover_light;
 }
 
 .about .main_content .tabs .tablist 
 .react-tabs__tab--selected{
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
-    border-radius: 10px;
+    border-radius: $radius_surface_sm;
 }  
 
 .about .main_content .tabs .tablist 
@@ -27,7 +36,7 @@
 .about .main_content .tabs .tablist .tab{
     text-align: center;
     color: $color_heading_wv;
-    font-family: $font-primary;
+    font-family: $font_primary;
     padding: 30px 10px;
     text-transform: capitalize;
     font-size: 18px;
@@ -35,7 +44,7 @@
     outline: none;
     border: 0 none;
     background: transparent;
-    border-radius: 10px;
+    border-radius: $radius_surface_sm;
     cursor: pointer;
     @include transition;
 
@@ -86,14 +95,23 @@
 
 .about .main_content .tabs .personal_info .stats_box{
     padding: 20px 30px 25px 40px;
-    border-radius: 11px;
+    border-radius: $radius_surface_md;
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
     margin-bottom: 20px;
+    @include transition;
+
+    &:hover{
+        transform: translateY(-4px);
+    }
 
     @media #{$large_mobile} {
         padding: 15px 20px 20px 25px;
     }
+}
+
+html:not(.dark) .about .main_content .tabs .personal_info .stats_box:hover{
+    box-shadow: $shadow_hover_light;
 }
 
 .about .main_content .tabs .personal_info .stats_box h3{
@@ -174,8 +192,8 @@
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
     padding: 45px 25px 30px;
-    border-radius: 10px;
-    margin-top: 50px;
+    border-radius: $radius_surface_md;
+    margin-top: 30px;
     position: relative;
     @include transition;
 
@@ -238,7 +256,7 @@
     color: $color_primary;
     font-size: 14px;
     padding: 10px 15px;
-    border-radius: 6px;
+    border-radius: $radius_surface_sm;
     background: $color_white;
     box-shadow: $shadow_white_3;
     @include transition;
@@ -315,26 +333,30 @@
     width: 70%;
     height: 8px;
     border-radius: 10px;
-    background: linear-gradient(145deg, #fff 0%, $color-primary 100%);
+    background: linear-gradient(145deg, #fff 0%, $color_primary 100%);
 }
 
 
 // ===== dark mode ===== //
-body.dark .about .main_content .tabs .tablist{
+body.dark .about .main_content .tabs .tablist,
+html.dark .about .main_content .tabs .tablist{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-body.dark .about .main_content .tabs .tablist .react-tabs__tab--selected{
+body.dark .about .main_content .tabs .tablist .react-tabs__tab--selected,
+html.dark .about .main_content .tabs .tablist .react-tabs__tab--selected{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-body.dark .about .main_content .tabs .tablist .react-tabs__tab--selected span{
+body.dark .about .main_content .tabs .tablist .react-tabs__tab--selected span,
+html.dark .about .main_content .tabs .tablist .react-tabs__tab--selected span{
     color: $color_primary;
 }
 
-body.dark .about .main_content .tabs .tablist .tab{
+body.dark .about .main_content .tabs .tablist .tab,
+html.dark .about .main_content .tabs .tablist .tab{
     color: $color_lightn;
 
     &:hover{
@@ -342,44 +364,57 @@ body.dark .about .main_content .tabs .tablist .tab{
     }
 }
 
-body.dark .about .main_content .tabs .personal_info .main_title{
+body.dark .about .main_content .tabs .personal_info .main_title,
+html.dark .about .main_content .tabs .personal_info .main_title{
     color: $color_lightn;
 }
 
-body.dark .about .main_content .tabs .personal_info .about_list .title{
+body.dark .about .main_content .tabs .personal_info .about_list .title,
+html.dark .about .main_content .tabs .personal_info .about_list .title{
     color: $color_lightn;
 }
 
-body.dark .about .main_content .tabs .personal_info .about_list .value{
+body.dark .about .main_content .tabs .personal_info .about_list .value,
+html.dark .about .main_content .tabs .personal_info .about_list .value{
     color: $color_lightn;
 }
 
-body.dark .about .main_content .tabs .personal_info .stats_box{
+body.dark .about .main_content .tabs .personal_info .stats_box,
+html.dark .about .main_content .tabs .personal_info .stats_box{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-body.dark .about .main_content .tabs .personal_info .stats_box p{
+body.dark .about .main_content .tabs .personal_info .stats_box p,
+html.dark .about .main_content .tabs .personal_info .stats_box p{
     color: $color_lightn;
 }
 
 body.dark .about .main_content .tabs .education .inner .subtitle,
-body.dark .about .main_content .tabs .experience .inner .subtitle{
+body.dark .about .main_content .tabs .experience .inner .subtitle,
+html.dark .about .main_content .tabs .education .inner .subtitle,
+html.dark .about .main_content .tabs .experience .inner .subtitle{
     @include subtitle;
 }
 
 body.dark .about .main_content .tabs .education .inner .main_title,
-body.dark .about .main_content .tabs .experience .inner .main_title{
+body.dark .about .main_content .tabs .experience .inner .main_title,
+html.dark .about .main_content .tabs .education .inner .main_title,
+html.dark .about .main_content .tabs .experience .inner .main_title{
     color: $color_lightn;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list,
-body.dark .about .main_content .tabs .experience .inner .inner_list{
+body.dark .about .main_content .tabs .experience .inner .inner_list,
+html.dark .about .main_content .tabs .education .inner .inner_list,
+html.dark .about .main_content .tabs .experience .inner .inner_list{
     border-left: 5px solid $background_color_4;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item,
-body.dark .about .main_content .tabs .experience .inner .inner_list .item{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item,
+html.dark .about .main_content .tabs .education .inner .inner_list .item,
+html.dark .about .main_content .tabs .experience .inner .inner_list .item{
     background: $background_color_1;
     box-shadow: $shadow_1;
 
@@ -394,66 +429,88 @@ body.dark .about .main_content .tabs .experience .inner .inner_list .item{
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item .heading,
-body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading,
+html.dark .about .main_content .tabs .education .inner .inner_list .item .heading,
+html.dark .about .main_content .tabs .experience .inner .inner_list .item .heading{
     border-bottom: 1px solid $background_color_4;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item .heading .title h4, 
-body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .title h4{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .title h4,
+html.dark .about .main_content .tabs .education .inner .inner_list .item .heading .title h4, 
+html.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .title h4{
     color: $color_lightn;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item .heading .title span, 
-body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .title span{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .title span,
+html.dark .about .main_content .tabs .education .inner .inner_list .item .heading .title span, 
+html.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .title span{
     color: $color_1;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item .heading .date_of_time span, 
-body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .date_of_time span{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .date_of_time span,
+html.dark .about .main_content .tabs .education .inner .inner_list .item .heading .date_of_time span, 
+html.dark .about .main_content .tabs .experience .inner .inner_list .item .heading .date_of_time span{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item .description, 
-body.dark .about .main_content .tabs .experience .inner .inner_list .item .description{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item .description,
+html.dark .about .main_content .tabs .education .inner .inner_list .item .description, 
+html.dark .about .main_content .tabs .experience .inner .inner_list .item .description{
     color: $color_body;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item:hover,
-body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover,
+html.dark .about .main_content .tabs .education .inner .inner_list .item:hover,
+html.dark .about .main_content .tabs .experience .inner .inner_list .item:hover{
     background: $gradient_black_hover;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item:hover::after,
-body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover::after{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover::after,
+html.dark .about .main_content .tabs .education .inner .inner_list .item:hover::after,
+html.dark .about .main_content .tabs .experience .inner .inner_list .item:hover::after{
     background: $gradient_black_hover;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item:hover .heading .date_of_time span,
-body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover .heading .date_of_time span{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover .heading .date_of_time span,
+html.dark .about .main_content .tabs .education .inner .inner_list .item:hover .heading .date_of_time span,
+html.dark .about .main_content .tabs .experience .inner .inner_list .item:hover .heading .date_of_time span{
     color: $color_primary;
     background: $background_color_1;
-    box-shadow: $shadow_1;;
+    box-shadow: $shadow_1;
 }
 
 body.dark .about .main_content .tabs .education .inner .inner_list .item:hover .description,
-body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover .description{
+body.dark .about .main_content .tabs .experience .inner .inner_list .item:hover .description,
+html.dark .about .main_content .tabs .education .inner .inner_list .item:hover .description,
+html.dark .about .main_content .tabs .experience .inner .inner_list .item:hover .description{
     color: $color_lightn;
 }
 
-body.dark .about .main_content .tabs .skill .inner .main_title{
+body.dark .about .main_content .tabs .skill .inner .main_title,
+html.dark .about .main_content .tabs .skill .inner .main_title{
     color: $color_lightn;
 }
 
-body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .heading{
+body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .heading,
+html.dark .about .main_content .tabs .skill .inner .skill_charts_inner .heading{
     color: $color_lightn;
 }
 
-body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar{
+body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar,
+html.dark .about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar{
     background: #212428;
-    box-shadow: inset 8px 8px 16px #00000075, inset -8px -8px 16px #383e4575;
+    box-shadow: $shadow_about_progress_inset;
 }
 
-body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar .progress_bar_inner{
+body.dark .about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar .progress_bar_inner,
+html.dark .about .main_content .tabs .skill .inner .skill_charts_inner .progress_bar .progress_bar_inner{
     background: linear-gradient(145deg, #f02981 0%, #c81901 100%);
 }

@@ -1,5 +1,5 @@
 .blogs .main_content{
-    padding-bottom: 3rem;
+    padding: clamp(20px, 3vw, 40px) $section_space_x;
 }
 
 .blogs .blog_card{
@@ -14,10 +14,17 @@
     text-align: left;
     background: transparent;
     cursor: pointer;
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
 }
 
 .blogs .blog_card .blog_thumbnail img{
     aspect-ratio: 16 / 10;
+    @include transition;
+}
+
+.blogs .blog_card:hover .blog_thumbnail img{
+    transform: scale(1.04);
 }
 
 .blogs .blog_card .blog_thumbnail .image_loader{
@@ -41,11 +48,13 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    border-top: 1px solid #d9dee2;
+    margin-top: auto;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
     padding-top: 18px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: $p_semi_bold;
     color: $color_body_white;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 
     @media #{$large_mobile} {
@@ -56,31 +65,42 @@
 
 .blogs .blog_card .read_more_btn{
     border: none;
-    background: transparent;
+    background: rgba(118, 200, 59, 0.12);
     color: $color_primary;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-weight: 700;
+    font-weight: $p_semi_bold;
+    font-size: 12px;
     text-transform: uppercase;
+    letter-spacing: 0.06em;
     white-space: nowrap;
     cursor: pointer;
+    padding: 10px 18px;
+    border-radius: 999px;
     @include transition;
 }
 
 .blogs .blog_card .read_more_btn:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
     transform: translateX(4px);
+    box-shadow: $shadow_cta_pink_soft;
+}
+
+.blogs .blog_card .read_more_btn:hover i{
+    color: $color_white;
 }
 
 .blogs .blog_actions{
     display: flex;
     justify-content: center;
-    margin-top: 34px;
+    margin-top: 20px;
 }
 
 .blogs .blog_load_more{
     border: none;
-    border-radius: 8px;
+    border-radius: $radius_surface_sm;
     min-width: 150px;
     min-height: 48px;
     padding: 0 26px;
@@ -105,7 +125,7 @@
     min-width: 150px;
     min-height: 48px;
     margin: 0;
-    border-radius: 8px;
+    border-radius: $radius_surface_sm;
     background: $gradient_box_w;
     color: $color_body_white;
     box-shadow: $shadow_white_3_inset;
@@ -117,8 +137,27 @@
     text-transform: uppercase;
 }
 
+.blog_details_page{
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+.blog_details--fullpage{
+    position: relative;
+    width: 100%;
+}
+
+.blog_details--fullpage .main_content{
+    padding-top: 72px;
+    padding-bottom: 4rem;
+
+    @media only screen and (min-width: 1200px) {
+        padding-top: clamp(20px, 3vw, 40px);
+    }
+}
+
 .blog_details .main_content .thumbnail .inner{
-    border-radius: 10px;
+    border-radius: $radius_surface_sm;
     overflow: hidden;
 }
 
@@ -178,7 +217,7 @@
     width: 42px;
     height: 42px;
     border: none;
-    border-radius: 8px;
+    border-radius: $radius_surface_sm;
     background: $gradient_box_w;
     color: $color_primary;
     box-shadow: $shadow_white_3;
@@ -235,72 +274,101 @@
 
 
 // ===== dark mode ===== //
-body.dark .blog_details .main_content .details .meta{
+body.dark .blog_details .main_content .details .meta,
+html.dark .blog_details .main_content .details .meta{
     border-bottom: 1px solid $background_color_4;
 }
 
-body.dark .blogs .blog_card .blog_excerpt{
+body.dark .blogs .blog_card .blog_excerpt,
+html.dark .blogs .blog_card .blog_excerpt{
     color: $color_body;
 }
 
-body.dark .blogs .blog_card .blog_footer{
-    border-top: 1px solid $background_color_4;
+body.dark .blogs .blog_card .blog_footer,
+html.dark .blogs .blog_card .blog_footer{
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     color: $color_lightn;
 }
 
-body.dark .blogs .blog_load_more{
+body.dark .blogs .blog_card .read_more_btn,
+html.dark .blogs .blog_card .read_more_btn{
+    background: rgba(118, 200, 59, 0.18);
+}
+
+body.dark .blogs .blog_card .read_more_btn:hover,
+html.dark .blogs .blog_card .read_more_btn:hover{
+    background: $gradient_red_hover;
+    color: $color_white;
+    box-shadow: $shadow_blog_dark_hover;
+}
+
+body.dark .blogs .blog_load_more,
+html.dark .blogs .blog_load_more{
     background: $background_color_1;
     color: $color_primary;
     box-shadow: $shadow_1;
 }
 
-body.dark .blogs .blog_load_more:hover{
+body.dark .blogs .blog_load_more:hover,
+html.dark .blogs .blog_load_more:hover{
     background: $gradient_black_hover;
     color: $color_white;
 }
 
-body.dark .blogs .blog_end{
+body.dark .blogs .blog_end,
+html.dark .blogs .blog_end{
     background: $background_color_1;
     color: $color_lightn;
     box-shadow: $inner_shadow;
 }
 
-body.dark .blog_details .main_content .details .title{
+body.dark .blog_details .main_content .details .title,
+html.dark .blog_details .main_content .details .title{
     color: $color_lightn;
 }
 
-body.dark .blog_details .main_content .blog_share{
+body.dark .blog_details .main_content .blog_share,
+html.dark .blog_details .main_content .blog_share{
     border-top: 1px solid $background_color_4;
 }
 
-body.dark .blog_details .main_content .blog_share span{
+body.dark .blog_details .main_content .blog_share span,
+html.dark .blog_details .main_content .blog_share span{
     color: $color_body;
 }
 
 body.dark .blog_details .main_content .blog_share button,
-body.dark .blog_details .main_content .blog_share a{
+body.dark .blog_details .main_content .blog_share a,
+html.dark .blog_details .main_content .blog_share button,
+html.dark .blog_details .main_content .blog_share a{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
 body.dark .blog_details .main_content .blog_share button:hover,
-body.dark .blog_details .main_content .blog_share a:hover{
+body.dark .blog_details .main_content .blog_share a:hover,
+html.dark .blog_details .main_content .blog_share button:hover,
+html.dark .blog_details .main_content .blog_share a:hover{
     background: $gradient_black_hover;
     color: $color_primary;
 }
 
-body.dark .blog_details .main_content .text_content .description .bigger{
+body.dark .blog_details .main_content .text_content .description .bigger,
+html.dark .blog_details .main_content .text_content .description .bigger{
     color: $color_lightn;
 }
 
-body.dark .blog_details .main_content .text_content .description p{
+body.dark .blog_details .main_content .text_content .description p,
+html.dark .blog_details .main_content .text_content .description p{
     color: $color_body;
 }
 
-body.dark .blog_details .main_content .text_content .description .quote_box .icon i{
+body.dark .blog_details .main_content .text_content .description .quote_box .icon i,
+html.dark .blog_details .main_content .text_content .description .quote_box .icon i{
     color: $color_lightn;
 }
 
-body.dark .blog_details .main_content .text_content .description .quote_box p{
+body.dark .blog_details .main_content .text_content .description .quote_box p,
+html.dark .blog_details .main_content .text_content .description .quote_box p{
     color: $color_lightn;
 }

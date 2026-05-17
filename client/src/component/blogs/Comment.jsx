@@ -53,7 +53,7 @@ const Comment = ({ blogId }) => {
         const newComment = {
             id: `${Date.now()}`,
             name: data.name,
-            message: data.massage,
+            message: data.message,
             liked: false,
             likes: 0,
             replies: [],
@@ -266,9 +266,9 @@ const Comment = ({ blogId }) => {
                             <div className="form_group">
                                 <textarea
                                     placeholder="Comment"
-                                    {...register("massage", { required: "Massage is required." })}
+                                    {...register("message", { required: "Message is required." })}
                                 ></textarea>
-                                {errors.massage?.message && <p className="errors">{errors.massage.message}</p>}
+                                {errors.message?.message && <p className="errors">{errors.message.message}</p>}
                             </div>
                         </div>
                         {/* == button */}

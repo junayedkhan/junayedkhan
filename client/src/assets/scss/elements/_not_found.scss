@@ -90,24 +90,29 @@
 
 
 // === dark mode === //
-body.dark .tm_error .tm_error_inner h1{
+body.dark .tm_error .tm_error_inner h1,
+html.dark .tm_error .tm_error_inner h1{
     color: $color_heading;
 }
 
-body.dark .tm_error .tm_error_inner h3{
+body.dark .tm_error .tm_error_inner h3,
+html.dark .tm_error .tm_error_inner h3{
     color: $color_heading;
 }
 
-body.dark .tm_error .tm_error_inner p{
+body.dark .tm_error .tm_error_inner p,
+html.dark .tm_error .tm_error_inner p{
     color: $color_heading;
 }
 
-body.dark .tm_error .tm_error_inner .tm_button{
+body.dark .tm_error .tm_error_inner .tm_button,
+html.dark .tm_error .tm_error_inner .tm_button{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-body.dark .tm_error .tm_error_inner .tm_button:hover{
+body.dark .tm_error .tm_error_inner .tm_button:hover,
+html.dark .tm_error .tm_error_inner .tm_button:hover{
     background: $gradient_black_hover;
     color: $color_primary;
 }

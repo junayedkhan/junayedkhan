@@ -15,20 +15,37 @@ html.dark .contact .main_content .contact_form_wrapper,
 html.dark .react_model .react_model_inner,
 html.dark .comment .inner .comment_bubble,
 html.dark .portfolio .gallery_card,
+html.dark .hero .hero_gallery_card,
 body.dark .card,
 body.dark .contact .main_content .contact_about_area,
 body.dark .contact .main_content .contact_form_wrapper,
 body.dark .react_model .react_model_inner,
 body.dark .comment .inner .comment_bubble,
-body.dark .portfolio .gallery_card{
+body.dark .portfolio .gallery_card,
+body.dark .hero .hero_gallery_card{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-html.dark .hero .main_content .thumbnail::before,
-body.dark .hero .main_content .thumbnail::before{
-    background: $background_color_1;
-    box-shadow: $shadow_1;
+html.dark .card:hover,
+html.dark .portfolio .gallery_card:hover,
+html.dark .hero .hero_gallery_card:hover,
+html.dark .contact .main_content .contact_about_area:hover,
+html.dark .contact .main_content .contact_form_wrapper:hover,
+html.dark .react_model .react_model_inner:hover,
+html.dark .comment .inner .comment_bubble:hover,
+html.dark .about .main_content .tabs .tablist:hover,
+html.dark .about .main_content .tabs .personal_info .stats_box:hover,
+body.dark .card:hover,
+body.dark .portfolio .gallery_card:hover,
+body.dark .hero .hero_gallery_card:hover,
+body.dark .contact .main_content .contact_about_area:hover,
+body.dark .contact .main_content .contact_form_wrapper:hover,
+body.dark .react_model .react_model_inner:hover,
+body.dark .comment .inner .comment_bubble:hover,
+body.dark .about .main_content .tabs .tablist:hover,
+body.dark .about .main_content .tabs .personal_info .stats_box:hover{
+    box-shadow: $shadow_hover_dark;
 }
 
 html.dark .blogs .blog_load_more,
@@ -65,10 +82,23 @@ body.dark .comment .inner .comment_reply_form input{
     left: 0;
     font-size: 23px;
     padding: 6px 11px 5px 11px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-right-radius: $radius_surface_sm;
+    border-bottom-right-radius: $radius_surface_sm;
     border: none;
     background: $gradient_red_hover;
     color: $color_white;
     z-index: 1000;
+    box-shadow: $shadow_theme_toggle;
+    cursor: pointer;
+    @include transition;
+}
+
+.dark_and_light_btn:hover{
+    filter: brightness(1.06);
+}
+
+@media only screen and (min-width: 1200px) {
+    .dark_and_light_btn{
+        top: 88px;
+    }
 }

@@ -1,23 +1,32 @@
 .contact .main_content{
-    padding-bottom: 3rem;
+    padding: clamp(20px, 3vw, 40px) $section_space_x;
 }
 
 .contact .main_content .contact_about_area{
-    padding: 45px 25px 40px;
-    border-radius: 10px;
+    padding: 30px 20px 25px;
+    border-radius: $radius_surface;
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
     height: 100%;
+    @include transition;
+
+    &:hover{
+        transform: translateY(-5px);
+    }
     
     @media #{$large_mobile} {
-        padding: 45px 20px 40px;
+        padding: 25px 15px 20px;
     }
 }
 
+html:not(.dark) .contact .main_content .contact_about_area:hover{
+    box-shadow: $shadow_hover_light;
+}
+
 .contact .main_content .contact_about_area .thumbnail{
-    margin-bottom: 28px;
+    margin-bottom: 20px;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: $radius_surface_sm;
 }
 
 .contact .main_content .contact_about_area .thumbnail img{
@@ -53,7 +62,7 @@
 }
 
 .contact .main_content .contact_about_area .description{
-    margin-bottom: 39px;
+    margin-bottom: 20px;
 
 }
 
@@ -61,9 +70,9 @@
     color: $color_body_white;
     font-size: 17px;
     font-weight: 400;
-    line-height: 30px;
+    line-height: 26px;
     display: inline-block;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .contact .main_content .contact_about_area .description .mail,
@@ -90,11 +99,16 @@
 
 .contact .main_content .contact_form_wrapper{
     padding: 45px 25px 30px;
-    border-radius: 10px;
+    border-radius: $radius_surface;
     margin-left: 20px;
     height: 100%;
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
+    @include transition;
+
+    &:hover{
+        transform: translateY(-5px);
+    }
 
     @media #{$md_layout, $sm_layout} {
         margin-left: 0px;
@@ -103,6 +117,10 @@
     @media #{$large_mobile} {
         padding: 45px 20px 40px;
     }
+}
+
+html:not(.dark) .contact .main_content .contact_form_wrapper:hover{
+    box-shadow: $shadow_hover_light;
 }
 
 .contact .main_content .contact_form_wrapper .form_group{
@@ -153,48 +171,58 @@
 
 
 // ===== dark mode ===== //
-body.dark .contact .main_content .contact_about_area{
+body.dark .contact .main_content .contact_about_area,
+html.dark .contact .main_content .contact_about_area{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-body.dark .contact .main_content .contact_about_area .title_area .title{
+body.dark .contact .main_content .contact_about_area .title_area .title,
+html.dark .contact .main_content .contact_about_area .title_area .title{
     color: $color_lightn;
 }
 
-body.dark .contact .main_content .contact_about_area .description p{
+body.dark .contact .main_content .contact_about_area .description p,
+html.dark .contact .main_content .contact_about_area .description p{
     color: $color_body;
 }
 
 body.dark .contact .main_content .contact_about_area .description .mail,
-body.dark .contact .main_content .contact_about_area .description .phone{
+body.dark .contact .main_content .contact_about_area .description .phone,
+html.dark .contact .main_content .contact_about_area .description .mail,
+html.dark .contact .main_content .contact_about_area .description .phone{
     color: $color_lightn;
 }
 
-body.dark .contact .main_content .contact_form_wrapper{
+body.dark .contact .main_content .contact_form_wrapper,
+html.dark .contact .main_content .contact_form_wrapper{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-body.dark .contact .main_content .contact_form_wrapper .form_group label{
+body.dark .contact .main_content .contact_form_wrapper .form_group label,
+html.dark .contact .main_content .contact_form_wrapper .form_group label{
     color: $color_body;
 }
 
-body.dark .contact .main_content .contact_form_wrapper .form_group input{
+body.dark .contact .main_content .contact_form_wrapper .form_group input,
+html.dark .contact .main_content .contact_form_wrapper .form_group input{
     background: #191b1e;
     color: $color_lightn;
     box-shadow: $inner_shadow;
     border: none;
 }
 
-body.dark .contact .main_content .contact_form_wrapper .form_group textarea{
+body.dark .contact .main_content .contact_form_wrapper .form_group textarea,
+html.dark .contact .main_content .contact_form_wrapper .form_group textarea{
     background: #191b1e;
     color: $color_lightn;
     box-shadow: $inner_shadow;
     border: none;
 }
 
-body.dark .contact .main_content .contact_form_wrapper .contact_btn{
+body.dark .contact .main_content .contact_form_wrapper .contact_btn,
+html.dark .contact .main_content .contact_form_wrapper .contact_btn{
     background: $background_color_1;
     box-shadow: $shadow_1;
 

@@ -48,7 +48,7 @@
 // == input == //
 @mixin input {
     background: #fdfefe;
-    border-radius: 6px;
+    border-radius: $radius_surface_sm;
     height: 55px;
     width: 100%;
     transition: $transition;
@@ -73,7 +73,7 @@
     color: $color_body_white;
     height: 200px;
     width: 100%;
-    border-radius: 6px;
+    border-radius: $radius_surface_sm;
     padding: 0;
     transition: $transition;
     padding: 15px 15px;
@@ -124,7 +124,7 @@
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
     color: $color_primary;
-    border-radius: 6px;
+    border-radius: $radius_surface_sm;
     font-size: 15px;
     text-transform: uppercase;
     font-weight: 600;
@@ -132,8 +132,9 @@
 
     &:hover{
         background: $gradient_red_hover;
-        color: $color_secondary;
+        color: $color_white;
         transform: translateY(-5px);
+        box-shadow: $shadow_cta_pink;
     }
 }
 

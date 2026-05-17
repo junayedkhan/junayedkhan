@@ -51,7 +51,8 @@
     }
 }
 
-body.dark .image_loader_skeleton{
+body.dark .image_loader_skeleton,
+html.dark .image_loader_skeleton{
     background: linear-gradient(90deg, #1f2328 0%, #2b3037 42%, #1f2328 82%);
     background-size: 200% 100%;
 }

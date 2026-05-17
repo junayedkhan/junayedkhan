@@ -4,11 +4,10 @@ import Social from '../Social'
 import { BackgroundImageWithLoader } from '../ImageWithLoader'
 
 const heroContent = {
-    name: "John Lee",
+    name: "Junayed",
     designation: ['Developer', 'Designer'],
-    description: `I use animation as a third dimension by which to simplify experiences
-                  and kuiding thro each and every interaction. I’m not adding motion
-                  just to spruce things up, but doing it in ways that.`,
+    description: `I use animation as a third dimension to simplify experiences
+                  and guide users through each interaction with clarity.`,
     image: "assets/image/home.png"
 }
 
@@ -23,7 +22,7 @@ const Hero = () => {
                             <div className="text_content">
                                 <span className="subtitle">WELCOME TO MY WORLD</span>
                                 <h1 className="title">
-                                    Hi, I’m <span className="text">{heroContent.name}</span> <br />
+                                    Hi, I'm <span className="text">{heroContent.name}</span> <br />
                                     <span className="text">a </span>
                                     <Typewriter
                                         words={heroContent.designation}

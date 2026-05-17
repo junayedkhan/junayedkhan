@@ -6,9 +6,8 @@ import { BackgroundImageWithLoader } from '../ImageWithLoader'
 const heroContent = {
     name: "Junayed",
     designation: [' Developer', ' Designer'],
-    description: `I use animation as a third dimension by which to simplify experiences
-                  and kuiding thro each and every interaction. I’m not adding motion
-                  just to spruce things up, but doing it in ways that.`,
+    description: `I build clean, responsive web experiences with thoughtful motion,
+                  clear interfaces, and careful attention to every interaction.`,
     image: "assets/image/home.png"
 }
 
@@ -27,12 +26,12 @@ const Hero = () => {
                                 </h1>
                                 <p className="designation">
                                     I'm a Web
-                                    <Typewriter 
-                                        words={heroContent.designation} 
+                                    <Typewriter
+                                        words={heroContent.designation}
                                         loop={true} cursor cursorStyle='_'
-                                        typeSpeed={100} 
-                                        deleteSpeed={50} 
-                                        delaySpeed={2000} 
+                                        typeSpeed={100}
+                                        deleteSpeed={50}
+                                        delaySpeed={2000}
                                     />
                                 </p>
                                 {/* == type write end == */}
@@ -45,12 +44,14 @@ const Hero = () => {
                             </div>
                             {/* == social area end == */}
                         </div>
-                        <div className="col-lg-5 col-md-12 col-12 order-1 order-lg-2 justify-content-center">
-                            <div className="thumbnail">
-                                <i></i>
-                                <BackgroundImageWithLoader className="inner" src={heroContent.image}></BackgroundImageWithLoader>
-                            </div>
-                            {/* == thumbnail area end == */}
+                        <div className="col-lg-5 col-md-12 col-12 order-1 order-lg-2 justify-content-center d-flex justify-content-lg-end justify-content-center">
+                            <article className="card gallery_card hero_gallery_card" aria-label="Profile photo">
+                                <div className="inner">
+                                    <div className="gallery_thumbnail hero_gallery_thumbnail">
+                                        <BackgroundImageWithLoader className="hero_gallery_bg" src={heroContent.image} />
+                                    </div>
+                                </div>
+                            </article>
                         </div>
                     </div>
                 </div>

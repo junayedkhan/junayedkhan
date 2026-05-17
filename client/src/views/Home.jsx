@@ -22,6 +22,9 @@ const Home = () => {
     const [isOpen,setIsOpen] = useState(false);
     const openMenu= ()=> setIsOpen(!isOpen);
     const [loading, setLoading] = useState(() => !sessionStorage.getItem("site-loaded"))
+    const [isMobileNav, setIsMobileNav] = useState(
+        () => typeof window !== "undefined" && window.matchMedia("(max-width: 1199px)").matches
+    );
 
     // === loading screen === //
     useEffect(() => {
@@ -55,6 +58,40 @@ const Home = () => {
     }, [darkMode]);
     // === dark mode area end === //
 
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 1199px)");
+        const onChange = () => setIsMobileNav(mq.matches);
+        onChange();
+        mq.addEventListener("change", onChange);
+        return () => mq.removeEventListener("change", onChange);
+    }, []);
+
+    // Reset scroll position when location changes
+    useEffect(() => {
+        // Smooth scroll to top with animation
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    }, [location.pathname]);
+
+    useEffect(() => {
+        if (isMobileNav && isOpen) {
+            document.documentElement.style.overflow = "hidden";
+            document.body.style.overflow = "hidden";
+        } else {
+            document.documentElement.style.overflow = "";
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.documentElement.style.overflow = "";
+            document.body.style.overflow = "";
+        };
+    }, [isMobileNav, isOpen]);
+
     const nav_item = [
         { menuName: "home", icon: "fas fa-home", path: "/"},
         { menuName: "about", icon: "fas fa-user", path: "/about"},
@@ -67,10 +104,19 @@ const Home = () => {
         nav_item.findIndex((item) => item.path === location.pathname || item.aliases?.some((alias) => location.pathname.startsWith(alias))),
         0
     );
+    const isBlogDetailsPage = location.pathname.replace(/\/$/, "").startsWith("/blogs/");
 
     const handleTabSelect = (index) => {
         const path = nav_item[index].path;
         if (path !== location.pathname) {
+            // Smooth scroll to top with animation
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+            });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
             navigate(path);
         }
     };
@@ -92,26 +138,56 @@ const Home = () => {
                 </div>
             ) : null}
             <>
-                <button className="dark_and_light_btn" onClick={()=> setDarkMode(!darkMode)}>
+                <button
+                    type="button"
+                    className="dark_and_light_btn"
+                    onClick={()=> setDarkMode(!darkMode)}
+                    aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                >
                     {darkMode ?
-                    (<i className="fas fa-sun" style={{color: "#c4cfde"}}></i>) :
-                    (<i className="fas fa-moon" style={{color: "#212428"}}></i>)}
+                    (<i className="fas fa-sun" style={{color: "#c4cfde"}} aria-hidden="true"></i>) :
+                    (<i className="fas fa-moon" style={{color: "#0b2c1f"}} aria-hidden="true"></i>)}
                 </button>
                 {/* == dark mode button end == */}
                 <Tabs selectedIndex={selectedIndex} onSelect={handleTabSelect}>
+                    {isMobileNav && isOpen ? (
+                        <button
+                            type="button"
+                            className="nav_backdrop"
+                            aria-label="Close menu"
+                            onClick={() => setIsOpen(false)}
+                        />
+                    ) : null}
                     <div className={isOpen===false ? "nav_menu" : "nav_menu active" }>
                         <TabList>
                             {nav_item.map((val, index) => {
                             return(
                             <Tab key={index} className="nav_item" onClick={openMenu}>
-                                <i className={val.icon} id="icon"></i>
+                                <i className={val.icon} id="icon" aria-hidden="true"></i>
                                 <span className="tooltiptext">{val.menuName}</span>
                             </Tab>
                             )
                             })}
                         </TabList>
                     </div>
-                    <button className={isOpen===false ? "hamburger" : "hamburger active" } onClick={openMenu}>
+                    {isBlogDetailsPage ? (
+                        <button
+                            type="button"
+                            className="nav_blog_back"
+                            onClick={() => navigate("/blogs")}
+                            aria-label="Back to all blogs"
+                        >
+                            <i className="fas fa-arrow-left" aria-hidden="true"></i>
+                            <span>All blogs</span>
+                        </button>
+                    ) : null}
+                    <button
+                        type="button"
+                        className={isOpen===false ? "hamburger" : "hamburger active" }
+                        onClick={openMenu}
+                        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+                        aria-expanded={isOpen}
+                    >
                         <span className="bar"></span>
                         <span className="bar"></span>
                         <span className="bar"></span>

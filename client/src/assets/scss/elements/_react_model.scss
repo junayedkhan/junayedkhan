@@ -10,7 +10,9 @@
 
 .react_model.overlay{
     z-index: -1;
-    background: $gradient_box_w;
+    background: rgba(236, 240, 243, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .react_model .react_model_inner{
@@ -21,7 +23,7 @@
     left: 50%;
     -webkit-transform: translate(-50%,-50%);
     transform: translate(-50%,-50%);
-    border-radius: 10px;
+    border-radius: $radius_surface;
     padding: 60px 35px 40px;
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
@@ -42,7 +44,10 @@
         width: 350px;
         padding: 60px 25px 40px;
     }
+}
 
+html:not(.dark) .react_model .react_model_inner:hover{
+    box-shadow: $shadow_hover_light;
 }
 
 .react_model_close{
@@ -64,16 +69,21 @@
 
 
 // ===== dark mode ===== //
-body.dark .react_model.overlay{
-    background: $background_color_2;
+body.dark .react_model.overlay,
+html.dark .react_model.overlay{
+    background: rgba(15, 17, 20, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
-body.dark .react_model_inner{
+body.dark .react_model .react_model_inner,
+html.dark .react_model .react_model_inner{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }
 
-body.dark  .react_model_close{
+body.dark .react_model_close,
+html.dark .react_model_close{
     background: $background_color_1;
     box-shadow: $shadow_1;
 }

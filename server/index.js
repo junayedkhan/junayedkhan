@@ -10,7 +10,19 @@ const app = express();
 
 connectDB();
 
-app.use(cors());
+app.use(cors({
+  origin(origin, callback) {
+    const allowedOrigin = process.env.CLIENT_URL;
+    const isLocalDev = !origin || /^http:\/\/localhost:\d+$/.test(origin) || /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
+
+    if (!allowedOrigin || origin === allowedOrigin || isLocalDev) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 app.use("/api/auth", require("./routes/auth"));
@@ -20,6 +32,8 @@ app.get("/api/protected", require("./middleware/authMiddleware"), (req, res) => 
   res.json("You are authenticated!");
 });
 
-app.listen(process.env.PORT, () => {
-  console.log("Server running on port", process.env.PORT);
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
 });

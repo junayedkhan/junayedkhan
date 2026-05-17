@@ -1,17 +1,26 @@
 .portfolio .main_content{
-    margin-bottom: 3rem;
+    margin-bottom: 0;
+    padding: clamp(20px, 3vw, 40px) $section_space_x;
 }
 
-.portfolio .gallery_card{
+.portfolio .gallery_card,
+.hero .hero_gallery_card{
     display: block;
-    padding: 25px;
+    padding: 12px;
 }
 
-.portfolio .gallery_card .inner{
+.portfolio .gallery_card .inner,
+.hero .hero_gallery_card .inner{
     position: relative;
+    border-radius: $radius_surface_md;
+    overflow: hidden;
+    background: $color_white;
+    border: 1px solid rgba(11, 44, 31, 0.06);
+    box-shadow: $shadow_white_3;
 }
 
-.portfolio .gallery_card .gallery_thumbnail{
+.portfolio .gallery_card .gallery_thumbnail,
+.hero .hero_gallery_card .gallery_thumbnail{
     width: 100%;
     border: none;
     padding: 0;
@@ -19,6 +28,29 @@
     text-align: left;
     background: transparent;
     cursor: pointer;
+    position: relative;
+    border-radius: calc(#{$radius_surface_md} - 2px);
+    overflow: hidden;
+}
+
+.hero .hero_gallery_card .gallery_thumbnail{
+    cursor: default;
+}
+
+.portfolio .gallery_card .gallery_thumbnail::after,
+.hero .hero_gallery_card .gallery_thumbnail::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0) 35%, rgba(15, 23, 42, 0.55) 100%);
+    opacity: 0;
+    @include transition;
+    pointer-events: none;
+}
+
+.portfolio .gallery_card:hover .gallery_thumbnail::after,
+.hero .hero_gallery_card:hover .gallery_thumbnail::after{
+    opacity: 1;
 }
 
 .portfolio .gallery_card .gallery_thumbnail img{
@@ -38,26 +70,52 @@
 }
 
 .portfolio .gallery_card:hover .gallery_thumbnail img{
-    transform: scale(1.06);
+    transform: scale(1.05);
+}
+
+// Hero profile: same frame as gallery, portrait ratio + background image
+.hero .hero_gallery_card .gallery_thumbnail .background_image_loader.hero_gallery_bg{
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    max-height: min(72vh, 560px);
+    border-radius: calc(#{$radius_surface_md} - 4px);
+    background-position: center 22%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    @include transition;
+}
+
+.hero .hero_gallery_card:hover .gallery_thumbnail .background_image_loader.hero_gallery_bg{
+    transform: scale(1.05);
+    transform-origin: center center;
+}
+
+@media #{$md_layout, $sm_layout} {
+    .hero .hero_gallery_card .gallery_thumbnail .background_image_loader.hero_gallery_bg{
+        max-height: min(58vh, 480px);
+    }
 }
 
 .portfolio .gallery_card .gallery_like{
     position: absolute;
-    right: 14px;
-    bottom: 14px;
-    min-width: 74px;
-    min-height: 38px;
+    right: 16px;
+    bottom: 16px;
+    min-width: 78px;
+    min-height: 40px;
     border: none;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.92);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.88);
     color: $color_heading_wv;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 8px;
     font-size: 13px;
-    font-weight: 700;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    font-weight: $p_semi_bold;
+    box-shadow: $shadow_gallery_like_light;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     cursor: pointer;
     z-index: 2;
     @include transition;
@@ -71,6 +129,7 @@
 .portfolio .gallery_card .gallery_like.active{
     background: $gradient_red_hover;
     color: $color_white;
+    box-shadow: $shadow_cta_pink_strong;
 }
 
 .portfolio .gallery_card .gallery_like:hover i,
@@ -81,12 +140,12 @@
 .portfolio .main_content .gallery_actions{
     display: flex;
     justify-content: center;
-    margin-top: 34px;
+    margin-top: 20px;
 }
 
 .portfolio .main_content .gallery_load_more{
     border: none;
-    border-radius: 8px;
+    border-radius: $radius_surface_sm;
     min-width: 150px;
     min-height: 48px;
     padding: 0 26px;
@@ -111,7 +170,7 @@
     min-width: 150px;
     min-height: 48px;
     margin: 0;
-    border-radius: 8px;
+    border-radius: $radius_surface_sm;
     background: $gradient_box_w;
     color: $color_body_white;
     box-shadow: $shadow_white_3_inset;
@@ -157,7 +216,7 @@
     width: 44px;
     height: 44px;
     border: none;
-    border-radius: 8px;
+    border-radius: $radius_surface_sm;
     background: $gradient_box_w;
     color: $color_primary;
     box-shadow: $shadow_white_3;
@@ -174,46 +233,65 @@
 }
 
 // ===== dark mode ===== //
-body.dark .portfolio{
+body.dark .portfolio,
+html.dark .portfolio{
     background: $background_color_2;
 }
 
-body.dark .portfolio .main_content .gallery_load_more{
+body.dark .portfolio .main_content .gallery_load_more,
+html.dark .portfolio .main_content .gallery_load_more{
     background: $background_color_1;
     color: $color_primary;
     box-shadow: $shadow_1;
 }
 
-body.dark .portfolio .main_content .gallery_load_more:hover{
+body.dark .portfolio .main_content .gallery_load_more:hover,
+html.dark .portfolio .main_content .gallery_load_more:hover{
     background: $gradient_black_hover;
     color: $color_white;
 }
 
-body.dark .portfolio .main_content .gallery_end{
+body.dark .portfolio .main_content .gallery_end,
+html.dark .portfolio .main_content .gallery_end{
     background: $background_color_1;
     color: $color_lightn;
     box-shadow: $inner_shadow;
 }
 
-body.dark .portfolio .gallery_card .gallery_like{
-    background: $background_color_1;
+body.dark .portfolio .gallery_card .gallery_like,
+html.dark .portfolio .gallery_card .gallery_like{
+    background: rgba(30, 32, 36, 0.82);
     color: $color_lightn;
-    box-shadow: $shadow_1;
+    box-shadow: $shadow_gallery_like_dark;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 body.dark .portfolio .gallery_card .gallery_like:hover,
-body.dark .portfolio .gallery_card .gallery_like.active{
-    background: $gradient_black_hover;
-    color: $color_primary;
+body.dark .portfolio .gallery_card .gallery_like.active,
+html.dark .portfolio .gallery_card .gallery_like:hover,
+html.dark .portfolio .gallery_card .gallery_like.active{
+    background: $gradient_red_hover;
+    color: $color_white;
+    border-color: transparent;
+    box-shadow: $shadow_cta_pink;
 }
 
-body.dark .gallery_details .gallery_zoom_controls button{
+body.dark .portfolio .gallery_card .gallery_like:hover i,
+body.dark .portfolio .gallery_card .gallery_like.active i,
+html.dark .portfolio .gallery_card .gallery_like:hover i,
+html.dark .portfolio .gallery_card .gallery_like.active i{
+    color: $color_white;
+}
+
+body.dark .gallery_details .gallery_zoom_controls button,
+html.dark .gallery_details .gallery_zoom_controls button{
     background: $background_color_1;
     color: $color_primary;
     box-shadow: $shadow_1;
 }
 
-body.dark .gallery_details .gallery_zoom_controls button:hover{
+body.dark .gallery_details .gallery_zoom_controls button:hover,
+html.dark .gallery_details .gallery_zoom_controls button:hover{
     background: $gradient_black_hover;
     color: $color_white;
 }

@@ -1,38 +1,107 @@
 
-// themes color
-$color_primary: #ff014f;
-$color_secondary: #f4f5f6;
-$color_tertiary: #0d1013;
+// themes color — dashboard-inspired (forest + lime, reference palette)
+$color_primary: #76c83b;
+$color_secondary: #f2f1eb;
+$color_tertiary: #0b2c1f;
 $color_gray: #f6f6f6;
-$color_subtitle: #f9004d;
+$color_subtitle: #5aa82e;
+$color_forest: #0b2c1f;
+// Single light canvas (avoids stripy hero vs sections when switching tabs)
+$color_canvas: #f4f3ee;
+$color_page_bg: $color_canvas;
+$color_cream: $color_canvas;
+
+// Vertical rhythm — main sections (tab panels)
+$section_space_y: clamp(40px, 5.5vw, 72px);
+$section_space_x: clamp(16px, 3vw, 32px);
 
 // background-color
 $background_color_1: linear-gradient(145deg, #1e2024, #23272b);
 $background_color_2: #212428;
-$background_color_3: #ECF0F3;
+$background_color_3: $color_canvas;
 $background_color_4: #1b1c1d;
 $color_title_bg_1: rgba(30, 37, 48, 0.07);
 $color_title_bg_2: rgba(211, 218, 231, 0.07);
 // $color_title_bg_2: rgba(161, 166, 175, 0.07);
     
-// box-shadow
-$shadow_1: 10px 10px 19px #1c1e22, -10px -10px 19px #262a2e;
-$shadow_2: inset 21px 21px 19px #181a1d, inset -21px -21px 19px #202225;
-$inner_shadow: 1px 4px 2px -3px rgba(0, 0, 0, 0.7) inset, -1px -3px 3px -2px rgba(255, 255, 255, 0.2) inset;
-$shadow_white_3: 5px 5px 15px #D1D9E6, -5px -5px 15px #ffffff;
-$shadow_white_3_inset: inset 5px 5px 15px #D1D9E6, inset -5px -5px 15px #ffffff;
+// ---------------------------------------------------------------------------
+// Shadows master toggle — false = no box-shadows site-wide (values kept below)
+// Restore depth: set to true (or assign $shadow_* from $_* manually).
+// ---------------------------------------------------------------------------
+$shadows_enabled: false;
+
+// —— Archived “on” values (do not delete; used when $shadows_enabled is true) ——
+$_shadow_1: 0 0 0 1px rgba(255, 255, 255, 0.06), 10px 10px 19px #1c1e22, -10px -10px 19px #262a2e;
+$_shadow_2: inset 21px 21px 19px #181a1d, inset -21px -21px 19px #202225;
+$_inner_shadow: 1px 4px 2px -3px rgba(0, 0, 0, 0.7) inset, -1px -3px 3px -2px rgba(255, 255, 255, 0.2) inset;
+$_shadow_white_3: 0 0 0 1px rgba(15, 23, 42, 0.05), 0 2px 6px rgba(15, 23, 42, 0.04), 0 18px 48px -14px rgba(15, 23, 42, 0.14);
+$_shadow_white_3_inset: inset 0 0 0 1px rgba(15, 23, 42, 0.07), inset 0 2px 10px rgba(15, 23, 42, 0.06);
+$_shadow_hover_light: 0 0 0 1px rgba(255, 1, 79, 0.14), 0 10px 22px rgba(15, 23, 42, 0.06), 0 28px 56px -18px rgba(15, 23, 42, 0.2);
+$_shadow_hover_dark: 0 0 0 1px rgba(255, 1, 79, 0.22), 12px 12px 22px #1c1e22, -8px -8px 22px #262a2e;
+$_shadow_nav_light: 0 0 0 1px rgba(15, 23, 42, 0.06), 0 8px 22px rgba(15, 23, 42, 0.12);
+$_shadow_nav_dark: 0 0 0 1px rgba(255, 255, 255, 0.08), 8px 8px 20px #1c1e22, -6px -6px 16px #262a2e;
+$_shadow_cta_pink: 0 12px 28px rgba(255, 1, 79, 0.35);
+$_shadow_cta_pink_strong: 0 10px 28px rgba(255, 1, 79, 0.4);
+$_shadow_cta_pink_soft: 0 8px 20px rgba(255, 1, 79, 0.35);
+$_shadow_nav_muted: 0 10px 26px rgba(0, 0, 0, 0.4);
+$_shadow_loader_logo: 0 16px 35px rgba(255, 1, 79, 0.28);
+$_shadow_gallery_like_light: 0 8px 28px rgba(15, 23, 42, 0.18);
+$_shadow_gallery_like_dark: 0 8px 28px rgba(0, 0, 0, 0.45);
+$_shadow_blog_dark_hover: 0 8px 24px rgba(0, 0, 0, 0.35);
+$_shadow_theme_toggle: 0 10px 28px rgba(255, 1, 79, 0.4);
+$_shadow_about_progress_inset: inset 8px 8px 16px #00000075, inset -8px -8px 16px #383e4575;
+
+// Active tokens (respect $shadows_enabled)
+$shadow_1: if($shadows_enabled, $_shadow_1, none);
+$shadow_2: if($shadows_enabled, $_shadow_2, none);
+$inner_shadow: if($shadows_enabled, $_inner_shadow, none);
+$shadow_white_3: if($shadows_enabled, $_shadow_white_3, none);
+$shadow_white_3_inset: if($shadows_enabled, $_shadow_white_3_inset, none);
+$shadow_hover_light: if($shadows_enabled, $_shadow_hover_light, none);
+$shadow_hover_dark: if($shadows_enabled, $_shadow_hover_dark, none);
+$shadow_nav_light: if($shadows_enabled, $_shadow_nav_light, none);
+$shadow_nav_dark: if($shadows_enabled, $_shadow_nav_dark, none);
+$shadow_cta_pink: if($shadows_enabled, $_shadow_cta_pink, none);
+$shadow_cta_pink_strong: if($shadows_enabled, $_shadow_cta_pink_strong, none);
+$shadow_cta_pink_soft: if($shadows_enabled, $_shadow_cta_pink_soft, none);
+$shadow_nav_muted: if($shadows_enabled, $_shadow_nav_muted, none);
+$shadow_loader_logo: if($shadows_enabled, $_shadow_loader_logo, none);
+$shadow_gallery_like_light: if($shadows_enabled, $_shadow_gallery_like_light, none);
+$shadow_gallery_like_dark: if($shadows_enabled, $_shadow_gallery_like_dark, none);
+$shadow_blog_dark_hover: if($shadows_enabled, $_shadow_blog_dark_hover, none);
+$shadow_theme_toggle: if($shadows_enabled, $_shadow_theme_toggle, none);
+$shadow_about_progress_inset: if($shadows_enabled, $_shadow_about_progress_inset, none);
+
+// Reference-style soft elevation (used when master shadows off)
+$_shadow_ref_card: 0 4px 24px rgba(11, 44, 31, 0.07), 0 1px 3px rgba(11, 44, 31, 0.04);
+$_shadow_ref_hover: 0 12px 40px rgba(11, 44, 31, 0.12);
+$_shadow_ref_nav: 0 2px 20px rgba(11, 44, 31, 0.08);
+
+$shadow_white_3: if($shadows_enabled, $_shadow_white_3, $_shadow_ref_card);
+$shadow_hover_light: if($shadows_enabled, $_shadow_hover_light, $_shadow_ref_hover);
+$shadow_nav_light: if($shadows_enabled, $_shadow_nav_light, $_shadow_ref_nav);
+$shadow_cta_pink: if($shadows_enabled, $_shadow_cta_pink, 0 8px 28px rgba(118, 200, 59, 0.28));
+$shadow_cta_pink_soft: if($shadows_enabled, $_shadow_cta_pink_soft, 0 6px 20px rgba(118, 200, 59, 0.22));
+$shadow_gallery_like_light: if($shadows_enabled, $_shadow_gallery_like_light, $_shadow_ref_nav);
+$shadow_theme_toggle: if($shadows_enabled, $_shadow_theme_toggle, 0 8px 26px rgba(118, 200, 59, 0.28));
+$shadow_loader_logo: if($shadows_enabled, $_shadow_loader_logo, 0 12px 28px rgba(118, 200, 59, 0.22));
+
+// radii — shared “modern” corners
+$radius_surface: 18px;
+$radius_surface_md: 16px;
+$radius_surface_sm: 12px;
 
 // Gradient
-$gradient_box_w: linear-gradient(145deg, #e2e8ec, #ffffff);
-$gradient_red_hover: linear-gradient(145deg, #ff014f, #d11414);
+$gradient_box_w: linear-gradient(180deg, #ffffff 0%, #faf9f5 100%);
+$gradient_red_hover: linear-gradient(145deg, #76c83b, #4a9328);
 $gradient_black_hover: linear-gradient(to right bottom, #212428, #16181c);
 
 // typo Color
 $color_1: #7c838e;
 $color_heading: #ffffff;
-$color_heading_wv: #1e2125;
-$color_body: #878e99;
-$color_body_white: #3c3e41;
+$color_heading_wv: #0b2c1f;
+$color_body: #6b7280;
+$color_body_white: #4b5563;
 $color_lightn: #c4cfde;
 
 // Gery Colors 

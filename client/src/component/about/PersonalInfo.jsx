@@ -1,37 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 const personalInfo = [
-    {title: "fast name", value: "John"},
-    {title: "last name", value: "Lee"},
-    {title: "age", value: "25"},
-    {title: "nationality", value: "usa"},
-    {title: "freelance", value: "jone lee"},
-    {title: "address", value: "usa"},
-    {title: "phone", value: "+2162118455"},
-    {title: "email", value: "jonelee@gmail.com"},
-    {title: "Skype", value: "jone.lee"},
-    {title: "language", value: "english"},
+    {title: "first name", value: "Junayed"},
+    {title: "last name", value: "Khan"},
+    {title: "profession", value: "Web Developer"},
+    {title: "nationality", value: "Bangladeshi"},
+    {title: "freelance", value: "Available"},
+    {title: "location", value: "Dhaka, Bangladesh"},
+    {title: "phone", value: "Available on request"},
+    {title: "email", value: "Use contact form"},
+    {title: "focus", value: "React, UI, Frontend"},
+    {title: "language", value: "Bangla, English"},
 ]
 
 const PersonalInfo = () => {
-
-    const [data, setData] = useState([])
-
-    const facthData = async() => {
-        const res = await fetch(`http://localhost:8000/personal`)
-        const data = await res.json()
-        return setData(data)
-    }
-
-
-    useEffect(() => {
-        facthData()
-    },[])
-
-    console.log(data)
-
     return (
-        <>
         <ul className="personal_info about_list list-unstyled">
             {personalInfo.map((val, index) => {
                 return(
@@ -44,14 +27,6 @@ const PersonalInfo = () => {
                 )
             })}
         </ul>
-        <ul>
-            {data.map((val, index) => {
-                return(
-                    <li key={index}>fast name: {val.fast_name}</li>
-                )
-            })}
-        </ul>
-        </>
     );
 };
 

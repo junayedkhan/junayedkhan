@@ -32,7 +32,7 @@
             font-size: $font_size_b2;
             letter-spacing: 2px;
             text-transform: uppercase;
-            border-radius: 6px;
+            border-radius: $radius_surface_sm;
             background: $gradient_box_w;
             box-shadow: $shadow_white_3;
             @include transition;
@@ -48,7 +48,8 @@
 
 
 // ===== dark mode ===== //
-body.dark .social_share{
+body.dark .social_share,
+html.dark .social_share{
 
     .title{
         color: $color_lightn;
