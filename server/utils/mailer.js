@@ -2,6 +2,41 @@ const nodemailer = require("nodemailer");
 
 const getEnv = (key) => process.env[key]?.trim();
 
+const sendMailWithBrevo = async ({ to, subject, text, html }) => {
+  const apiKey = getEnv("BREVO_API_KEY");
+  const senderEmail = getEnv("BREVO_SENDER_EMAIL") || getEnv("EMAIL_FROM") || getEnv("SMTP_USER");
+  const senderName = getEnv("BREVO_SENDER_NAME") || "Junayed Khan Admin";
+
+  if (!apiKey || !senderEmail) {
+    throw new Error("Brevo email service is not configured");
+  }
+
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "api-key": apiKey,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: {
+        name: senderName,
+        email: senderEmail,
+      },
+      to: [{ email: to }],
+      subject,
+      textContent: text,
+      htmlContent: html,
+      replyTo: { email: senderEmail },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Brevo send failed: ${response.status} ${errorBody}`);
+  }
+};
+
 const getSmtpConfig = () => {
   const host = getEnv("SMTP_HOST");
   const user = getEnv("SMTP_USER");
@@ -23,12 +58,18 @@ const getSmtpConfig = () => {
 };
 
 const smtpEnabled = () => {
+  if (getEnv("BREVO_API_KEY")) return true;
+
   const { host, user, pass, emailFrom } = getSmtpConfig();
 
   return Boolean(host && user && pass && emailFrom);
 };
 
 const sendMail = async ({ to, subject, text, html }) => {
+  if (getEnv("BREVO_API_KEY")) {
+    return sendMailWithBrevo({ to, subject, text, html });
+  }
+
   const { host, port, secure, user, pass, emailFrom } = getSmtpConfig();
 
   if (!host || !user || !pass || !emailFrom) {

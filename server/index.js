@@ -65,13 +65,13 @@ app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(clientIndexPath);
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
 const startServer = async () => {
   validateEnv();
   await connectDB();
 
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => {
     console.log("Server running on port", PORT);
   });
 };
