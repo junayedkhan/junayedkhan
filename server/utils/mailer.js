@@ -39,6 +39,9 @@ const sendMail = async ({ to, subject, text, html }) => {
     host,
     port,
     secure: secure || port === 465,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
     auth: {
       user,
       pass,
