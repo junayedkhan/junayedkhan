@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api, { setToken } from "../utils/api";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +32,7 @@ export default function AdminLogin() {
     };
   }, []);
 
-  const handleLogin = async (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
     setMessage("");
     setIsSubmitting(true);
@@ -40,6 +41,7 @@ export default function AdminLogin() {
       if (authMode === "setup") {
         await api.post("/auth/register", {
           username: username.trim(),
+          email: email.trim(),
           password,
         });
       }
@@ -62,29 +64,48 @@ export default function AdminLogin() {
     }
   };
 
+  const title =
+    authMode === "setup" ? "Create Admin" : "Admin Login";
+
+  const copy =
+    authMode === "setup"
+      ? "Create the first admin account. Use a real email so password recovery works later."
+      : "Sign in with your username or email to manage your portfolio.";
+
   return (
     <main className="admin_auth_shell">
       <section className="admin_auth_card">
         <span className="admin_auth_logo">J</span>
         <p className="admin_auth_kicker">{authMode === "setup" ? "First admin" : "Secure access"}</p>
-        <h1>{authMode === "setup" ? "Create Admin" : "Admin Login"}</h1>
-        <p className="admin_auth_copy">
-          {authMode === "setup"
-            ? "Create the first admin account, then you will be signed in automatically."
-            : "Sign in to manage your portfolio content and messages."}
-        </p>
+        <h1>{title}</h1>
+        <p className="admin_auth_copy">{copy}</p>
 
-        <form className="admin_auth_form" onSubmit={handleLogin}>
-          <label>
-            <span>Username</span>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-              required
-            />
-          </label>
+        <form className="admin_auth_form" onSubmit={handleAuth}>
+          {authMode === "login" || authMode === "setup" ? (
+            <label>
+              <span>{authMode === "setup" ? "Username" : "Username or Email"}</span>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                required
+              />
+            </label>
+          ) : null}
+
+          {authMode === "setup" ? (
+            <label>
+              <span>Email</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </label>
+          ) : null}
 
           <label>
             <span>Password</span>
@@ -93,6 +114,7 @@ export default function AdminLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
+              minLength={8}
               required
             />
           </label>
@@ -103,9 +125,19 @@ export default function AdminLogin() {
             {isCheckingStatus
               ? "Checking..."
               : isSubmitting
-                ? authMode === "setup" ? "Creating..." : "Signing in..."
-                : authMode === "setup" ? "Create Admin" : "Login"}
+                ? authMode === "setup"
+                  ? "Creating..."
+                  : "Signing in..."
+                : authMode === "setup"
+                  ? "Create Admin"
+                  : "Login"}
           </button>
+
+          {authMode === "login" ? (
+            <Link className="admin_auth_text_button" to="/forgot-password">
+              Forgot password?
+            </Link>
+          ) : null}
         </form>
       </section>
     </main>

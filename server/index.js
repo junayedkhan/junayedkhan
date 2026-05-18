@@ -1,9 +1,9 @@
 const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
-require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");

@@ -4,6 +4,8 @@ import { Routes, Route } from "react-router-dom";
 import Home from "../views/Home";
 import NotFound from "../views/NotFound";
 import AdminLogin from "../pages/AdminLogin";
+import AdminForgotPassword from "../pages/AdminForgotPassword";
+import AdminResetPassword from "../pages/AdminResetPassword";
 import AdminDashboard from "../pages/AdminDashboard";
 import PrivateRoute from "../utils/PrivateRoute";
 
@@ -18,6 +20,8 @@ const Router = () => {
       <Route path="/blogs/:slug" element={<Home />} />
       <Route path="/contact" element={<Home />} />
       <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/forgot-password" element={<AdminForgotPassword />} />
+      <Route path="/reset-password/:token" element={<AdminResetPassword />} />
 
       {/* Protected Admin Route */}
       <Route

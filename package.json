@@ -6,7 +6,7 @@
     "node": ">=20.19.0"
   },
   "scripts": {
-    "build": "npm ci --prefix server && npm ci --include=dev --prefix client && npm run build --prefix client",
+    "build": "npm ci --prefix server && cd client && npm ci --include=dev && npm run build",
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
     "start": "npm start --prefix server"
