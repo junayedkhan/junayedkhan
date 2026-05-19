@@ -1,4 +1,7 @@
 const nodemailer = require("nodemailer");
+const dns = require("dns");
+
+dns.setDefaultResultOrder?.("ipv4first");
 
 const getEnv = (key) => process.env[key]?.trim();
 const hasEnv = (key) => Boolean(getEnv(key));
@@ -61,6 +64,7 @@ const sendMail = async ({ to, subject, text, html }) => {
     host,
     port,
     secure: secure || port === 465,
+    family: 4,
     connectionTimeout: 15000,
     greetingTimeout: 15000,
     socketTimeout: 20000,
