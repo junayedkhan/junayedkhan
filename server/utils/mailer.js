@@ -26,13 +26,13 @@ const getSmtpConfig = () => {
     pass = pass.replace(/\s+/g, "");
   }
 
-  const defaultPort = 587;
-  const port = Number(getEnv("SMTP_PORT") || defaultPort);
+  const isGmailHost = host?.toLowerCase() === "smtp.gmail.com";
+  const port = isGmailHost ? 587 : Number(getEnv("SMTP_PORT") || 587);
 
   return {
     host,
     port,
-    secure: getEnv("SMTP_SECURE") === "true" || port === 465,
+    secure: isGmailHost ? false : getEnv("SMTP_SECURE") === "true" || port === 465,
     user,
     pass,
     emailFrom,
@@ -72,23 +72,19 @@ const sendMail = async ({ to, subject, text, html }) => {
   const isGmailHost = host.toLowerCase() === "smtp.gmail.com";
   const resolvedHost = isGmailHost ? await resolveIpv4(host) : null;
   const smtpHost = resolvedHost || host;
-  const attempts = [
-    {
-      host: smtpHost,
-      port,
-      secure: secure || port === 465,
-      servername: resolvedHost ? host : undefined,
-    },
-  ];
-
-  if (isGmailHost && port !== 587) {
-    attempts.push({
+  const attempts = isGmailHost
+    ? [{
       host: smtpHost,
       port: 587,
       secure: false,
       servername: resolvedHost ? host : undefined,
-    });
-  }
+    }]
+    : [{
+      host: smtpHost,
+      port,
+      secure: secure || port === 465,
+      servername: resolvedHost ? host : undefined,
+    }];
 
   const failures = [];
 
