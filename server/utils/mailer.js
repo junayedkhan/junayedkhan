@@ -5,6 +5,7 @@ dns.setDefaultResultOrder?.("ipv4first");
 
 const getEnv = (key) => process.env[key]?.trim();
 const hasEnv = (key) => Boolean(getEnv(key));
+const getEmailFrom = () => getEnv("EMAIL_FROM") || getEnv("SMTP_USER") || getEnv("EMAIL_USER");
 const lookupIpv4 = (hostname, options, callback) => {
   dns.lookup(hostname, { ...options, family: 4 }, callback);
 };
@@ -19,7 +20,7 @@ const getSmtpConfig = () => {
   const user = getEnv("SMTP_USER") || getEnv("EMAIL_USER");
   const isGmailUser = user?.toLowerCase().endsWith("@gmail.com");
   const host = getEnv("SMTP_HOST") || (isGmailUser ? "smtp.gmail.com" : undefined);
-  const emailFrom = getEnv("EMAIL_FROM") || user;
+  const emailFrom = getEmailFrom() || user;
   let pass = getEnv("SMTP_PASS") || getEnv("EMAIL_PASS");
 
   if (host?.includes("gmail.com") && pass) {
@@ -57,12 +58,48 @@ const getSmtpStatus = () => {
 };
 
 const smtpEnabled = () => {
+  if (getEnv("RESEND_API_KEY")) return true;
+
   const { host, user, pass, emailFrom } = getSmtpConfig();
 
   return Boolean(host && user && pass && emailFrom);
 };
 
+const sendMailWithResend = async ({ to, subject, text, html }) => {
+  const apiKey = getEnv("RESEND_API_KEY");
+  const from = getEmailFrom();
+
+  if (!apiKey || !from) {
+    throw new Error("Resend email service is not configured");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject,
+      text,
+      html,
+      reply_to: from,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Resend send failed: ${response.status} ${errorBody}`);
+  }
+};
+
 const sendMail = async ({ to, subject, text, html }) => {
+  if (getEnv("RESEND_API_KEY")) {
+    return sendMailWithResend({ to, subject, text, html });
+  }
+
   const { host, port, secure, user, pass, emailFrom } = getSmtpConfig();
 
   if (!host || !user || !pass || !emailFrom) {
