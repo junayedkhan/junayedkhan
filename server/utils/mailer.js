@@ -26,7 +26,7 @@ const getSmtpConfig = () => {
     pass = pass.replace(/\s+/g, "");
   }
 
-  const defaultPort = host?.includes("gmail.com") ? 465 : 587;
+  const defaultPort = 587;
   const port = Number(getEnv("SMTP_PORT") || defaultPort);
 
   return {
