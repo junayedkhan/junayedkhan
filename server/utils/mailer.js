@@ -5,7 +5,8 @@ dns.setDefaultResultOrder?.("ipv4first");
 
 const getEnv = (key) => process.env[key]?.trim();
 const hasEnv = (key) => Boolean(getEnv(key));
-const getEmailFrom = () => getEnv("EMAIL_FROM") || getEnv("SMTP_USER") || getEnv("EMAIL_USER");
+const getEmailFrom = () => getEnv("EMAIL_FROM") || getEnv("RESEND_FROM") || getEnv("SMTP_USER") || getEnv("EMAIL_USER");
+const getResendFrom = () => getEmailFrom() || "onboarding@resend.dev";
 const lookupIpv4 = (hostname, options, callback) => {
   dns.lookup(hostname, { ...options, family: 4 }, callback);
 };
@@ -67,7 +68,7 @@ const smtpEnabled = () => {
 
 const sendMailWithResend = async ({ to, subject, text, html }) => {
   const apiKey = getEnv("RESEND_API_KEY");
-  const from = getEmailFrom();
+  const from = getResendFrom();
 
   if (!apiKey || !from) {
     throw new Error("Resend email service is not configured");
@@ -78,6 +79,7 @@ const sendMailWithResend = async ({ to, subject, text, html }) => {
     headers: {
       authorization: `Bearer ${apiKey}`,
       "content-type": "application/json",
+      "user-agent": "junayedkhan-server/1.0",
     },
     body: JSON.stringify({
       from,
