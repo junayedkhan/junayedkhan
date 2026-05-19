@@ -1,10 +1,12 @@
 const nodemailer = require("nodemailer");
 
 const getEnv = (key) => process.env[key]?.trim();
+const hasEnv = (key) => Boolean(getEnv(key));
 
 const getSmtpConfig = () => {
   const user = getEnv("SMTP_USER") || getEnv("EMAIL_USER");
-  const host = getEnv("SMTP_HOST") || (user?.endsWith("@gmail.com") ? "smtp.gmail.com" : undefined);
+  const isGmailUser = user?.toLowerCase().endsWith("@gmail.com");
+  const host = getEnv("SMTP_HOST") || (isGmailUser ? "smtp.gmail.com" : undefined);
   const emailFrom = getEnv("EMAIL_FROM") || user;
   let pass = getEnv("SMTP_PASS") || getEnv("EMAIL_PASS");
 
@@ -25,6 +27,23 @@ const getSmtpConfig = () => {
   };
 };
 
+const getSmtpStatus = () => {
+  const { host, port, secure, user, pass, emailFrom } = getSmtpConfig();
+
+  return {
+    host: host || "missing",
+    port,
+    secure,
+    hasUser: Boolean(user),
+    hasPass: Boolean(pass),
+    hasEmailFrom: Boolean(emailFrom),
+    usingSmtpUser: hasEnv("SMTP_USER"),
+    usingEmailUser: hasEnv("EMAIL_USER"),
+    usingSmtpPass: hasEnv("SMTP_PASS"),
+    usingEmailPass: hasEnv("EMAIL_PASS"),
+  };
+};
+
 const smtpEnabled = () => {
   const { host, user, pass, emailFrom } = getSmtpConfig();
 
@@ -35,7 +54,7 @@ const sendMail = async ({ to, subject, text, html }) => {
   const { host, port, secure, user, pass, emailFrom } = getSmtpConfig();
 
   if (!host || !user || !pass || !emailFrom) {
-    throw new Error("Email service is not configured");
+    throw new Error(`Email service is not configured: ${JSON.stringify(getSmtpStatus())}`);
   }
 
   const transporter = nodemailer.createTransport({
@@ -51,18 +70,24 @@ const sendMail = async ({ to, subject, text, html }) => {
     },
   });
 
-  await transporter.sendMail({
-    from: `"Junayed Khan Admin" <${emailFrom}>`,
-    to,
-    subject,
-    text,
-    html,
-    replyTo: emailFrom,
-    headers: {
-      "X-Entity-Ref-ID": `junayed-admin-${Date.now()}`,
-      "X-Auto-Response-Suppress": "OOF, AutoReply",
-    },
-  });
+  try {
+    await transporter.verify();
+
+    await transporter.sendMail({
+      from: `"Junayed Khan Admin" <${emailFrom}>`,
+      to,
+      subject,
+      text,
+      html,
+      replyTo: emailFrom,
+      headers: {
+        "X-Entity-Ref-ID": `junayed-admin-${Date.now()}`,
+        "X-Auto-Response-Suppress": "OOF, AutoReply",
+      },
+    });
+  } catch (error) {
+    throw new Error(`SMTP send failed: ${error.message}; config=${JSON.stringify(getSmtpStatus())}`);
+  }
 };
 
 module.exports = { sendMail, smtpEnabled };
