@@ -5,6 +5,7 @@ dns.setDefaultResultOrder?.("ipv4first");
 
 const getEnv = (key) => process.env[key]?.trim();
 const hasEnv = (key) => Boolean(getEnv(key));
+const getEmailProvider = () => (getEnv("EMAIL_PROVIDER") || "auto").toLowerCase();
 const getEmailFrom = () => getEnv("EMAIL_FROM") || getEnv("RESEND_FROM") || getEnv("SMTP_USER") || getEnv("EMAIL_USER");
 const getResendFrom = () => getEmailFrom() || "onboarding@resend.dev";
 const lookupIpv4 = (hostname, options, callback) => {
@@ -59,7 +60,7 @@ const getSmtpStatus = () => {
 };
 
 const smtpEnabled = () => {
-  if (getEnv("RESEND_API_KEY")) return true;
+  if (getEmailProvider() !== "smtp" && getEnv("RESEND_API_KEY")) return true;
 
   const { host, user, pass, emailFrom } = getSmtpConfig();
 
@@ -98,7 +99,7 @@ const sendMailWithResend = async ({ to, subject, text, html }) => {
 };
 
 const sendMail = async ({ to, subject, text, html }) => {
-  if (getEnv("RESEND_API_KEY")) {
+  if (getEmailProvider() !== "smtp" && getEnv("RESEND_API_KEY")) {
     return sendMailWithResend({ to, subject, text, html });
   }
 

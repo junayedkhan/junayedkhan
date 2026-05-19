@@ -37,9 +37,10 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: "4mb" }));
 
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/site", require("./routes/site"));
 
 app.get("/api/health", (req, res) => {
   res.json({

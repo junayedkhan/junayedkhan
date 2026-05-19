@@ -942,6 +942,84 @@
     cursor: pointer;
 }
 
+.admin_confirm_modal{
+    position: relative;
+    z-index: 1;
+    width: min(430px, 100%);
+    padding: 28px;
+    border-radius: $radius_surface;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 28px 90px rgba(15, 23, 42, 0.24);
+    text-align: center;
+}
+
+.admin_confirm_icon{
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 18px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(118, 200, 59, 0.14);
+    color: $color_primary;
+    font-size: 22px;
+}
+
+.admin_confirm_icon.danger{
+    background: rgba(217, 45, 32, 0.1);
+    color: #d92d20;
+}
+
+.admin_confirm_modal h2{
+    font-family: $font_secondary;
+    color: $color_heading_wv;
+    font-size: 30px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.admin_confirm_modal > p:not(.admin_auth_kicker){
+    color: $color_body_white;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 12px 0 0;
+}
+
+.admin_confirm_actions{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 22px;
+
+    @media #{$small_mobile} {
+        grid-template-columns: 1fr;
+    }
+}
+
+.admin_confirm_actions button{
+    min-height: 48px;
+    border: none;
+    border-radius: $radius_surface_sm;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.admin_confirm_actions button:first-child{
+    background: rgba(236, 240, 243, 0.72);
+    color: $color_tertiary;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.admin_confirm_actions button:last-child{
+    background: $gradient_red_hover;
+    color: $color_white;
+    box-shadow: $shadow_cta_pink_soft;
+}
+
 .admin_modal_body{
     display: grid;
     gap: 16px;
@@ -1434,6 +1512,211 @@
     line-height: 1.6;
 }
 
+.admin_hero_image_editor{
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+    gap: clamp(16px, 3vw, 24px);
+    margin-top: 24px;
+    padding: clamp(16px, 3vw, 22px);
+    border-radius: $radius_surface;
+    background: rgba(236, 240, 243, 0.54);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+
+    @media #{$md_layout, $sm_layout} {
+        grid-template-columns: 1fr;
+    }
+}
+
+.admin_hero_image_preview{
+    width: 100%;
+    min-height: 340px;
+    aspect-ratio: 4 / 5;
+    border-radius: $radius_surface_md;
+    background-color: rgba(15, 23, 42, 0.08);
+    background-position: center 22%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    position: relative;
+    box-shadow: $shadow_white_3;
+
+    @media #{$md_layout} {
+        max-width: 360px;
+        justify-self: center;
+    }
+
+    @media #{$sm_layout} {
+        min-height: 0;
+        max-width: 320px;
+        justify-self: center;
+    }
+}
+
+.admin_hero_image_preview::after{
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.5));
+    pointer-events: none;
+}
+
+.admin_hero_image_preview span{
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 1;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    border-radius: $radius_surface_sm;
+    background: rgba(255, 255, 255, 0.9);
+    color: $color_heading_wv;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.admin_hero_image_form{
+    min-width: 0;
+    display: grid;
+    align-content: start;
+    gap: 14px;
+}
+
+.admin_hero_image_form label{
+    min-width: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.admin_hero_image_preview span i{
+    color: $color_primary;
+}
+
+.admin_hero_image_form label span{
+    color: $color_body_white;
+    font-size: 13px;
+    font-weight: $p_semi_bold;
+    text-transform: uppercase;
+}
+
+.admin_hero_fields{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+
+    @media #{$sm_layout} {
+        grid-template-columns: 1fr;
+    }
+}
+
+.admin_hero_image_form input,
+.admin_hero_image_form textarea{
+    width: 100%;
+    min-width: 0;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: $radius_surface_sm;
+    background: rgba(255, 255, 255, 0.78);
+    color: $color_heading_wv;
+    outline: none;
+    font-size: 14px;
+}
+
+.admin_hero_image_form input{
+    min-height: 50px;
+    padding: 0 16px;
+}
+
+.admin_hero_image_form textarea{
+    min-height: 142px;
+    resize: vertical;
+    padding: 14px 16px;
+    line-height: 1.5;
+    word-break: break-all;
+}
+
+.admin_hero_image_form input:focus,
+.admin_hero_image_form textarea:focus{
+    border-color: rgba(118, 200, 59, 0.48);
+    box-shadow: 0 0 0 4px rgba(118, 200, 59, 0.12);
+}
+
+.admin_hero_image_actions{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+
+    @media #{$large_mobile} {
+        grid-template-columns: 1fr;
+    }
+}
+
+.admin_hero_image_actions button,
+.admin_hero_upload_button{
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    border: none;
+    border-radius: $radius_surface_sm;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 14px;
+    background: rgba(118, 200, 59, 0.14);
+    color: $color_forest;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    @include transition;
+}
+
+.admin_hero_upload_button span{
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-transform: inherit;
+    margin: 0;
+}
+
+.admin_hero_image_actions button i,
+.admin_hero_upload_button i{
+    width: 16px;
+    flex: 0 0 auto;
+    text-align: center;
+}
+
+.admin_hero_image_actions button[type="submit"]{
+    background: $gradient_red_hover;
+    color: $color_white;
+    box-shadow: $shadow_cta_pink_soft;
+}
+
+.admin_hero_image_actions button:hover,
+.admin_hero_upload_button:hover{
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+}
+
+.admin_hero_image_actions button:disabled{
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+}
+
+.admin_hero_upload_button input{
+    display: none;
+}
+
 body.dark .admin_auth_shell,
 body.dark .admin_dashboard,
 html.dark .admin_auth_shell,
@@ -1448,12 +1731,14 @@ body.dark .admin_account_panel,
 body.dark .admin_profile_hero,
 body.dark .admin_profile_section,
 body.dark .admin_password_modal,
+body.dark .admin_confirm_modal,
 body.dark .admin_modal_email,
 body.dark .admin_password_panel,
 body.dark .admin_profile_trigger,
 body.dark .admin_profile_popover,
 body.dark .admin_content_card,
 body.dark .admin_editor_panel,
+body.dark .admin_hero_image_editor,
 html.dark .admin_auth_card,
 html.dark .admin_sidebar,
 html.dark .admin_stat_card,
@@ -1461,12 +1746,14 @@ html.dark .admin_account_panel,
 html.dark .admin_profile_hero,
 html.dark .admin_profile_section,
 html.dark .admin_password_modal,
+html.dark .admin_confirm_modal,
 html.dark .admin_modal_email,
 html.dark .admin_password_panel,
 html.dark .admin_profile_trigger,
 html.dark .admin_profile_popover,
 html.dark .admin_content_card,
-html.dark .admin_editor_panel{
+html.dark .admin_editor_panel,
+html.dark .admin_hero_image_editor{
     background: $background_color_1;
     border-color: rgba(255, 255, 255, 0.08);
     box-shadow: $shadow_1;
@@ -1521,6 +1808,7 @@ body.dark .admin_profile_identity h2,
 body.dark .admin_profile_section_head strong,
 body.dark .admin_account_info_list strong,
 body.dark .admin_password_modal header h2,
+body.dark .admin_confirm_modal h2,
 body.dark .admin_modal_email strong,
 body.dark .admin_password_panel h3,
 body.dark .admin_profile_head strong,
@@ -1536,6 +1824,7 @@ html.dark .admin_profile_identity h2,
 html.dark .admin_profile_section_head strong,
 html.dark .admin_account_info_list strong,
 html.dark .admin_password_modal header h2,
+html.dark .admin_confirm_modal h2,
 html.dark .admin_modal_email strong,
 html.dark .admin_password_panel h3,
 html.dark .admin_profile_head strong,
@@ -1557,6 +1846,7 @@ body.dark .admin_account_info_list span,
 body.dark .admin_email_edit_verify p,
 body.dark .admin_profile_locked_state,
 body.dark .admin_password_modal header p:not(.admin_auth_kicker),
+body.dark .admin_confirm_modal > p:not(.admin_auth_kicker),
 body.dark .admin_modal_email span,
 body.dark .admin_password_panel > div > p:not(.admin_auth_kicker),
 body.dark .admin_verify_form label span,
@@ -1566,6 +1856,7 @@ body.dark .admin_stat_card p,
 body.dark .admin_content_card p,
 body.dark .admin_editor_intro p,
 body.dark .admin_editor_note,
+body.dark .admin_hero_image_form label span,
 body.dark .admin_stat_card span,
 html.dark .admin_auth_copy,
 html.dark .admin_auth_form label span,
@@ -1577,6 +1868,7 @@ html.dark .admin_account_info_list span,
 html.dark .admin_email_edit_verify p,
 html.dark .admin_profile_locked_state,
 html.dark .admin_password_modal header p:not(.admin_auth_kicker),
+html.dark .admin_confirm_modal > p:not(.admin_auth_kicker),
 html.dark .admin_modal_email span,
 html.dark .admin_password_panel > div > p:not(.admin_auth_kicker),
 html.dark .admin_verify_form label span,
@@ -1586,6 +1878,7 @@ html.dark .admin_stat_card p,
 html.dark .admin_content_card p,
 html.dark .admin_editor_intro p,
 html.dark .admin_editor_note,
+html.dark .admin_hero_image_form label span,
 html.dark .admin_stat_card span{
     color: $color_body;
 }
@@ -1596,12 +1889,16 @@ body.dark .admin_verify_form input,
 body.dark .admin_email_edit_code input,
 body.dark .admin_account_info_list div,
 body.dark .admin_editor_list article,
+body.dark .admin_hero_image_form input,
+body.dark .admin_hero_image_form textarea,
 html.dark .admin_auth_form input,
 html.dark .admin_account_form input,
 html.dark .admin_verify_form input,
 html.dark .admin_email_edit_code input,
 html.dark .admin_account_info_list div,
-html.dark .admin_editor_list article{
+html.dark .admin_editor_list article,
+html.dark .admin_hero_image_form input,
+html.dark .admin_hero_image_form textarea{
     background: #191b1e;
     color: $color_lightn;
     border-color: rgba(255, 255, 255, 0.08);

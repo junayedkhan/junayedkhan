@@ -4,7 +4,7 @@ import api, { authHeaders, clearToken } from "../utils/api";
 
 const adminSections = [
   { id: "overview", label: "Overview", icon: "fas fa-chart-line" },
-  { id: "hero", label: "Hero Profile", icon: "fas fa-id-badge" },
+  { id: "hero", label: "Home", icon: "fas fa-home" },
   { id: "resume", label: "Resume", icon: "fas fa-file-alt" },
   { id: "gallery", label: "Gallery", icon: "fas fa-images" },
   { id: "blogs", label: "Travel Blogs", icon: "fas fa-pen-nib" },
@@ -22,7 +22,7 @@ const contentStats = [
 const contentSections = {
   hero: {
     eyebrow: "Landing content",
-    title: "Hero Profile",
+    title: "Home",
     description: "Main introduction: Junayed, Web Developer/Designer, profile photo, and social links.",
     items: ["Name: Junayed", "Roles: Developer, Designer", "Image: assets/image/home.png", "CTA area: social profile links"],
   },
@@ -52,6 +52,15 @@ const contentSections = {
   },
 };
 
+const DEFAULT_HERO_IMAGE = "assets/image/home.png";
+const DEFAULT_HERO_CONTENT = {
+  name: "Junayed",
+  designation: "Developer, Designer",
+  description: "I build clean, responsive web experiences with thoughtful motion, clear interfaces, and careful attention to every interaction.",
+  image: DEFAULT_HERO_IMAGE,
+};
+const MAX_HERO_UPLOAD_SIZE = 2.5 * 1024 * 1024;
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -78,6 +87,11 @@ export default function AdminDashboard() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [heroForm, setHeroForm] = useState(DEFAULT_HERO_CONTENT);
+  const [heroImageMessage, setHeroImageMessage] = useState("");
+  const [isSavingHeroImage, setIsSavingHeroImage] = useState(false);
+  const [heroUploadState, setHeroUploadState] = useState("idle");
+  const [heroConfirmAction, setHeroConfirmAction] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -106,6 +120,32 @@ export default function AdminDashboard() {
       active = false;
     };
   }, [navigate]);
+
+  useEffect(() => {
+    let active = true;
+
+    api
+      .get("/site/admin/hero", { headers: authHeaders() })
+      .then((res) => {
+        if (!active) return;
+        const content = res.data.content || res.data;
+        setHeroForm({
+          name: content.name || DEFAULT_HERO_CONTENT.name,
+          designation: Array.isArray(content.designation)
+            ? content.designation.join(", ")
+            : DEFAULT_HERO_CONTENT.designation,
+          description: content.description || DEFAULT_HERO_CONTENT.description,
+          image: content.image || DEFAULT_HERO_IMAGE,
+        });
+      })
+      .catch(() => {
+        if (active) setHeroImageMessage("Unable to load hero image setting.");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (mobileNavOpen || passwordModalOpen || accountModalOpen || emailVerifyModalOpen) {
@@ -353,6 +393,123 @@ export default function AdminDashboard() {
     } finally {
       setIsSavingPassword(false);
     }
+  };
+
+  const saveHeroImage = async (e) => {
+    e.preventDefault();
+    setHeroConfirmAction("save");
+  };
+
+  const confirmSaveHeroImage = async () => {
+    setHeroConfirmAction(null);
+    setHeroImageMessage("");
+    setIsSavingHeroImage(true);
+
+    try {
+      const res = await api.put(
+        "/site/admin/hero",
+        {
+          name: heroForm.name.trim(),
+          designation: heroForm.designation,
+          description: heroForm.description.trim(),
+          image: heroForm.image.trim(),
+        },
+        { headers: authHeaders() }
+      );
+      const content = res.data.content || res.data;
+      const serverSupportsFullHeroCrud = Boolean(content.name || content.description || content.designation);
+
+      if (!serverSupportsFullHeroCrud) {
+        setHeroForm((current) => ({
+          ...current,
+          image: content.image || current.image,
+        }));
+        setHeroImageMessage("Server is still using the old image-only hero API. Redeploy the backend to update name, roles, and description.");
+        setHeroUploadState("error");
+        return;
+      }
+
+      setHeroForm({
+        name: content.name || DEFAULT_HERO_CONTENT.name,
+        designation: Array.isArray(content.designation)
+          ? content.designation.join(", ")
+          : DEFAULT_HERO_CONTENT.designation,
+        description: content.description || DEFAULT_HERO_CONTENT.description,
+        image: content.image || DEFAULT_HERO_IMAGE,
+      });
+      setHeroImageMessage(res.data.message);
+      setHeroUploadState("saved");
+    } catch (err) {
+      setHeroImageMessage(err.response?.data?.message || "Unable to update hero image");
+      setHeroUploadState("error");
+    } finally {
+      setIsSavingHeroImage(false);
+    }
+  };
+
+  const resetHeroImage = async () => {
+    setHeroConfirmAction("reset");
+  };
+
+  const confirmResetHeroImage = async () => {
+    setHeroConfirmAction(null);
+    setHeroImageMessage("");
+    setIsSavingHeroImage(true);
+
+    try {
+      const res = await api.delete("/site/admin/hero", { headers: authHeaders() });
+      const content = res.data.content || res.data;
+      setHeroForm({
+        name: content.name || DEFAULT_HERO_CONTENT.name,
+        designation: Array.isArray(content.designation)
+          ? content.designation.join(", ")
+          : DEFAULT_HERO_CONTENT.designation,
+        description: content.description || DEFAULT_HERO_CONTENT.description,
+        image: content.image || DEFAULT_HERO_IMAGE,
+      });
+      setHeroImageMessage(res.data.message);
+      setHeroUploadState("idle");
+    } catch (err) {
+      setHeroImageMessage(err.response?.data?.message || "Unable to reset hero image");
+      setHeroUploadState("error");
+    } finally {
+      setIsSavingHeroImage(false);
+    }
+  };
+
+  const uploadHeroImage = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    setHeroImageMessage("");
+    setHeroUploadState("idle");
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setHeroImageMessage("Upload a JPG, PNG, or WebP image.");
+      setHeroUploadState("error");
+      return;
+    }
+
+    if (file.size > MAX_HERO_UPLOAD_SIZE) {
+      setHeroImageMessage("Image must be under 2.5 MB.");
+      setHeroUploadState("error");
+      return;
+    }
+
+    setHeroUploadState("ready");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = String(reader.result || "");
+      setHeroForm((current) => ({ ...current, image }));
+      setHeroImageMessage("Preview ready. Save changes to publish it.");
+      setHeroUploadState("ready");
+    };
+    reader.onerror = () => {
+      setHeroImageMessage("Unable to read image file.");
+      setHeroUploadState("error");
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -623,6 +780,40 @@ export default function AdminDashboard() {
         </div>
       ) : null}
 
+      {heroConfirmAction ? (
+        <div className="admin_modal_layer admin_modal_layer--hero-confirm" role="presentation">
+          <button
+            type="button"
+            className="admin_modal_backdrop"
+            aria-label="Cancel hero confirmation"
+            onClick={() => setHeroConfirmAction(null)}
+          />
+          <section className="admin_confirm_modal" role="dialog" aria-modal="true" aria-label="Confirm hero action">
+            <div className={heroConfirmAction === "reset" ? "admin_confirm_icon danger" : "admin_confirm_icon"}>
+              <i className={heroConfirmAction === "reset" ? "fas fa-rotate-left" : "fas fa-save"} aria-hidden="true"></i>
+            </div>
+            <p className="admin_auth_kicker">Hero section</p>
+            <h2>{heroConfirmAction === "reset" ? "Reset content?" : "Save changes?"}</h2>
+            <p>
+              {heroConfirmAction === "reset"
+                ? "This will restore the default hero name, roles, description, and image."
+                : "This will publish the current hero name, roles, description, and image to the home page."}
+            </p>
+            <div className="admin_confirm_actions">
+              <button type="button" onClick={() => setHeroConfirmAction(null)}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={heroConfirmAction === "reset" ? confirmResetHeroImage : confirmSaveHeroImage}
+              >
+                {heroConfirmAction === "reset" ? "Reset" : "Save"}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       <aside className={mobileNavOpen ? "admin_sidebar active" : "admin_sidebar"} onClick={() => setMobileNavOpen(false)}>
         <span className="admin_auth_logo">J</span>
         <nav aria-label="Admin navigation" onClick={(e) => e.stopPropagation()}>
@@ -701,9 +892,83 @@ export default function AdminDashboard() {
               ))}
             </div>
 
+            {activeSection === "hero" ? (
+              <section className="admin_hero_image_editor">
+                <div className="admin_hero_image_preview" style={{ backgroundImage: `url(${heroForm.image || DEFAULT_HERO_IMAGE})` }}>
+                  <span>
+                    <i className="fas fa-image" aria-hidden="true"></i>
+                    Live preview
+                  </span>
+                </div>
+                <form className="admin_hero_image_form" onSubmit={saveHeroImage}>
+                  <div className="admin_hero_fields">
+                    <label>
+                      <span>Name field</span>
+                      <input
+                        type="text"
+                        value={heroForm.name}
+                        onChange={(e) => setHeroForm((current) => ({ ...current, name: e.target.value }))}
+                        placeholder="Junayed"
+                        required
+                      />
+                    </label>
+                    <label>
+                      <span>Roles</span>
+                      <input
+                        type="text"
+                        value={heroForm.designation}
+                        onChange={(e) => setHeroForm((current) => ({ ...current, designation: e.target.value }))}
+                        placeholder="Developer, Designer"
+                        required
+                      />
+                    </label>
+                  </div>
+                  <label>
+                    <span>Description</span>
+                    <textarea
+                      value={heroForm.description}
+                      onChange={(e) => setHeroForm((current) => ({ ...current, description: e.target.value }))}
+                      placeholder="Short hero introduction"
+                      rows={3}
+                      required
+                    />
+                  </label>
+                  <div className="admin_hero_image_actions">
+                    <label className="admin_hero_upload_button">
+                      <span>
+                        <i
+                          className={
+                            heroUploadState === "ready"
+                              ? "fas fa-check-circle"
+                              : heroUploadState === "saved"
+                                ? "fas fa-check-circle"
+                                : heroUploadState === "error"
+                                  ? "fas fa-exclamation-triangle"
+                                  : "fas fa-cloud-upload-alt"
+                          }
+                          aria-hidden="true"
+                        ></i>
+                        {heroUploadState === "ready" ? "Ready" : heroUploadState === "saved" ? "Saved" : heroUploadState === "error" ? "Retry" : "Upload"}
+                      </span>
+                      <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadHeroImage} />
+                    </label>
+                    <button type="submit" disabled={isSavingHeroImage}>
+                      <i className="fas fa-save" aria-hidden="true"></i>
+                      {isSavingHeroImage ? "Saving..." : "Save"}
+                    </button>
+                    <button type="button" onClick={resetHeroImage} disabled={isSavingHeroImage}>
+                      <i className="fas fa-trash-restore" aria-hidden="true"></i>
+                      Reset
+                    </button>
+                  </div>
+                  {heroImageMessage ? <p className="admin_profile_message">{heroImageMessage}</p> : null}
+                </form>
+              </section>
+            ) : null}
+
             <div className="admin_editor_note">
               <i className="fas fa-info-circle" aria-hidden="true"></i>
-              <p>This dashboard section matches the current website content. Editing controls can be connected next when content APIs are added.</p>
+              <p>{activeSection === "hero" ? "Hero changes are saved to the server and shown on the public home page." : "This dashboard section matches the current website content. Editing controls can be connected next when content APIs are added."}</p>
             </div>
           </section>
         ) : null}
