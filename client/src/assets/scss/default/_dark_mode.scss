@@ -102,3 +102,52 @@ body.dark .comment .inner .comment_reply_form input{
         top: 88px;
     }
 }
+
+html.dark .portfolio .gallery_intro,
+body.dark .portfolio .gallery_intro{
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        rgba(255, 255, 255, 0.025);
+    background-size: 44px 44px;
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark .portfolio .gallery_intro::before,
+body.dark .portfolio .gallery_intro::before{
+    background: $color_primary;
+}
+
+html.dark .portfolio .gallery_eyebrow,
+body.dark .portfolio .gallery_eyebrow{
+    background: rgba(255, 1, 79, 0.08);
+    color: $color_primary;
+    border-color: rgba(255, 1, 79, 0.22);
+}
+
+@media only screen and (max-width: 1199px) {
+    html.dark .portfolio .gallery_eyebrow,
+    body.dark .portfolio .gallery_eyebrow{
+        background: rgba(255, 1, 79, 0.08);
+        border-color: rgba(255, 1, 79, 0.22);
+    }
+}
+
+html.dark .portfolio .gallery_meta span,
+body.dark .portfolio .gallery_meta span{
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: $color_lightn;
+}
+
+html.dark .portfolio .gallery_card,
+html.dark .portfolio .gallery_card:hover,
+html.dark .portfolio .gallery_card .inner,
+body.dark .portfolio .gallery_card,
+body.dark .portfolio .gallery_card:hover,
+body.dark .portfolio .gallery_card .inner{
+    background: transparent;
+    box-shadow: none;
+    border-color: transparent;
+}

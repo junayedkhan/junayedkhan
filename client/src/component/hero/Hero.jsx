@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Typewriter } from 'react-simple-typewriter'
 import Social from '../Social'
 import { BackgroundImageWithLoader } from '../ImageWithLoader'
@@ -16,6 +17,8 @@ const normalizeHeroContent = (content) => ({
 const Hero = () => {
     const [content, setContent] = useState(null)
     const [isHeroReady, setIsHeroReady] = useState(false)
+    const heroRoles = ["Travel Explorer", "Story Keeper", "Photo Lover"]
+    const heroDescription = "I share personal moments, travel stories, and visual memories from places, people, and quiet details that make every journey feel meaningful."
 
     useEffect(() => {
         let active = true
@@ -57,19 +60,21 @@ const Hero = () => {
 
     return (
         <section className="hero">
+            <div className="hero_art hero_art_left" aria-hidden="true"></div>
+            <div className="hero_art hero_art_right" aria-hidden="true"></div>
             <div className="main_content">
                 <div className="container">
                     <div className="row about_content">
                         <div className="col-lg-7 col-md-12 col-12 order-2 order-lg-1">
                             <div className="text_content">
-                                <span className="subtitle">WELCOME TO MY WORLD</span>
+                                <span className="subtitle">Travel stories and personal moments</span>
                                 <h1 className="title">
-                                    Hi, I'm <span className="text">{content.name}</span> <br />
+                                    A soulful travel journal by <span className="text">{content.name}</span>
                                 </h1>
                                 <p className="designation">
-                                    I'm a Web
+                                    Personal
                                     <Typewriter
-                                        words={content.designation.map((role) => ` ${role}`)}
+                                        words={heroRoles.map((role) => ` ${role}`)}
                                         loop={true} cursor cursorStyle='_'
                                         typeSpeed={100}
                                         deleteSpeed={50}
@@ -78,8 +83,22 @@ const Hero = () => {
                                 </p>
                                 {/* == type write end == */}
                                 {/* == title area end == */}
-                                <p className="description">{content.description}</p>
+                                <p className="description">{heroDescription}</p>
                                 {/* == description area end == */}
+                                <div className="hero_actions" aria-label="Primary actions">
+                                    <Link className="hero_btn hero_btn_primary" to="/gallery">
+                                        <span>View Gallery</span>
+                                        <i className="fas fa-arrow-right" aria-hidden="true"></i>
+                                    </Link>
+                                    <Link className="hero_btn hero_btn_secondary" to="/contact">
+                                        <span>Contact With Me</span>
+                                    </Link>
+                                </div>
+                                <div className="hero_highlights" aria-label="Portfolio highlights">
+                                    <span>Travel Stories</span>
+                                    <span>Personal Notes</span>
+                                    <span>Photo Memories</span>
+                                </div>
                             </div>
                             <div className="row">
                                 <Social />
@@ -87,13 +106,29 @@ const Hero = () => {
                             {/* == social area end == */}
                         </div>
                         <div className="col-lg-5 col-md-12 col-12 order-1 order-lg-2 justify-content-center d-flex justify-content-lg-end justify-content-center">
-                            <article className="card gallery_card hero_gallery_card" aria-label="Profile photo">
-                                <div className="inner">
-                                    <div className="gallery_thumbnail hero_gallery_thumbnail">
-                                        <BackgroundImageWithLoader className="hero_gallery_bg" src={content.image} />
+                            <div className="hero_visual" aria-label="Profile photo">
+                                <div className="hero_visual_label">
+                                    <span>Featured</span>
+                                    <strong>Portfolio</strong>
+                                </div>
+                                <article className="card gallery_card hero_gallery_card">
+                                    <div className="inner">
+                                        <div className="gallery_thumbnail hero_gallery_thumbnail">
+                                            <BackgroundImageWithLoader className="hero_gallery_bg" src={content.image} />
+                                        </div>
+                                    </div>
+                                </article>
+                                <div className="hero_stats" aria-label="Quick profile stats">
+                                    <div>
+                                        <strong>40+</strong>
+                                        <span>Gallery pieces</span>
+                                    </div>
+                                    <div>
+                                        <strong>6+</strong>
+                                        <span>Travel notes</span>
                                     </div>
                                 </div>
-                            </article>
+                            </div>
                         </div>
                     </div>
                 </div>
