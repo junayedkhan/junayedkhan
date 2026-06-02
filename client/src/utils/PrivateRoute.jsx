@@ -33,7 +33,11 @@ export default function PrivateRoute({ children }) {
       <main className="admin_auth_shell">
         <section className="admin_auth_card admin_auth_card--compact">
           <span className="admin_auth_logo">J</span>
-          <p>Checking session</p>
+          <div className="admin_auth_skeleton" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </section>
       </main>
     );

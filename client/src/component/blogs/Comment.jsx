@@ -140,146 +140,158 @@ const Comment = ({ blogId }) => {
         <>
         <div className="comment">
             <div className="inner">
-                <div className="comment_list_area">
-                    <h3 className="title">comments</h3>
-                    <div className="comment_list">
-                        {visibleComments.map((comment) => (
-                            <article className="comment_item" key={comment.id}>
-                                <div className="comment_avatar">{comment.name.charAt(0)}</div>
-                                <div className="comment_body">
-                                    <div className="comment_bubble">
-                                        <div className="comment_meta">
-                                            <h4>{comment.name}</h4>
-                                            <span>{comment.date}</span>
+                <div className="comment_layout">
+                    <div className="comment_panel comment_list_area">
+                        <div className="comment_panel_header">
+                            <span className="comment_label">Discussion</span>
+                            <h3 className="title">Comments</h3>
+                            <p>{blogComments.length} thoughts from readers</p>
+                        </div>
+                        <div className="comment_list">
+                            {visibleComments.map((comment) => (
+                                <article className="comment_item" key={comment.id}>
+                                    <div className="comment_avatar">{comment.name.charAt(0)}</div>
+                                    <div className="comment_body">
+                                        <div className="comment_bubble">
+                                            <div className="comment_meta">
+                                                <h4>{comment.name}</h4>
+                                                <span>{comment.date}</span>
+                                            </div>
+                                            <p>{comment.message}</p>
                                         </div>
-                                        <p>{comment.message}</p>
-                                    </div>
-                                    <div className="comment_actions">
-                                        <button
-                                            type="button"
-                                            className={comment.liked ? "active" : ""}
-                                            onClick={() => handleCommentLike(comment.id)}
-                                        >
-                                            Like
-                                        </button>
-                                        <button type="button" onClick={() => setReplyingTo(comment.id)}>
-                                            Reply
-                                        </button>
-                                        <span>{comment.likes} likes</span>
-                                        <span>{comment.replies.length} replies</span>
-                                    </div>
-                                    {comment.replies.length > 0 ? (
-                                        <div className="comment_replies">
-                                            {comment.replies.map((reply) => (
-                                                <article className="comment_reply" key={reply.id}>
-                                                    <div className="comment_avatar small">{reply.name.charAt(0)}</div>
-                                                    <div className="comment_body">
-                                                        <div className="comment_bubble">
-                                                            <div className="comment_meta">
-                                                                <h4>{reply.name}</h4>
-                                                                <span>{reply.date}</span>
+                                        <div className="comment_actions">
+                                            <button
+                                                type="button"
+                                                className={comment.liked ? "active" : ""}
+                                                onClick={() => handleCommentLike(comment.id)}
+                                            >
+                                                Like
+                                            </button>
+                                            <button type="button" onClick={() => setReplyingTo(comment.id)}>
+                                                Reply
+                                            </button>
+                                            <span>{comment.likes} likes</span>
+                                            <span>{comment.replies.length} replies</span>
+                                        </div>
+                                        {comment.replies.length > 0 ? (
+                                            <div className="comment_replies">
+                                                {comment.replies.map((reply) => (
+                                                    <article className="comment_reply" key={reply.id}>
+                                                        <div className="comment_avatar small">{reply.name.charAt(0)}</div>
+                                                        <div className="comment_body">
+                                                            <div className="comment_bubble">
+                                                                <div className="comment_meta">
+                                                                    <h4>{reply.name}</h4>
+                                                                    <span>{reply.date}</span>
+                                                                </div>
+                                                                <p>{reply.message}</p>
                                                             </div>
-                                                            <p>{reply.message}</p>
+                                                            <div className="comment_actions">
+                                                                <button
+                                                                    type="button"
+                                                                    className={reply.liked ? "active" : ""}
+                                                                    onClick={() => handleReplyLike(comment.id, reply.id)}
+                                                                >
+                                                                    Like
+                                                                </button>
+                                                                <span>{reply.likes} likes</span>
+                                                            </div>
                                                         </div>
-                                                        <div className="comment_actions">
-                                                            <button
-                                                                type="button"
-                                                                className={reply.liked ? "active" : ""}
-                                                                onClick={() => handleReplyLike(comment.id, reply.id)}
-                                                            >
-                                                                Like
-                                                            </button>
-                                                            <span>{reply.likes} likes</span>
-                                                        </div>
-                                                    </div>
-                                                </article>
-                                            ))}
-                                        </div>
-                                    ) : null}
-                                    {replyingTo === comment.id ? (
-                                        <form className="comment_reply_form" onSubmit={(event) => handleReplySubmit(event, comment.id)}>
-                                            <input
-                                                type="text"
-                                                value={replyText}
-                                                onChange={(event) => setReplyText(event.target.value)}
-                                                placeholder={`Reply to ${comment.name}`}
-                                            />
-                                            <button type="submit">Reply</button>
-                                        </form>
-                                    ) : null}
+                                                    </article>
+                                                ))}
+                                            </div>
+                                        ) : null}
+                                        {replyingTo === comment.id ? (
+                                            <form className="comment_reply_form" onSubmit={(event) => handleReplySubmit(event, comment.id)}>
+                                                <input
+                                                    type="text"
+                                                    value={replyText}
+                                                    onChange={(event) => setReplyText(event.target.value)}
+                                                    placeholder={`Reply to ${comment.name}`}
+                                                />
+                                                <button type="submit">Reply</button>
+                                            </form>
+                                        ) : null}
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                        {hasMoreComments ? (
+                            <button type="button" className="comment_load_more" onClick={() => setVisibleCount((current) => current + COMMENTS_PER_PAGE)}>
+                                Load More Comments
+                            </button>
+                        ) : null}
+                    </div>
+                    <div className="comment_panel comment_form_panel">
+                        <div className="comment_panel_header">
+                            <span className="comment_label">Join in</span>
+                            <h3 className="title">Leave a reply</h3>
+                            <p>Share a quick note, question, or feedback.</p>
+                        </div>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <div className="comment_form_grid">
+                                <div>
+                                    {/* == name == */}
+                                    <div className="form_group">
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            id="name"
+                                            placeholder="Name"
+                                            {...register("name", { required: "Name is required." })}
+                                        />
+                                        {errors.name?.message && <p className="errors">{errors.name.message}</p>}
+                                    </div>
+                                    {/* == email == */}
+                                    <div className="form_group">
+                                        <input
+                                            type="text"
+                                            name="email"
+                                            id="email"
+                                            placeholder="Email"
+                                            {...register("email",
+                                            { required: "Email is required.",
+                                            pattern: {value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: "Invalid email address"} })}
+                                        />
+                                        {errors.email?.message && <p className="errors">{errors.email.message}</p>}
+                                    </div>
+                                    {/* == phone number == */}
+                                    <div className="form_group">
+                                        <input
+                                            type="text"
+                                            name="phone"
+                                            id="phone"
+                                            placeholder="Phone(optional)"
+                                            {...register("phone",
+                                            { required: false,
+                                            pattern: {value: /^[0-9\b]+$/,
+                                            message: "Invalid phone number"} })}
+                                        />
+                                        {errors.phone?.message && <p className="errors">{errors.phone.message}</p>}
+                                    </div>
                                 </div>
-                            </article>
-                        ))}
+                                <div>
+                                    {/* == comment == */}
+                                    <div className="form_group">
+                                        <textarea
+                                            placeholder="Comment"
+                                            {...register("message", { required: "Message is required." })}
+                                        ></textarea>
+                                        {errors.message?.message && <p className="errors">{errors.message.message}</p>}
+                                    </div>
+                                </div>
+                                {/* == button */}
+                                <div className="comment_form_footer">
+                                    <div className="form_group_btn">
+                                        <button type="submit">Submit now</button>
+                                        {successMessage && <p className="success_message">{successMessage}</p>}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    {hasMoreComments ? (
-                        <button type="button" className="comment_load_more" onClick={() => setVisibleCount((current) => current + COMMENTS_PER_PAGE)}>
-                            Load More Comments
-                        </button>
-                    ) : null}
                 </div>
-                <h3 className="title">leave a reply</h3>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="row">
-                        <div className="col-lg-6 col-md-12 col-12">
-                            {/* == name == */}
-                            <div className="form_group">
-                                <input
-                                    type="text"
-                                    name="name"
-                                    id="name"
-                                    placeholder="Name"
-                                    {...register("name", { required: "Name is required." })}
-                                />
-                                {errors.name?.message && <p className="errors">{errors.name.message}</p>}
-                            </div>
-                            {/* == email == */}
-                            <div className="form_group">
-                                <input
-                                    type="text"
-                                    name="email"
-                                    id="email"
-                                    placeholder="Email"
-                                    {...register("email",
-                                    { required: "Email is required.",
-                                    pattern: {value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                    message: "Invalid email address"} })}
-                                />
-                                {errors.email?.message && <p className="errors">{errors.email.message}</p>}
-                            </div>
-                            {/* == phone number == */}
-                            <div className="form_group">
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    id="phone"
-                                    placeholder="Phone(optional)"
-                                    {...register("phone",
-                                    { required: false,
-                                    pattern: {value: /^[0-9\b]+$/,
-                                    message: "Invalid phone number"} })}
-                                />
-                                {errors.phone?.message && <p className="errors">{errors.phone.message}</p>}
-                            </div>
-                        </div>
-                        <div className="col-lg-6 col-md-12 col-12">        
-                            {/* == comment == */}
-                            <div className="form_group">
-                                <textarea
-                                    placeholder="Comment"
-                                    {...register("message", { required: "Message is required." })}
-                                ></textarea>
-                                {errors.message?.message && <p className="errors">{errors.message.message}</p>}
-                            </div>
-                        </div>
-                        {/* == button */}
-                        <div className="col-lg-6 col-md-12 col-12">
-                            <div className="form_group_btn">
-                                <button type="submit">submit now</button>
-                                {successMessage && <p className="success_message">{successMessage}</p>}
-                            </div>
-                        </div>
-                    </div>
-                </form>
             </div>
             {/* == from area end == */}
         </div>            

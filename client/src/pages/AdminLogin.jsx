@@ -76,11 +76,22 @@ export default function AdminLogin() {
     <main className="admin_auth_shell">
       <section className="admin_auth_card">
         <span className="admin_auth_logo">J</span>
-        <p className="admin_auth_kicker">{authMode === "setup" ? "First admin" : "Secure access"}</p>
-        <h1>{title}</h1>
-        <p className="admin_auth_copy">{copy}</p>
+        {isCheckingStatus ? (
+          <div className="admin_auth_skeleton" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        ) : (
+          <>
+            <p className="admin_auth_kicker">{authMode === "setup" ? "First admin" : "Secure access"}</p>
+            <h1>{title}</h1>
+            <p className="admin_auth_copy">{copy}</p>
+          </>
+        )}
 
-        <form className="admin_auth_form" onSubmit={handleAuth}>
+        {!isCheckingStatus ? <form className="admin_auth_form" onSubmit={handleAuth}>
           {authMode === "login" || authMode === "setup" ? (
             <label>
               <span>{authMode === "setup" ? "Username" : "Username or Email"}</span>
@@ -138,7 +149,7 @@ export default function AdminLogin() {
               Forgot password?
             </Link>
           ) : null}
-        </form>
+        </form> : null}
       </section>
     </main>
   );

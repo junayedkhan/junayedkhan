@@ -7,6 +7,7 @@ const BlogDetails = ({ data }) => {
     const slug = data?.title ? createBlogSlug(data.title) : "";
     const shareUrl = slug ? `${window.location.origin}/blogs/${slug}` : `${window.location.origin}/blogs`;
     const shareText = `${data.title} - ${shareUrl}`;
+    const articleMeta = [data.category, data.meta, data.readTime].filter(Boolean);
 
     const handleShare = async () => {
         try {
@@ -29,15 +30,22 @@ const BlogDetails = ({ data }) => {
         <article className="blog_details blog_details--fullpage">
             <div className="main_content">
                 <div className="container">
-                    <div className="thumbnail">
-                        <div className="inner">
-                            <ImageWithLoader src={data.img} alt={data.title || "blog"} />
+                    <header className="blog_details_hero">
+                        <div className="details">
+                            <div className="blog_details_meta">
+                                {articleMeta.map((item) => (
+                                    <span key={item}>{item}</span>
+                                ))}
+                            </div>
+                            <h1 className="title">{data.title}</h1>
+                            {data.excerpt ? <p className="blog_details_excerpt">{data.excerpt}</p> : null}
                         </div>
-                    </div>
-                    <div className="details">
-                        <p className="meta">{data.meta}</p>
-                        <h3 className="title">{data.title}</h3>
-                    </div>
+                        <div className="thumbnail">
+                            <div className="inner">
+                                <ImageWithLoader src={data.img} alt={data.title || "blog"} />
+                            </div>
+                        </div>
+                    </header>
                     <div className="text_content">
                         <div className="description">
                             <p className="bigger">{data.designation_01}</p>

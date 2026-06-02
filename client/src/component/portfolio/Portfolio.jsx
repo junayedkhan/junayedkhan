@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import api from '../../utils/api';
 import { ImageWithLoader } from '../ImageWithLoader';
 import img01 from "../../assets/image/portfolio-01.jpg";
 import img02 from "../../assets/image/portfolio-02.jpg";
@@ -32,7 +33,7 @@ const galleryAlts = [
     "travel journal preview eight"
 ];
 
-const galleryContent = Array.from({ length: 40 }, (_, index) => ({
+const defaultGalleryContent = Array.from({ length: 40 }, (_, index) => ({
     id: `${index + 1}`,
     img: galleryImages[index % galleryImages.length],
     alt: galleryAlts[index % galleryAlts.length],
@@ -43,6 +44,18 @@ const galleryContent = Array.from({ length: 40 }, (_, index) => ({
 
 const ITEMS_PER_PAGE = 8;
 const LIKE_STORAGE_KEY = "gallery-likes";
+
+const requestWithFallback = async (primaryRequest, fallbackRequest) => {
+    try {
+        return await primaryRequest();
+    } catch (error) {
+        if (error.response?.status === 404 && fallbackRequest) {
+            return fallbackRequest();
+        }
+
+        throw error;
+    }
+};
 
 const Portfolio = () => {
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
@@ -60,7 +73,12 @@ const Portfolio = () => {
             return {};
         }
     });
+    const [adminGalleryItems, setAdminGalleryItems] = useState(() => {
+        return [];
+    });
+    const [isGalleryLoading, setIsGalleryLoading] = useState(true);
 
+    const galleryContent = [...adminGalleryItems, ...defaultGalleryContent];
     const visibleGallery = galleryContent.slice(0, visibleCount);
     const hasMoreItems = visibleCount < galleryContent.length;
 
@@ -95,6 +113,29 @@ const Portfolio = () => {
             document.documentElement.style.overflow = previousHtmlOverflow;
         };
     }, [openModel]);
+
+    useEffect(() => {
+        let active = true;
+        setIsGalleryLoading(true);
+
+        requestWithFallback(
+            () => api.get("/site/gallery"),
+            () => api.get("/gallery")
+        )
+            .then((res) => {
+                if (active) setAdminGalleryItems(res.data.images || []);
+            })
+            .catch(() => {
+                if (active) setAdminGalleryItems([]);
+            })
+            .finally(() => {
+                if (active) setIsGalleryLoading(false);
+            });
+
+        return () => {
+            active = false;
+        };
+    }, []);
 
     const updateZoom = (nextZoom) => {
         const clampedZoom = Math.min(Math.max(Number(nextZoom), 1), 100);
@@ -134,8 +175,12 @@ const Portfolio = () => {
         updateZoom(zoom + (event.deltaY < 0 ? 0.5 : -0.5));
     };
 
-    const handleLike = (event, item) => {
+    const handleLike = async (event, item) => {
         event.stopPropagation();
+
+        const wasLiked = Boolean(savedLikes[item.id]?.liked);
+        const nextLiked = !wasLiked;
+        const originalCount = savedLikes[item.id]?.count ?? item.likes;
 
         setSavedLikes((current) => {
             const isLiked = current[item.id]?.liked;
@@ -150,6 +195,44 @@ const Portfolio = () => {
             localStorage.setItem(LIKE_STORAGE_KEY, JSON.stringify(next));
             return next;
         });
+
+        if (item.source !== "Uploaded") {
+            return;
+        }
+
+        try {
+            const res = await requestWithFallback(
+                () => api.patch(`/site/gallery/${item.id}/like`, { liked: nextLiked }),
+                () => api.patch(`/gallery/${item.id}/like`, { liked: nextLiked })
+            );
+            const updatedImage = res.data.image;
+            setAdminGalleryItems((current) => current.map((galleryItem) => (
+                galleryItem.id === updatedImage.id ? updatedImage : galleryItem
+            )));
+            setSavedLikes((current) => {
+                const next = {
+                    ...current,
+                    [item.id]: {
+                        liked: nextLiked,
+                        count: updatedImage.likes
+                    }
+                };
+                localStorage.setItem(LIKE_STORAGE_KEY, JSON.stringify(next));
+                return next;
+            });
+        } catch {
+            setSavedLikes((current) => {
+                const next = {
+                    ...current,
+                    [item.id]: {
+                        liked: wasLiked,
+                        count: originalCount
+                    }
+                };
+                localStorage.setItem(LIKE_STORAGE_KEY, JSON.stringify(next));
+                return next;
+            });
+        }
     };
 
     const getLikeCount = (item) => savedLikes[item.id]?.count ?? item.likes;
@@ -177,7 +260,18 @@ const Portfolio = () => {
                     </div>
 
                     <div className="row gallery_grid">
-                        {visibleGallery.map((item, index) => (
+                        {isGalleryLoading ? (
+                            Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+                                <div className="col-lg-6 col-xl-4 col-md-6 col-12 _mb_20_" key={`gallery-skeleton-${index}`}>
+                                    <article className="gallery_skeleton_card" aria-hidden="true">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </article>
+                                </div>
+                            ))
+                        ) : null}
+                        {!isGalleryLoading && visibleGallery.map((item, index) => (
                             <div className="col-lg-6 col-xl-4 col-md-6 col-12 _mb_20_" key={item.id}>
                                 <article className={`card gallery_card gallery_card_${(index % 3) + 1}`}>
                                     <div className="inner">
@@ -209,13 +303,13 @@ const Portfolio = () => {
                     </div>
 
                     <div className="gallery_actions">
-                        {hasMoreItems ? (
+                        {!isGalleryLoading && hasMoreItems ? (
                             <button type="button" className="gallery_load_more" onClick={handleLoadMore}>
                                 Load More Memories
                             </button>
-                        ) : (
+                        ) : !isGalleryLoading ? (
                             <p className="gallery_end">All memories loaded</p>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div>

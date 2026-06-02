@@ -1,12 +1,84 @@
+.comment{
+    margin-top: 38px;
+}
+
+.comment .inner .comment_layout{
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.75fr);
+    gap: 28px;
+    align-items: start;
+
+    @media #{$md_layout},
+    #{$sm_layout} {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+}
+
+.comment .inner .comment_panel{
+    border: 1px solid rgba(11, 44, 31, 0.08);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.74);
+    box-shadow: $shadow_white_3;
+    padding: clamp(20px, 2.4vw, 28px);
+
+    @media #{$large_mobile} {
+        padding: 16px;
+    }
+}
+
+.comment .inner .comment_form_panel{
+    position: sticky;
+    top: 24px;
+
+    @media #{$md_layout},
+    #{$sm_layout} {
+        position: static;
+    }
+}
+
+.comment .inner .comment_panel_header{
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(11, 44, 31, 0.09);
+}
+
+.comment .inner .comment_label{
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    margin-bottom: 10px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(118, 200, 59, 0.14);
+    color: $color_primary;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
 .comment .inner .title{
-    font-size: 32px;
+    font-size: 28px;
     font-weight: $p_semi_bold;
     color: $color_heading_wv;
-    margin: 40px 0; 
+    margin: 0; 
+    text-transform: capitalize;
+
+    @media #{$large_mobile} {
+        font-size: 23px;
+        line-height: 1.3;
+    }
+}
+
+.comment .inner .comment_panel_header p{
+    margin: 8px 0 0;
+    color: $color_body_white;
+    font-size: 14px;
+    line-height: 1.6;
 }
 
 .comment .inner .comment_list_area .title{
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .comment .inner .comment_list{
@@ -17,6 +89,10 @@
 .comment .inner .comment_item{
     display: flex;
     gap: 16px;
+
+    @media #{$large_mobile} {
+        gap: 12px;
+    }
 }
 
 .comment .inner .comment_avatar{
@@ -32,6 +108,13 @@
     font-size: 18px;
     font-weight: 700;
     text-transform: uppercase;
+
+    @media #{$large_mobile} {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+        font-size: 16px;
+    }
 }
 
 .comment .inner .comment_body{
@@ -40,11 +123,16 @@
 }
 
 .comment .inner .comment_bubble{
-    padding: 14px 16px;
-    border-radius: $radius_surface_md;
+    padding: 16px 18px;
+    border: 1px solid rgba(11, 44, 31, 0.07);
+    border-radius: 8px;
     background: $gradient_box_w;
     box-shadow: $shadow_white_3;
     @include transition;
+
+    @media #{$large_mobile} {
+        padding: 14px;
+    }
 }
 
 html:not(.dark) .comment .inner .comment_bubble:hover{
@@ -57,6 +145,12 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
     justify-content: space-between;
     gap: 14px;
     margin-bottom: 8px;
+
+    @media #{$large_mobile} {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
 }
 
 .comment .inner .comment_meta h4{
@@ -121,6 +215,10 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
 .comment .inner .comment_reply{
     display: flex;
     gap: 12px;
+
+    @media #{$small_mobile} {
+        gap: 10px;
+    }
 }
 
 .comment .inner .comment_avatar.small{
@@ -128,19 +226,30 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
     height: 36px;
     flex-basis: 36px;
     font-size: 14px;
+
+    @media #{$large_mobile} {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        font-size: 13px;
+    }
 }
 
 .comment .inner .comment_reply_form{
     display: flex;
     gap: 10px;
     margin-top: 14px;
+
+    @media #{$large_mobile} {
+        flex-direction: column;
+    }
 }
 
 .comment .inner .comment_reply_form input{
     width: 100%;
     height: 42px;
     border: none;
-    border-radius: $radius_surface_sm;
+    border-radius: 8px;
     background: $gradient_box_w;
     color: $color_heading_wv;
     box-shadow: $shadow_white_3_inset;
@@ -149,7 +258,7 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
 
 .comment .inner .comment_reply_form button{
     border: none;
-    border-radius: $radius_surface_sm;
+    border-radius: 8px;
     min-width: 82px;
     background: $gradient_box_w;
     color: $color_primary;
@@ -158,6 +267,10 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
     font-weight: 700;
     cursor: pointer;
     @include transition;
+
+    @media #{$large_mobile} {
+        min-height: 42px;
+    }
 }
 
 .comment .inner .comment_reply_form button:hover{
@@ -167,7 +280,7 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
 
 .comment .inner .comment_load_more{
     border: none;
-    border-radius: $radius_surface_sm;
+    border-radius: 8px;
     min-width: 180px;
     min-height: 46px;
     margin-top: 24px;
@@ -180,6 +293,12 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
     text-transform: uppercase;
     cursor: pointer;
     @include transition;
+
+    @media #{$large_mobile} {
+        width: 100%;
+        min-width: 0;
+        padding: 0 16px;
+    }
 }
 
 .comment .inner .comment_load_more:hover{
@@ -193,13 +312,31 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
     position: relative;
 }
 
+.comment .inner .comment_form_grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
 .comment .inner .form_group input{
     @include input;
+    border-radius: 8px;
+
+    @media #{$large_mobile} {
+        height: 50px;
+    }
 }
 
 .comment .inner .form_group textarea{
     @include textarea;
-    height: 205px;
+    min-height: 190px;
+    height: 100%;
+    border-radius: 8px;
+    resize: vertical;
+
+    @media #{$large_mobile} {
+        min-height: 150px;
+    }
 }
 
 .comment .inner .form_group .errors{
@@ -209,6 +346,8 @@ html:not(.dark) .comment .inner .comment_bubble:hover{
 
 .comment .inner .form_group_btn button{
     @include button;
+    width: 100%;
+    border-radius: 8px;
 }
 
 .comment .inner .form_group_btn .success_message{
@@ -225,8 +364,31 @@ html.dark .comment .inner .title{
     color: $color_lightn;
 }
 
+body.dark .comment .inner .comment_panel,
+html.dark .comment .inner .comment_panel{
+    border-color: rgba(255, 255, 255, 0.07);
+    background: rgba(30, 32, 36, 0.9);
+    box-shadow: $shadow_1;
+}
+
+body.dark .comment .inner .comment_panel_header,
+html.dark .comment .inner .comment_panel_header{
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark .comment .inner .comment_label,
+html.dark .comment .inner .comment_label{
+    background: rgba(118, 200, 59, 0.16);
+}
+
+body.dark .comment .inner .comment_panel_header p,
+html.dark .comment .inner .comment_panel_header p{
+    color: $color_body;
+}
+
 body.dark .comment .inner .comment_bubble,
 html.dark .comment .inner .comment_bubble{
+    border-color: rgba(255, 255, 255, 0.06);
     background: $background_color_1;
     box-shadow: $shadow_1;
 }

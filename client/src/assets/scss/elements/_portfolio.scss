@@ -159,6 +159,44 @@
     padding: 0;
 }
 
+.portfolio .gallery_skeleton_card{
+    height: 100%;
+    min-height: 100%;
+    display: grid;
+    align-content: end;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 24px;
+    background: linear-gradient(90deg, rgba(226, 231, 238, 0.86) 0%, rgba(247, 249, 251, 0.96) 45%, rgba(226, 231, 238, 0.86) 90%);
+    background-size: 220% 100%;
+    animation: imageSkeletonLoading 1.2s ease-in-out infinite;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+
+    @media #{$sm_layout} {
+        min-height: 260px;
+    }
+}
+
+.portfolio .gallery_skeleton_card span{
+    display: block;
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.64);
+}
+
+.portfolio .gallery_skeleton_card span:first-child{
+    width: 42%;
+}
+
+.portfolio .gallery_skeleton_card span:nth-child(2){
+    width: 72%;
+}
+
+.portfolio .gallery_skeleton_card span:last-child{
+    width: 28%;
+    height: 34px;
+}
+
 .portfolio .gallery_card{
     cursor: pointer;
 }
@@ -600,6 +638,18 @@ html.dark .portfolio .gallery_card:hover{
 body.dark .portfolio .gallery_card .gallery_thumbnail,
 html.dark .portfolio .gallery_card .gallery_thumbnail{
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+}
+
+body.dark .portfolio .gallery_skeleton_card,
+html.dark .portfolio .gallery_skeleton_card{
+    background: linear-gradient(90deg, rgba(25, 27, 30, 0.92) 0%, rgba(38, 42, 47, 0.95) 45%, rgba(25, 27, 30, 0.92) 90%);
+    background-size: 220% 100%;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+}
+
+body.dark .portfolio .gallery_skeleton_card span,
+html.dark .portfolio .gallery_skeleton_card span{
+    background: rgba(255, 255, 255, 0.08);
 }
 
 body.dark .portfolio .gallery_card .inner::before,

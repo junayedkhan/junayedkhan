@@ -21,25 +21,9 @@ const Home = () => {
     const navigate = useNavigate();
     const [isOpen,setIsOpen] = useState(false);
     const openMenu= ()=> setIsOpen(!isOpen);
-    const [loading, setLoading] = useState(() => !sessionStorage.getItem("site-loaded"))
     const [isMobileNav, setIsMobileNav] = useState(
         () => typeof window !== "undefined" && window.matchMedia("(max-width: 1199px)").matches
     );
-
-    // === loading screen === //
-    useEffect(() => {
-        if (sessionStorage.getItem("site-loaded")) {
-            setLoading(false);
-            return;
-        }
-
-        const loadingTimer = setTimeout(() => {
-            sessionStorage.setItem("site-loaded", "true");
-            setLoading(false)
-        }, 850)
-
-        return () => clearTimeout(loadingTimer)
-    },[])
 
 
     // === dark mode area start === //
@@ -123,20 +107,6 @@ const Home = () => {
 
     return (
         <main className="websfolio_th">
-            {loading ? (
-                <div className="modern_loader" role="status" aria-live="polite">
-                    <div className="modern_loader_card">
-                        <span className="modern_loader_logo">J</span>
-                        <div className="modern_loader_text">
-                            <strong>Loading</strong>
-                            <span>Preparing your page</span>
-                        </div>
-                        <div className="modern_loader_bar">
-                            <span></span>
-                        </div>
-                    </div>
-                </div>
-            ) : null}
             <>
                 <button
                     type="button"

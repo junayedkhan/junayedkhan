@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { authHeaders, clearToken } from "../utils/api";
+import portfolio01 from "../assets/image/portfolio-01.jpg";
+import portfolio02 from "../assets/image/portfolio-02.jpg";
+import portfolio03 from "../assets/image/portfolio-03.jpg";
+import portfolio04 from "../assets/image/portfolio-04.jpg";
+import portfolio05 from "../assets/image/portfolio-05.jpg";
+import portfolio06 from "../assets/image/portfolio-06.jpg";
+import blog02 from "../assets/image/blog-02.jpg";
+import blog03 from "../assets/image/blog-03.jpg";
 
 const adminSections = [
   { id: "overview", label: "Overview", icon: "fas fa-chart-line" },
@@ -60,10 +68,65 @@ const DEFAULT_HERO_CONTENT = {
   image: DEFAULT_HERO_IMAGE,
 };
 const MAX_HERO_UPLOAD_SIZE = 2.5 * 1024 * 1024;
+const MAX_GALLERY_UPLOAD_SIZE = 3 * 1024 * 1024;
+const ADMIN_ACTIVE_SECTION_KEY = "admin-active-section";
+
+const defaultGalleryImages = [portfolio01, portfolio02, portfolio03, portfolio04, portfolio05, portfolio06, blog02, blog03];
+const defaultGalleryItems = defaultGalleryImages.map((image, index) => ({
+  id: `${index + 1}`,
+  img: image,
+  alt: `gallery preview ${index + 1}`,
+  likes: 20 + ((index + 1) * 3),
+  location: ["Coastal light", "Old street", "Quiet mountain", "City corner"][index % 4],
+  mood: ["Soft morning", "Warm evening", "Slow walk", "Open sky"][index % 4],
+  source: "Default",
+}));
+
+const emptyGalleryForm = {
+  img: "",
+  alt: "",
+  location: "",
+  mood: "",
+  likes: 0,
+};
+
+const AdminSkeleton = ({ variant = "panel" }) => (
+  <div className={`admin_skeleton admin_skeleton--${variant}`} aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+);
+
+const getApiErrorMessage = (error, fallback) => {
+  const responseMessage = error.response?.data?.message;
+
+  if (responseMessage) return responseMessage;
+  if (error.response?.status === 404) return "Gallery API not found. Restart or redeploy the backend server.";
+  if (error.response?.status === 413) return "Image is too large for the server. Try a smaller image.";
+  if (error.response?.status === 401) return "Admin session expired. Please login again.";
+  if (error.message === "Network Error") return "Could not reach the backend server.";
+
+  return fallback;
+};
+
+const requestWithFallback = async (primaryRequest, fallbackRequest) => {
+  try {
+    return await primaryRequest();
+  } catch (error) {
+    if (error.response?.status === 404 && fallbackRequest) {
+      return fallbackRequest();
+    }
+
+    throw error;
+  }
+};
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [email, setEmail] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [accountForm, setAccountForm] = useState({ username: "", email: "", age: "", address: "" });
@@ -76,7 +139,14 @@ export default function AdminDashboard() {
   const [isEmailEditVerified, setIsEmailEditVerified] = useState(false);
   const [resetMessage, setResetMessage] = useState("");
   const [isSavingEmail, setIsSavingEmail] = useState(false);
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, setActiveSection] = useState(() => {
+    try {
+      const storedSection = localStorage.getItem(ADMIN_ACTIVE_SECTION_KEY);
+      return adminSections.some((section) => section.id === storedSection) ? storedSection : "overview";
+    } catch {
+      return "overview";
+    }
+  });
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
@@ -92,6 +162,14 @@ export default function AdminDashboard() {
   const [isSavingHeroImage, setIsSavingHeroImage] = useState(false);
   const [heroUploadState, setHeroUploadState] = useState("idle");
   const [heroConfirmAction, setHeroConfirmAction] = useState(null);
+  const [isLoadingHero, setIsLoadingHero] = useState(true);
+  const [galleryItems, setGalleryItems] = useState([]);
+  const [galleryForm, setGalleryForm] = useState(emptyGalleryForm);
+  const [galleryMessage, setGalleryMessage] = useState("");
+  const [galleryUploadState, setGalleryUploadState] = useState("idle");
+  const [isLoadingGallery, setIsLoadingGallery] = useState(false);
+  const [isSavingGallery, setIsSavingGallery] = useState(false);
+  const [galleryDeleteTarget, setGalleryDeleteTarget] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -114,6 +192,9 @@ export default function AdminDashboard() {
       .catch(() => {
         clearToken();
         navigate("/admin-login", { replace: true });
+      })
+      .finally(() => {
+        if (active) setIsLoadingUser(false);
       });
 
     return () => {
@@ -140,12 +221,51 @@ export default function AdminDashboard() {
       })
       .catch(() => {
         if (active) setHeroImageMessage("Unable to load hero image setting.");
+      })
+      .finally(() => {
+        if (active) setIsLoadingHero(false);
       });
 
     return () => {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    setIsLoadingGallery(true);
+
+    requestWithFallback(
+      () => api.get("/site/admin/gallery", { headers: authHeaders() }),
+      () => api.get("/gallery/admin", { headers: authHeaders() })
+    )
+      .then((res) => {
+        if (active) setGalleryItems(res.data.images || []);
+      })
+      .catch(() => {
+        if (active) setGalleryMessage("Unable to load gallery images.");
+      })
+      .finally(() => {
+        if (active) setIsLoadingGallery(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!galleryMessage) return undefined;
+
+    const messageTimer = setTimeout(() => {
+      setGalleryMessage("");
+      setGalleryUploadState((current) => (
+        current === "saved" || current === "error" ? "idle" : current
+      ));
+    }, 4000);
+
+    return () => clearTimeout(messageTimer);
+  }, [galleryMessage]);
 
   useEffect(() => {
     if (mobileNavOpen || passwordModalOpen || accountModalOpen || emailVerifyModalOpen) {
@@ -217,6 +337,7 @@ export default function AdminDashboard() {
 
   const selectSection = (sectionId) => {
     setActiveSection(sectionId);
+    localStorage.setItem(ADMIN_ACTIVE_SECTION_KEY, sectionId);
     setMobileNavOpen(false);
   };
 
@@ -511,6 +632,124 @@ export default function AdminDashboard() {
     };
     reader.readAsDataURL(file);
   };
+
+  const uploadGalleryImage = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    setGalleryMessage("");
+    setGalleryUploadState("idle");
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setGalleryMessage("Upload a JPG, PNG, or WebP image.");
+      setGalleryUploadState("error");
+      return;
+    }
+
+    if (file.size > MAX_GALLERY_UPLOAD_SIZE) {
+      setGalleryMessage("Gallery image must be under 3 MB.");
+      setGalleryUploadState("error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setGalleryForm((current) => ({
+        ...current,
+        img: String(reader.result || ""),
+        alt: current.alt || file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " "),
+      }));
+      setGalleryMessage("Preview ready. Add details and publish the image.");
+      setGalleryUploadState("ready");
+    };
+    reader.onerror = () => {
+      setGalleryMessage("Unable to read image file.");
+      setGalleryUploadState("error");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const saveGalleryItem = async (event) => {
+    event.preventDefault();
+    setGalleryMessage("");
+
+    if (!galleryForm.img) {
+      setGalleryMessage("Choose an image before publishing.");
+      setGalleryUploadState("error");
+      return;
+    }
+
+    setIsSavingGallery(true);
+
+    try {
+      const payload = {
+        image: galleryForm.img,
+        alt: galleryForm.alt.trim() || "uploaded gallery image",
+        location: galleryForm.location.trim() || "New upload",
+        mood: galleryForm.mood.trim() || "Fresh frame",
+        likes: Math.max(Number(galleryForm.likes) || 0, 0),
+      };
+      const res = await requestWithFallback(
+        () => api.post("/site/admin/gallery", payload, { headers: authHeaders() }),
+        () => api.post("/gallery/admin", payload, { headers: authHeaders() })
+      );
+      setGalleryItems((current) => [res.data.image, ...current]);
+      setGalleryForm(emptyGalleryForm);
+      setGalleryUploadState("saved");
+      setGalleryMessage(res.data.message || "Gallery image published.");
+    } catch (err) {
+      setGalleryUploadState("error");
+      setGalleryMessage(getApiErrorMessage(err, "Unable to publish gallery image."));
+    } finally {
+      setIsSavingGallery(false);
+    }
+  };
+
+  const removeGalleryItem = async (itemId) => {
+    setGalleryMessage("");
+
+    try {
+      const res = await requestWithFallback(
+        () => api.delete(`/site/admin/gallery/${itemId}`, { headers: authHeaders() }),
+        () => api.delete(`/gallery/admin/${itemId}`, { headers: authHeaders() })
+      );
+      setGalleryItems((current) => current.filter((item) => item.id !== itemId));
+      setGalleryMessage(res.data.message || "Gallery image removed.");
+    } catch (err) {
+      setGalleryMessage(getApiErrorMessage(err, "Unable to remove gallery image."));
+    } finally {
+      setGalleryDeleteTarget(null);
+    }
+  };
+
+  const updateGalleryItemLikes = (itemId, likes) => {
+    const normalizedLikes = Math.max(Number(likes) || 0, 0);
+    const nextItems = galleryItems.map((item) => (
+      item.id === itemId ? { ...item, likes: normalizedLikes } : item
+    ));
+    setGalleryItems(nextItems);
+  };
+
+  const saveGalleryItemLikes = async (itemId, likes) => {
+    setGalleryMessage("");
+
+    try {
+      const payload = { likes: Math.max(Number(likes) || 0, 0) };
+      const res = await requestWithFallback(
+        () => api.patch(`/site/admin/gallery/${itemId}`, payload, { headers: authHeaders() }),
+        () => api.patch(`/gallery/admin/${itemId}`, payload, { headers: authHeaders() })
+      );
+      setGalleryItems((current) => current.map((item) => (
+        item.id === itemId ? res.data.image : item
+      )));
+      setGalleryMessage("Like count saved to MongoDB.");
+    } catch (err) {
+      setGalleryMessage(getApiErrorMessage(err, "Unable to update likes."));
+    }
+  };
+
+  const getGalleryLikeCount = (item) => item.likes;
 
   return (
     <main className="admin_dashboard">
@@ -814,6 +1053,33 @@ export default function AdminDashboard() {
         </div>
       ) : null}
 
+      {galleryDeleteTarget ? (
+        <div className="admin_modal_layer admin_modal_layer--gallery-confirm" role="presentation">
+          <button
+            type="button"
+            className="admin_modal_backdrop"
+            aria-label="Cancel gallery delete"
+            onClick={() => setGalleryDeleteTarget(null)}
+          />
+          <section className="admin_confirm_modal" role="dialog" aria-modal="true" aria-label="Confirm gallery delete">
+            <div className="admin_confirm_icon danger">
+              <i className="fas fa-trash" aria-hidden="true"></i>
+            </div>
+            <p className="admin_auth_kicker">Gallery image</p>
+            <h2>Delete image?</h2>
+            <p>This will remove the uploaded image from MongoDB and the public gallery.</p>
+            <div className="admin_confirm_actions">
+              <button type="button" onClick={() => setGalleryDeleteTarget(null)}>
+                Cancel
+              </button>
+              <button type="button" onClick={() => removeGalleryItem(galleryDeleteTarget.id)}>
+                Delete
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       <aside className={mobileNavOpen ? "admin_sidebar active" : "admin_sidebar"} onClick={() => setMobileNavOpen(false)}>
         <span className="admin_auth_logo">J</span>
         <nav aria-label="Admin navigation" onClick={(e) => e.stopPropagation()}>
@@ -841,31 +1107,39 @@ export default function AdminDashboard() {
 
         {activeSection === "overview" ? (
           <>
-            <div className="admin_stats">
-              {contentStats.map((card) => (
-                <article className="admin_stat_card" key={card.label}>
-                  <i className={card.icon} aria-hidden="true"></i>
-                  <span>{card.label}</span>
-                  <strong>{card.value}</strong>
-                  <p>{card.helper}</p>
-                </article>
-              ))}
-            </div>
+            {isLoadingUser ? (
+              <AdminSkeleton variant="stats" />
+            ) : (
+              <div className="admin_stats">
+                {contentStats.map((card) => (
+                  <article className="admin_stat_card" key={card.label}>
+                    <i className={card.icon} aria-hidden="true"></i>
+                    <span>{card.label}</span>
+                    <strong>{card.value}</strong>
+                    <p>{card.helper}</p>
+                  </article>
+                ))}
+              </div>
+            )}
 
-            <section className="admin_content_grid">
-              {Object.entries(contentSections).map(([id, section]) => (
-                <button
-                  type="button"
-                  className="admin_content_card"
-                  onClick={() => setActiveSection(id)}
-                  key={id}
-                >
-                  <span>{section.eyebrow}</span>
-                  <strong>{section.title}</strong>
-                  <p>{section.description}</p>
-                </button>
-              ))}
-            </section>
+            {isLoadingUser ? (
+              <AdminSkeleton variant="cards" />
+            ) : (
+              <section className="admin_content_grid">
+                {Object.entries(contentSections).map(([id, section]) => (
+                  <button
+                    type="button"
+                    className="admin_content_card"
+                    onClick={() => selectSection(id)}
+                    key={id}
+                  >
+                    <span>{section.eyebrow}</span>
+                    <strong>{section.title}</strong>
+                    <p>{section.description}</p>
+                  </button>
+                ))}
+              </section>
+            )}
           </>
         ) : null}
 
@@ -892,7 +1166,11 @@ export default function AdminDashboard() {
               ))}
             </div>
 
-            {activeSection === "hero" ? (
+            {activeSection === "hero" && isLoadingHero ? (
+              <AdminSkeleton variant="editor" />
+            ) : null}
+
+            {activeSection === "hero" && !isLoadingHero ? (
               <section className="admin_hero_image_editor">
                 <div className="admin_hero_image_preview" style={{ backgroundImage: `url(${heroForm.image || DEFAULT_HERO_IMAGE})` }}>
                   <span>
@@ -966,14 +1244,172 @@ export default function AdminDashboard() {
               </section>
             ) : null}
 
+            {activeSection === "gallery" && isLoadingGallery ? (
+              <AdminSkeleton variant="gallery" />
+            ) : null}
+
+            {activeSection === "gallery" && !isLoadingGallery ? (
+              <section className="admin_gallery_manager">
+                <div className="admin_gallery_toolbar">
+                  <article>
+                    <i className="fas fa-images" aria-hidden="true"></i>
+                    <span>Total Images</span>
+                    <strong>{defaultGalleryItems.length + galleryItems.length}</strong>
+                  </article>
+                  <article>
+                    <i className="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                    <span>Uploaded</span>
+                    <strong>{galleryItems.length}</strong>
+                  </article>
+                  <article>
+                    <i className="fas fa-heart" aria-hidden="true"></i>
+                    <span>Total Likes</span>
+                    <strong>
+                      {[...galleryItems, ...defaultGalleryItems].reduce((total, item) => total + getGalleryLikeCount(item), 0)}
+                    </strong>
+                  </article>
+                </div>
+
+                <div className="admin_gallery_upload_panel">
+                  <div
+                    className={galleryForm.img ? "admin_gallery_preview has_image" : "admin_gallery_preview"}
+                    style={galleryForm.img ? { backgroundImage: `url(${galleryForm.img})` } : undefined}
+                  >
+                    {!galleryForm.img ? (
+                      <div className="admin_gallery_preview_empty">
+                        <i className="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                        <strong>Image preview</strong>
+                        <p>Upload a JPG, PNG, or WebP photo.</p>
+                      </div>
+                    ) : null}
+                    {galleryForm.img ? (
+                      <span>
+                        <i className="fas fa-image" aria-hidden="true"></i>
+                        Preview ready
+                      </span>
+                    ) : null}
+                  </div>
+                  <form className="admin_gallery_form" onSubmit={saveGalleryItem}>
+                    <div className="admin_gallery_form_head">
+                      <div>
+                        <p className="admin_auth_kicker">Upload photo</p>
+                        <h3>Publish a gallery image</h3>
+                      </div>
+                      <label className="admin_gallery_upload_button">
+                        <i
+                          className={
+                            galleryUploadState === "ready"
+                              ? "fas fa-check-circle"
+                              : galleryUploadState === "saved"
+                                ? "fas fa-check-circle"
+                                : galleryUploadState === "error"
+                                  ? "fas fa-exclamation-triangle"
+                                  : "fas fa-cloud-upload-alt"
+                          }
+                          aria-hidden="true"
+                        ></i>
+                        <span>{galleryUploadState === "ready" ? "Ready" : galleryUploadState === "saved" ? "Saved" : galleryUploadState === "error" ? "Retry" : "Upload"}</span>
+                        <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadGalleryImage} />
+                      </label>
+                    </div>
+                    <div className="admin_gallery_fields">
+                      <label>
+                        <span>Image title</span>
+                        <input
+                          type="text"
+                          value={galleryForm.alt}
+                          onChange={(event) => setGalleryForm((current) => ({ ...current, alt: event.target.value }))}
+                          placeholder="Beach sunset frame"
+                        />
+                      </label>
+                      <label>
+                        <span>Location</span>
+                        <input
+                          type="text"
+                          value={galleryForm.location}
+                          onChange={(event) => setGalleryForm((current) => ({ ...current, location: event.target.value }))}
+                          placeholder="Coastal light"
+                        />
+                      </label>
+                      <label>
+                        <span>Mood</span>
+                        <input
+                          type="text"
+                          value={galleryForm.mood}
+                          onChange={(event) => setGalleryForm((current) => ({ ...current, mood: event.target.value }))}
+                          placeholder="Soft morning"
+                        />
+                      </label>
+                      <label>
+                        <span>Initial likes</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={galleryForm.likes}
+                          onChange={(event) => setGalleryForm((current) => ({ ...current, likes: event.target.value }))}
+                        />
+                      </label>
+                    </div>
+                    <button type="submit" disabled={isSavingGallery}>
+                      <i className="fas fa-paper-plane" aria-hidden="true"></i>
+                      {isSavingGallery ? "Publishing..." : "Publish Image"}
+                    </button>
+                    {galleryMessage ? <p className="admin_profile_message">{galleryMessage}</p> : null}
+                  </form>
+                </div>
+
+                <div className="admin_gallery_library">
+                  {[...galleryItems, ...defaultGalleryItems].map((item) => (
+                    <article className="admin_gallery_card" key={item.id}>
+                      <div className="admin_gallery_card_image" style={{ backgroundImage: `url(${item.img})` }}>
+                        <span>{item.source}</span>
+                      </div>
+                      <div className="admin_gallery_card_body">
+                        <div>
+                          <strong>{item.location}</strong>
+                          <p>{item.mood}</p>
+                        </div>
+                        <span className="admin_gallery_like_badge">
+                          <i className="fas fa-heart" aria-hidden="true"></i>
+                          {getGalleryLikeCount(item)}
+                        </span>
+                      </div>
+                      {item.source === "Uploaded" ? (
+                        <div className="admin_gallery_card_actions">
+                          <label>
+                            <span>Likes</span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={item.likes}
+                              onChange={(event) => updateGalleryItemLikes(item.id, event.target.value)}
+                              onBlur={(event) => saveGalleryItemLikes(item.id, event.target.value)}
+                            />
+                          </label>
+                          <button type="button" onClick={() => setGalleryDeleteTarget(item)}>
+                            <i className="fas fa-trash" aria-hidden="true"></i>
+                            Remove
+                          </button>
+                        </div>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
             <div className="admin_editor_note">
               <i className="fas fa-info-circle" aria-hidden="true"></i>
-              <p>{activeSection === "hero" ? "Hero changes are saved to the server and shown on the public home page." : "This dashboard section matches the current website content. Editing controls can be connected next when content APIs are added."}</p>
+              <p>{activeSection === "hero" ? "Hero changes are saved to the server and shown on the public home page." : activeSection === "gallery" ? "Uploaded gallery images and like totals are saved in this browser and appear on the public gallery page." : "This dashboard section matches the current website content. Editing controls can be connected next when content APIs are added."}</p>
             </div>
           </section>
         ) : null}
 
-        {activeSection === "account" ? (
+        {activeSection === "account" && isLoadingUser ? (
+          <AdminSkeleton variant="account" />
+        ) : null}
+
+        {activeSection === "account" && !isLoadingUser ? (
           <section className="admin_account_panel">
             <div className="admin_profile_hero">
               <div className="admin_profile_avatar">

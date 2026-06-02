@@ -8,22 +8,122 @@
         radial-gradient(circle at 80% 18%, rgba(27, 162, 219, 0.12), transparent 28%),
         rgba(244, 243, 238, 0.97);
     backdrop-filter: blur(14px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
     padding: 24px;
+}
+
+.modern_loader_shell{
+    width: min(1120px, 100%);
+    display: grid;
+    gap: 24px;
+}
+
+.modern_loader_nav{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modern_loader_nav span{
+    width: 48px;
+    height: 48px;
+    border-radius: $radius_surface_sm;
+}
+
+.modern_loader_hero{
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    gap: clamp(20px, 4vw, 48px);
+    align-items: center;
+
+    @media #{$md_layout, $sm_layout} {
+        grid-template-columns: 1fr;
+    }
+}
+
+.modern_loader_copy{
+    display: grid;
+    gap: 16px;
+}
+
+.modern_loader_copy > span:not(.modern_loader_logo){
+    height: 22px;
+    border-radius: 999px;
+}
+
+.modern_loader_copy > span:nth-child(2){
+    width: 34%;
+}
+
+.modern_loader_copy > span:nth-child(3){
+    width: 92%;
+    height: 58px;
+    border-radius: $radius_surface_sm;
+}
+
+.modern_loader_copy > span:nth-child(4){
+    width: 72%;
+    height: 58px;
+    border-radius: $radius_surface_sm;
+}
+
+.modern_loader_copy > span:nth-child(5){
+    width: 84%;
+}
+
+.modern_loader_actions{
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+
+    @media #{$large_mobile} {
+        flex-direction: column;
+    }
+}
+
+.modern_loader_actions span{
+    width: 160px;
+    height: 50px;
+    border-radius: $radius_surface_sm;
+
+    @media #{$large_mobile} {
+        width: 100%;
+    }
+}
+
+.modern_loader_visual{
+    min-height: clamp(280px, 34vw, 440px);
+    border-radius: 28px;
+}
+
+.modern_loader_cards{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+
+    @media #{$sm_layout} {
+        grid-template-columns: 1fr;
+    }
+}
+
+.modern_loader_cards span{
+    min-height: 120px;
+    border-radius: $radius_surface;
 }
 
 .modern_loader_card{
     width: min(360px, 100%);
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
     border-radius: $radius_surface;
     background: rgba(255, 255, 255, 0.88);
     box-shadow: $shadow_white_3;
-    padding: 30px;
+    padding: 18px;
     display: grid;
-    grid-template-columns: 58px 1fr;
-    align-items: center;
-    gap: 18px;
+    gap: 12px;
 }
 
 .modern_loader_logo{
@@ -59,12 +159,21 @@
 }
 
 .modern_loader_bar{
-    grid-column: 1 / -1;
     height: 8px;
     border-radius: 999px;
     overflow: hidden;
     background: #dde3ea;
     margin-top: 8px;
+}
+
+.modern_loader_nav span,
+.modern_loader_copy > span:not(.modern_loader_logo),
+.modern_loader_actions span,
+.modern_loader_visual,
+.modern_loader_cards span{
+    background: linear-gradient(90deg, rgba(226, 231, 238, 0.82) 0%, rgba(247, 249, 251, 0.96) 45%, rgba(226, 231, 238, 0.82) 90%);
+    background-size: 220% 100%;
+    animation: homeSkeletonLoading 1.2s ease-in-out infinite;
 }
 
 .modern_loader_bar span{
@@ -86,6 +195,16 @@
     }
 }
 
+@keyframes homeSkeletonLoading {
+    0%{
+        background-position: 220% 0;
+    }
+
+    100%{
+        background-position: -220% 0;
+    }
+}
+
 html.dark,
 html.dark body{
     background: #212428;
@@ -100,6 +219,20 @@ html.dark .modern_loader_card,
 body.dark .modern_loader_card{
     background: $background_color_1;
     box-shadow: $shadow_1;
+}
+
+html.dark .modern_loader_nav span,
+html.dark .modern_loader_copy > span:not(.modern_loader_logo),
+html.dark .modern_loader_actions span,
+html.dark .modern_loader_visual,
+html.dark .modern_loader_cards span,
+body.dark .modern_loader_nav span,
+body.dark .modern_loader_copy > span:not(.modern_loader_logo),
+body.dark .modern_loader_actions span,
+body.dark .modern_loader_visual,
+body.dark .modern_loader_cards span{
+    background: linear-gradient(90deg, rgba(25, 27, 30, 0.92) 0%, rgba(38, 42, 47, 0.95) 45%, rgba(25, 27, 30, 0.92) 90%);
+    background-size: 220% 100%;
 }
 
 html.dark .modern_loader_text strong,
