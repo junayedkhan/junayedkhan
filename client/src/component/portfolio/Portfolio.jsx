@@ -276,7 +276,10 @@ const Portfolio = () => {
                                 Load More Memories
                             </button>
                         ) : !isGalleryLoading && galleryContent.length ? (
-                            <p className="gallery_end">All memories loaded</p>
+                            <p className="gallery_end">
+                                <i className="fas fa-check" aria-hidden="true"></i>
+                                <span>All memories loaded</span>
+                            </p>
                         ) : null}
                     </div>
                 </div>
