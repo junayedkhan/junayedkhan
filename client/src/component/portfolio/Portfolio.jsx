@@ -2,45 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import api from '../../utils/api';
 import { ImageWithLoader } from '../ImageWithLoader';
-import img01 from "../../assets/image/portfolio-01.jpg";
-import img02 from "../../assets/image/portfolio-02.jpg";
-import img03 from "../../assets/image/portfolio-03.jpg";
-import img04 from "../../assets/image/portfolio-04.jpg";
-import img05 from "../../assets/image/portfolio-05.jpg";
-import img06 from "../../assets/image/portfolio-06.jpg";
-import img07 from "../../assets/image/blog-02.jpg";
-import img08 from "../../assets/image/blog-03.jpg";
-
-const galleryImages = [
-    img01,
-    img02,
-    img03,
-    img04,
-    img05,
-    img06,
-    img07,
-    img08
-];
-
-const galleryAlts = [
-    "portfolio project preview one",
-    "portfolio project preview two",
-    "portfolio project preview three",
-    "portfolio project preview four",
-    "portfolio project preview five",
-    "portfolio project preview six",
-    "travel journal preview seven",
-    "travel journal preview eight"
-];
-
-const defaultGalleryContent = Array.from({ length: 40 }, (_, index) => ({
-    id: `${index + 1}`,
-    img: galleryImages[index % galleryImages.length],
-    alt: galleryAlts[index % galleryAlts.length],
-    likes: 20 + ((index + 1) * 3),
-    location: ["Coastal light", "Old street", "Quiet mountain", "City corner"][index % 4],
-    mood: ["Soft morning", "Warm evening", "Slow walk", "Open sky"][index % 4]
-}));
 
 const ITEMS_PER_PAGE = 8;
 const LIKE_STORAGE_KEY = "gallery-likes";
@@ -73,12 +34,10 @@ const Portfolio = () => {
             return {};
         }
     });
-    const [adminGalleryItems, setAdminGalleryItems] = useState(() => {
-        return [];
-    });
+    const [adminGalleryItems, setAdminGalleryItems] = useState([]);
     const [isGalleryLoading, setIsGalleryLoading] = useState(true);
 
-    const galleryContent = [...adminGalleryItems, ...defaultGalleryContent];
+    const galleryContent = adminGalleryItems;
     const visibleGallery = galleryContent.slice(0, visibleCount);
     const hasMoreItems = visibleCount < galleryContent.length;
 
@@ -300,6 +259,15 @@ const Portfolio = () => {
                                 </article>
                             </div>
                         ))}
+                        {!isGalleryLoading && !galleryContent.length ? (
+                            <div className="col-12">
+                                <div className="gallery_empty_state">
+                                    <i className="fas fa-images" aria-hidden="true"></i>
+                                    <strong>No gallery images yet</strong>
+                                    <span>Uploaded images from the admin panel will appear here.</span>
+                                </div>
+                            </div>
+                        ) : null}
                     </div>
 
                     <div className="gallery_actions">
@@ -307,7 +275,7 @@ const Portfolio = () => {
                             <button type="button" className="gallery_load_more" onClick={handleLoadMore}>
                                 Load More Memories
                             </button>
-                        ) : !isGalleryLoading ? (
+                        ) : !isGalleryLoading && galleryContent.length ? (
                             <p className="gallery_end">All memories loaded</p>
                         ) : null}
                     </div>

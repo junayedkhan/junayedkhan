@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { authHeaders, clearToken } from "../utils/api";
-import portfolio01 from "../assets/image/portfolio-01.jpg";
-import portfolio02 from "../assets/image/portfolio-02.jpg";
-import portfolio03 from "../assets/image/portfolio-03.jpg";
-import portfolio04 from "../assets/image/portfolio-04.jpg";
-import portfolio05 from "../assets/image/portfolio-05.jpg";
-import portfolio06 from "../assets/image/portfolio-06.jpg";
-import blog02 from "../assets/image/blog-02.jpg";
-import blog03 from "../assets/image/blog-03.jpg";
 
 const adminSections = [
   { id: "overview", label: "Overview", icon: "fas fa-chart-line" },
@@ -21,7 +13,7 @@ const adminSections = [
 ];
 
 const contentStats = [
-  { label: "Gallery Items", value: "40", icon: "fas fa-images", helper: "Shown in batches of 10" },
+  { label: "Gallery Items", value: "Live", icon: "fas fa-images", helper: "Loaded from MongoDB" },
   { label: "Travel Blogs", value: "9", icon: "fas fa-newspaper", helper: "Published article cards" },
   { label: "Resume Tabs", value: "4", icon: "fas fa-layer-group", helper: "Info, education, skills, experience" },
   { label: "Social Links", value: "3", icon: "fas fa-share-alt", helper: "Facebook, Twitter, LinkedIn" },
@@ -31,8 +23,8 @@ const contentSections = {
   hero: {
     eyebrow: "Landing content",
     title: "Home",
-    description: "Main introduction: Junayed, Web Developer/Designer, profile photo, and social links.",
-    items: ["Name: Junayed", "Roles: Developer, Designer", "Image: assets/image/home.png", "CTA area: social profile links"],
+    description: "Main introduction, roles, description, and profile image are loaded from the backend.",
+    items: ["Name from server", "Roles from server", "Image from MongoDB setting", "CTA area: social profile links"],
   },
   resume: {
     eyebrow: "About page",
@@ -43,8 +35,8 @@ const contentSections = {
   gallery: {
     eyebrow: "Portfolio page",
     title: "Gallery Library",
-    description: "Gallery uses six source images repeated into 40 public items with local like counts.",
-    items: ["6 source images", "40 gallery cards", "Image modal with zoom controls", "Like counts stored in browser"],
+    description: "Gallery images, captions, and like counts are loaded from MongoDB.",
+    items: ["Uploaded images only", "MongoDB gallery cards", "Image modal with zoom controls", "Like counts saved on server"],
   },
   blogs: {
     eyebrow: "Journal page",
@@ -60,27 +52,15 @@ const contentSections = {
   },
 };
 
-const DEFAULT_HERO_IMAGE = "assets/image/home.png";
 const DEFAULT_HERO_CONTENT = {
-  name: "Junayed",
-  designation: "Developer, Designer",
-  description: "I build clean, responsive web experiences with thoughtful motion, clear interfaces, and careful attention to every interaction.",
-  image: DEFAULT_HERO_IMAGE,
+  name: "",
+  designation: "",
+  description: "",
+  image: "",
 };
 const MAX_HERO_UPLOAD_SIZE = 2.5 * 1024 * 1024;
 const MAX_GALLERY_UPLOAD_SIZE = 3 * 1024 * 1024;
 const ADMIN_ACTIVE_SECTION_KEY = "admin-active-section";
-
-const defaultGalleryImages = [portfolio01, portfolio02, portfolio03, portfolio04, portfolio05, portfolio06, blog02, blog03];
-const defaultGalleryItems = defaultGalleryImages.map((image, index) => ({
-  id: `${index + 1}`,
-  img: image,
-  alt: `gallery preview ${index + 1}`,
-  likes: 20 + ((index + 1) * 3),
-  location: ["Coastal light", "Old street", "Quiet mountain", "City corner"][index % 4],
-  mood: ["Soft morning", "Warm evening", "Slow walk", "Open sky"][index % 4],
-  source: "Default",
-}));
 
 const emptyGalleryForm = {
   img: "",
@@ -209,14 +189,16 @@ export default function AdminDashboard() {
       .get("/site/admin/hero", { headers: authHeaders() })
       .then((res) => {
         if (!active) return;
-        const content = res.data.content || res.data;
+        const content = Object.prototype.hasOwnProperty.call(res.data || {}, "content")
+          ? res.data.content
+          : res.data;
         setHeroForm({
-          name: content.name || DEFAULT_HERO_CONTENT.name,
-          designation: Array.isArray(content.designation)
+          name: content?.name || DEFAULT_HERO_CONTENT.name,
+          designation: Array.isArray(content?.designation)
             ? content.designation.join(", ")
             : DEFAULT_HERO_CONTENT.designation,
-          description: content.description || DEFAULT_HERO_CONTENT.description,
-          image: content.image || DEFAULT_HERO_IMAGE,
+          description: content?.description || DEFAULT_HERO_CONTENT.description,
+          image: content?.image || DEFAULT_HERO_CONTENT.image,
         });
       })
       .catch(() => {
@@ -537,13 +519,15 @@ export default function AdminDashboard() {
         },
         { headers: authHeaders() }
       );
-      const content = res.data.content || res.data;
-      const serverSupportsFullHeroCrud = Boolean(content.name || content.description || content.designation);
+      const content = Object.prototype.hasOwnProperty.call(res.data || {}, "content")
+        ? res.data.content
+        : res.data;
+      const serverSupportsFullHeroCrud = Boolean(content?.name || content?.description || content?.designation);
 
       if (!serverSupportsFullHeroCrud) {
         setHeroForm((current) => ({
           ...current,
-          image: content.image || current.image,
+          image: content?.image || current.image,
         }));
         setHeroImageMessage("Server is still using the old image-only hero API. Redeploy the backend to update name, roles, and description.");
         setHeroUploadState("error");
@@ -551,12 +535,12 @@ export default function AdminDashboard() {
       }
 
       setHeroForm({
-        name: content.name || DEFAULT_HERO_CONTENT.name,
-        designation: Array.isArray(content.designation)
+        name: content?.name || DEFAULT_HERO_CONTENT.name,
+        designation: Array.isArray(content?.designation)
           ? content.designation.join(", ")
           : DEFAULT_HERO_CONTENT.designation,
-        description: content.description || DEFAULT_HERO_CONTENT.description,
-        image: content.image || DEFAULT_HERO_IMAGE,
+        description: content?.description || DEFAULT_HERO_CONTENT.description,
+        image: content?.image || DEFAULT_HERO_CONTENT.image,
       });
       setHeroImageMessage(res.data.message);
       setHeroUploadState("saved");
@@ -579,14 +563,16 @@ export default function AdminDashboard() {
 
     try {
       const res = await api.delete("/site/admin/hero", { headers: authHeaders() });
-      const content = res.data.content || res.data;
+      const content = Object.prototype.hasOwnProperty.call(res.data || {}, "content")
+        ? res.data.content
+        : res.data;
       setHeroForm({
-        name: content.name || DEFAULT_HERO_CONTENT.name,
-        designation: Array.isArray(content.designation)
+        name: content?.name || DEFAULT_HERO_CONTENT.name,
+        designation: Array.isArray(content?.designation)
           ? content.designation.join(", ")
           : DEFAULT_HERO_CONTENT.designation,
-        description: content.description || DEFAULT_HERO_CONTENT.description,
-        image: content.image || DEFAULT_HERO_IMAGE,
+        description: content?.description || DEFAULT_HERO_CONTENT.description,
+        image: content?.image || DEFAULT_HERO_CONTENT.image,
       });
       setHeroImageMessage(res.data.message);
       setHeroUploadState("idle");
@@ -1172,11 +1158,22 @@ export default function AdminDashboard() {
 
             {activeSection === "hero" && !isLoadingHero ? (
               <section className="admin_hero_image_editor">
-                <div className="admin_hero_image_preview" style={{ backgroundImage: `url(${heroForm.image || DEFAULT_HERO_IMAGE})` }}>
-                  <span>
-                    <i className="fas fa-image" aria-hidden="true"></i>
-                    Live preview
-                  </span>
+                <div
+                  className={heroForm.image ? "admin_hero_image_preview has_image" : "admin_hero_image_preview"}
+                  style={heroForm.image ? { backgroundImage: `url(${heroForm.image})` } : undefined}
+                >
+                  {heroForm.image ? (
+                    <span>
+                      <i className="fas fa-image" aria-hidden="true"></i>
+                      Live preview
+                    </span>
+                  ) : (
+                    <div className="admin_gallery_preview_empty">
+                      <i className="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                      <strong>Hero image preview</strong>
+                      <p>Upload an image to publish the hero section.</p>
+                    </div>
+                  )}
                 </div>
                 <form className="admin_hero_image_form" onSubmit={saveHeroImage}>
                   <div className="admin_hero_fields">
@@ -1186,7 +1183,7 @@ export default function AdminDashboard() {
                         type="text"
                         value={heroForm.name}
                         onChange={(e) => setHeroForm((current) => ({ ...current, name: e.target.value }))}
-                        placeholder="Junayed"
+                        placeholder="Hero display name"
                         required
                       />
                     </label>
@@ -1196,7 +1193,7 @@ export default function AdminDashboard() {
                         type="text"
                         value={heroForm.designation}
                         onChange={(e) => setHeroForm((current) => ({ ...current, designation: e.target.value }))}
-                        placeholder="Developer, Designer"
+                        placeholder="Travel Writer, Photographer"
                         required
                       />
                     </label>
@@ -1254,7 +1251,7 @@ export default function AdminDashboard() {
                   <article>
                     <i className="fas fa-images" aria-hidden="true"></i>
                     <span>Total Images</span>
-                    <strong>{defaultGalleryItems.length + galleryItems.length}</strong>
+                    <strong>{galleryItems.length}</strong>
                   </article>
                   <article>
                     <i className="fas fa-cloud-upload-alt" aria-hidden="true"></i>
@@ -1265,7 +1262,7 @@ export default function AdminDashboard() {
                     <i className="fas fa-heart" aria-hidden="true"></i>
                     <span>Total Likes</span>
                     <strong>
-                      {[...galleryItems, ...defaultGalleryItems].reduce((total, item) => total + getGalleryLikeCount(item), 0)}
+                      {galleryItems.reduce((total, item) => total + getGalleryLikeCount(item), 0)}
                     </strong>
                   </article>
                 </div>
@@ -1359,7 +1356,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="admin_gallery_library">
-                  {[...galleryItems, ...defaultGalleryItems].map((item) => (
+                  {galleryItems.map((item) => (
                     <article className="admin_gallery_card" key={item.id}>
                       <div className="admin_gallery_card_image" style={{ backgroundImage: `url(${item.img})` }}>
                         <span>{item.source}</span>
@@ -1394,6 +1391,13 @@ export default function AdminDashboard() {
                       ) : null}
                     </article>
                   ))}
+                  {!galleryItems.length ? (
+                    <div className="admin_gallery_empty_state">
+                      <i className="fas fa-images" aria-hidden="true"></i>
+                      <strong>No uploaded gallery images</strong>
+                      <span>Publish an image above to add it to the website.</span>
+                    </div>
+                  ) : null}
                 </div>
               </section>
             ) : null}
