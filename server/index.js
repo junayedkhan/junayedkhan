@@ -23,13 +23,22 @@ const validateEnv = () => {
 
 app.use(cors({
   origin(origin, callback) {
-    const allowedOrigins = (process.env.CLIENT_URL || "")
+    const defaultClientOrigins = [
+      "https://junayedkhan.com",
+      "https://www.junayedkhan.com",
+      "https://junayedkhan000.netlify.app"
+    ];
+    const configuredClientOrigins = (process.env.CLIENT_URL || "")
       .split(",")
       .map((url) => url.trim().replace(/\/$/, ""))
       .filter(Boolean);
+    const allowedOrigins = Array.from(new Set([
+      ...defaultClientOrigins,
+      ...configuredClientOrigins
+    ]));
     const isLocalDev = !origin || /^http:\/\/localhost:\d+$/.test(origin) || /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
 
-    if (!allowedOrigins.length || allowedOrigins.includes(origin) || isLocalDev) {
+    if (allowedOrigins.includes(origin) || isLocalDev) {
       return callback(null, true);
     }
 
