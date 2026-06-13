@@ -12,6 +12,10 @@ export default function AdminLogin() {
   const [authMode, setAuthMode] = useState("login");
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
 
+  const clearMessage = () => {
+    if (message) setMessage("");
+  };
+
   useEffect(() => {
     let active = true;
 
@@ -98,7 +102,10 @@ export default function AdminLogin() {
               <input
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  clearMessage();
+                  setUsername(e.target.value);
+                }}
                 autoComplete="username"
                 required
               />
@@ -111,7 +118,10 @@ export default function AdminLogin() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  clearMessage();
+                  setEmail(e.target.value);
+                }}
                 autoComplete="email"
                 required
               />
@@ -123,7 +133,10 @@ export default function AdminLogin() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                clearMessage();
+                setPassword(e.target.value);
+              }}
               autoComplete="current-password"
               minLength={8}
               required

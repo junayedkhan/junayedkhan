@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const NotFound = () => {
     return (
-        <section className="container">
+        <section className="mx-auto max-w-5xl px-4">
             <div className="tm_error">
                 <div className="tm_error_inner">
                     <h1>404!</h1>

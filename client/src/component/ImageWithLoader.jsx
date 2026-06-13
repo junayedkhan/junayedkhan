@@ -30,13 +30,13 @@ export const ImageWithLoader = ({ src, alt, className = "", wrapperClassName = "
     }, [src, syncLoadedState]);
 
     return (
-        <span className={`image_loader ${loaded ? "loaded" : ""} ${wrapperClassName}`}>
-            <span className="image_loader_skeleton"></span>
+        <span className={`image_loader relative block h-full w-full overflow-hidden ${loaded ? "loaded" : "is-loading"} ${wrapperClassName}`}>
+            {!loaded ? <span className="image_loader_skeleton absolute inset-0"></span> : null}
             <img
                 ref={imgRef}
                 src={src}
                 alt={alt}
-                className={className}
+                className={`block h-full w-full object-cover transition duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
                 style={style}
                 loading="lazy"
                 onLoad={syncLoadedState}
@@ -63,10 +63,10 @@ export const BackgroundImageWithLoader = ({ src, className = "", children }) => 
 
     return (
         <div
-            className={`background_image_loader ${loaded ? "loaded" : ""} ${className}`}
+            className={`background_image_loader relative block h-full w-full overflow-hidden bg-cover bg-center ${loaded ? "loaded" : "is-loading"} ${className}`}
             style={loaded ? { backgroundImage: `url(${src})` } : undefined}
         >
-            <span className="image_loader_skeleton"></span>
+            {!loaded ? <span className="image_loader_skeleton absolute inset-0"></span> : null}
             {children}
         </div>
     );

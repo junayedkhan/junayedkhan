@@ -7,6 +7,7 @@ import AdminLogin from "../pages/AdminLogin";
 import AdminForgotPassword from "../pages/AdminForgotPassword";
 import AdminResetPassword from "../pages/AdminResetPassword";
 import AdminDashboard from "../pages/AdminDashboard";
+import AdminAddPost from "../pages/AdminAddPost";
 import PrivateRoute from "../utils/PrivateRoute";
 
 const Router = () => {
@@ -29,6 +30,15 @@ const Router = () => {
         element={
           <PrivateRoute>
             <AdminDashboard />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/admin/posts/new"
+        element={
+          <PrivateRoute>
+            <AdminAddPost />
           </PrivateRoute>
         }
       />

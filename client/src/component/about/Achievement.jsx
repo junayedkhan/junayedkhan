@@ -9,15 +9,15 @@ const AchievementContent = [
 
 const Achievement = () => {
     return (
-        <div className="row">
+        <div className="grid grid-cols-2 gap-4">
             {AchievementContent.map((val, index) => {
                 return(
-                <div className="col-6" key={index}>
-                    <div className="stats_box">
-                        <h3>{val.number}</h3>
-                        <p>
+                <div key={index}>
+                    <div className="stats_box h-full rounded-3xl bg-vellum/80 p-5 shadow-soft ring-1 ring-white/80">
+                        <h3 className="text-4xl font-black text-brass">{val.number}</h3>
+                        <p className="mt-2 text-xs font-extrabold uppercase leading-5 tracking-wide text-slate-600">
                             {val.text_1}
-                            <span className="d-block">{val.text_2}</span>
+                            <span className="block">{val.text_2}</span>
                         </p>
                     </div>
                 </div>

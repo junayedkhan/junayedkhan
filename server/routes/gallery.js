@@ -25,8 +25,13 @@ const serializeGalleryImage = (image) => ({
   createdAt: image.createdAt
 })
 
+const setPublicDataCache = (res) => {
+  res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
+}
+
 router.get('/', async (req, res) => {
   try {
+    setPublicDataCache(res)
     const images = await GalleryImage.find().sort({ createdAt: -1 }).lean()
     res.json({ images: images.map(serializeGalleryImage) })
   } catch (err) {

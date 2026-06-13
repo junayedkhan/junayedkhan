@@ -55,7 +55,10 @@ export default function AdminResetPassword() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                if (message) setMessage("");
+                setPassword(e.target.value);
+              }}
               autoComplete="new-password"
               minLength={8}
               required
@@ -67,7 +70,10 @@ export default function AdminResetPassword() {
             <input
               type="password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                if (message) setMessage("");
+                setConfirmPassword(e.target.value);
+              }}
               autoComplete="new-password"
               minLength={8}
               required

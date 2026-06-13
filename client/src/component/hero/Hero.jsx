@@ -2,8 +2,28 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Typewriter } from 'react-simple-typewriter'
 import Social from '../Social'
-import { BackgroundImageWithLoader } from '../ImageWithLoader'
 import api from '../../utils/api'
+import Icon from '../Icon'
+import { ImageWithLoader } from '../ImageWithLoader'
+
+const HERO_CACHE_KEY = "site-hero-content"
+
+const readHeroCache = () => {
+    try {
+        const cached = JSON.parse(localStorage.getItem(HERO_CACHE_KEY))
+        return cached?.content ? normalizeHeroContent(cached.content) : null
+    } catch {
+        return null
+    }
+}
+
+const writeHeroCache = (content) => {
+    try {
+        localStorage.setItem(HERO_CACHE_KEY, JSON.stringify({ content, savedAt: Date.now() }))
+    } catch {
+        // Cache is optional. Rendering should keep working if storage is unavailable.
+    }
+}
 
 const normalizeHeroContent = (content) => ({
     name: content?.name || "",
@@ -15,14 +35,16 @@ const normalizeHeroContent = (content) => ({
 })
 
 const Hero = () => {
-    const [content, setContent] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const [content, setContent] = useState(() => readHeroCache())
+    const [isLoading, setIsLoading] = useState(() => !readHeroCache())
     const heroRoles = content?.designation || []
-    const heroDescription = content?.description || ""
+    const heroDescription = content?.description || "I create clean digital experiences, collect travel memories, and share the stories behind every frame."
+    const heroImage = content?.image || "/assets/image/home.png"
+    const heroName = content?.name || "Kalvin"
 
     useEffect(() => {
         let active = true
-        setIsLoading(true)
+        if (!content) setIsLoading(true)
 
         api
             .get('/site/hero')
@@ -31,11 +53,13 @@ const Hero = () => {
                     ? res.data.content
                     : res.data
                 if (active && nextContent) {
-                    setContent(normalizeHeroContent(nextContent))
+                    const normalizedContent = normalizeHeroContent(nextContent)
+                    setContent(normalizedContent)
+                    writeHeroCache(normalizedContent)
                 }
             })
             .catch(() => {
-                if (active) setContent(null)
+                if (active && !content) setContent(null)
             })
             .finally(() => {
                 if (active) setIsLoading(false)
@@ -47,13 +71,11 @@ const Hero = () => {
     }, [])
 
     return (
-        <section className="hero">
-            <div className="hero_art hero_art_left" aria-hidden="true"></div>
-            <div className="hero_art hero_art_right" aria-hidden="true"></div>
+        <section className="hero relative isolate min-h-screen overflow-hidden">
             <div className="main_content">
-                <div className="container">
-                    <div className="row about_content">
-                        <div className="col-lg-7 col-md-12 col-12 order-2 order-lg-1">
+                <div className="mx-auto max-w-7xl">
+                    <div className="about_content hero_minimal_content relative z-10">
+                        <div className="hero_panel">
                             <div className="text_content">
                                 {isLoading || !content ? (
                                     <div className="hero_content_skeleton" aria-hidden="true">
@@ -61,18 +83,21 @@ const Hero = () => {
                                         <span></span>
                                         <span></span>
                                         <span></span>
+                                        <span></span>
+                                        <span></span>
                                     </div>
                                 ) : (
                                     <>
-                                        <span className="subtitle">Travel stories and personal moments</span>
-                                        <h1 className="title">
-                                            A soulful travel journal by <span className="text">{content?.name || "..."}</span>
+                                        <span className="hero_eyebrow inline-flex items-center justify-center rounded-full text-[11px] font-extrabold uppercase tracking-[.18em]">
+                                            Portfolio / Travel / Journal
+                                        </span>
+                                        <h1 className="title max-w-4xl text-balance text-[2.65rem] font-black leading-[1.02] text-ink sm:text-[3.6rem] md:text-[4.25rem] lg:text-[5rem]">
+                                            Hi! I'm <span className="text text-personal">{heroName}</span>.
                                         </h1>
                                         {heroRoles.length ? (
-                                            <p className="designation">
-                                                Personal
+                                            <p className="designation text-lg font-bold text-ink sm:text-xl md:text-2xl">
                                                 <Typewriter
-                                                    words={heroRoles.map((role) => ` ${role}`)}
+                                                    words={heroRoles}
                                                     loop={true} cursor cursorStyle='_'
                                                     typeSpeed={100}
                                                     deleteSpeed={50}
@@ -80,60 +105,45 @@ const Hero = () => {
                                                 />
                                             </p>
                                         ) : null}
+                                        <p className="hero_intro max-w-2xl text-sm font-medium leading-7 text-vellum/85 sm:text-base">
+                                            {heroDescription}
+                                        </p>
                                         {/* == type write end == */}
                                         {/* == title area end == */}
-                                        {heroDescription ? <p className="description">{heroDescription}</p> : null}
                                     </>
                                 )}
                                 {/* == description area end == */}
-                                <div className="hero_actions" aria-label="Primary actions">
-                                    <Link className="hero_btn hero_btn_primary" to="/gallery">
+                                <div className="hero_actions flex flex-wrap gap-3" aria-label="Primary actions">
+                                    <Link className="hero_btn hero_btn_primary inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full bg-ink px-6 text-[13px] font-extrabold uppercase tracking-wide text-vellum shadow-button transition duration-300 hover:-translate-y-1 hover:bg-personal hover:text-white" to="/gallery">
                                         <span>View Gallery</span>
-                                        <i className="fas fa-arrow-right" aria-hidden="true"></i>
+                                        <Icon icon="arrow-right" />
                                     </Link>
-                                    <Link className="hero_btn hero_btn_secondary" to="/contact">
-                                        <span>Contact With Me</span>
+                                    <Link className="hero_btn hero_btn_secondary inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-white/70 px-6 text-[13px] font-extrabold uppercase tracking-wide text-ink shadow-soft transition duration-300 hover:-translate-y-1 hover:bg-ink hover:text-vellum" to="/contact">
+                                        <span>Contact Me</span>
                                     </Link>
                                 </div>
-                                <div className="hero_highlights" aria-label="Portfolio highlights">
-                                    <span>Travel Stories</span>
-                                    <span>Personal Notes</span>
-                                    <span>Photo Memories</span>
+                                <div className="hero_social_wrap">
+                                    <Social />
                                 </div>
                             </div>
-                            <div className="row">
-                                <Social />
+                            <div className="hero_visual" aria-hidden={isLoading || !content ? "true" : undefined}>
+                                {isLoading || !content ? (
+                                    <div className="hero_image_skeleton"></div>
+                                ) : (
+                                    <figure className="hero_image_card">
+                                        <ImageWithLoader
+                                            src={heroImage}
+                                            alt={`${heroName} portrait`}
+                                            wrapperClassName="hero_image_loader"
+                                        />
+                                        <figcaption className="hero_visual_label">
+                                            <span>Featured Story</span>
+                                            <strong>{heroName}</strong>
+                                        </figcaption>
+                                    </figure>
+                                )}
                             </div>
                             {/* == social area end == */}
-                        </div>
-                        <div className="col-lg-5 col-md-12 col-12 order-1 order-lg-2 justify-content-center d-flex justify-content-lg-end justify-content-center">
-                            <div className="hero_visual" aria-label="Profile photo">
-                                <div className="hero_visual_label">
-                                    <span>Featured</span>
-                                    <strong>Portfolio</strong>
-                                </div>
-                                <article className="card gallery_card hero_gallery_card">
-                                    <div className="inner">
-                                        <div className="gallery_thumbnail hero_gallery_thumbnail">
-                                            {content?.image ? (
-                                                <BackgroundImageWithLoader className="hero_gallery_bg" src={content.image} />
-                                            ) : (
-                                                <span className="hero_image_skeleton" aria-hidden="true"></span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </article>
-                                <div className="hero_stats" aria-label="Quick profile stats">
-                                    <div>
-                                        <strong>40+</strong>
-                                        <span>Gallery pieces</span>
-                                    </div>
-                                    <div>
-                                        <strong>6+</strong>
-                                        <span>Travel notes</span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

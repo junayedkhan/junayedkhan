@@ -6,6 +6,7 @@ import About from '../component/about/About'
 import Portfolio from '../component/portfolio/Portfolio'
 import Blogs from '../component/blogs/Blogs'
 import Contact from '../component/contact/Contact'
+import Icon from '../component/Icon'
 
 const getStoredDarkMode = () => {
     try {
@@ -19,11 +20,6 @@ const Home = () => {
 
     const location = useLocation();
     const navigate = useNavigate();
-    const [isOpen,setIsOpen] = useState(false);
-    const openMenu= ()=> setIsOpen(!isOpen);
-    const [isMobileNav, setIsMobileNav] = useState(
-        () => typeof window !== "undefined" && window.matchMedia("(max-width: 1199px)").matches
-    );
 
 
     // === dark mode area start === //
@@ -42,46 +38,19 @@ const Home = () => {
     }, [darkMode]);
     // === dark mode area end === //
 
-    useEffect(() => {
-        const mq = window.matchMedia("(max-width: 1199px)");
-        const onChange = () => setIsMobileNav(mq.matches);
-        onChange();
-        mq.addEventListener("change", onChange);
-        return () => mq.removeEventListener("change", onChange);
-    }, []);
-
     // Reset scroll position when location changes
     useEffect(() => {
-        // Smooth scroll to top with animation
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, left: 0 });
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
     }, [location.pathname]);
 
-    useEffect(() => {
-        if (isMobileNav && isOpen) {
-            document.documentElement.style.overflow = "hidden";
-            document.body.style.overflow = "hidden";
-        } else {
-            document.documentElement.style.overflow = "";
-            document.body.style.overflow = "";
-        }
-        return () => {
-            document.documentElement.style.overflow = "";
-            document.body.style.overflow = "";
-        };
-    }, [isMobileNav, isOpen]);
-
     const nav_item = [
-        { menuName: "home", icon: "fas fa-home", path: "/"},
-        { menuName: "about", icon: "fas fa-user", path: "/about"},
-        { menuName: "gallery", icon: "fas fa-images", path: "/gallery", aliases: ["/portfolio"]},
-        { menuName: "blogs", icon: "fas fa-envelope-open", path: "/blogs", aliases: ["/blogs/"]},
-        { menuName: "contact", icon: "fas fa-comments", path: "/contact"},
+        { menuName: "home", icon: "home", path: "/"},
+        { menuName: "about", icon: "user", path: "/about"},
+        { menuName: "gallery", icon: "images", path: "/gallery", aliases: ["/portfolio"]},
+        { menuName: "blogs", icon: "mail-open", path: "/blogs", aliases: ["/blogs/"]},
+        { menuName: "contact", icon: "comments", path: "/contact"},
     ]
 
     const selectedIndex = Math.max(
@@ -92,13 +61,10 @@ const Home = () => {
 
     const handleTabSelect = (index) => {
         const path = nav_item[index].path;
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
         if (path !== location.pathname) {
-            // Smooth scroll to top with animation
-            window.scrollTo({
-                top: 0,
-                left: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, left: 0 });
             document.documentElement.scrollTop = 0;
             document.body.scrollTop = 0;
             navigate(path);
@@ -106,35 +72,25 @@ const Home = () => {
     };
 
     return (
-        <main className="websfolio_th">
+        <main className={`websfolio_th min-h-screen bg-[radial-gradient(circle_at_12%_8%,rgba(183,121,31,.16),transparent_25%),radial-gradient(circle_at_88%_18%,rgba(15,118,110,.16),transparent_24%),linear-gradient(120deg,#fffaf0,#f4f3ee)] text-ink dark:bg-[#15181d] ${selectedIndex === 0 ? "home_active" : ""}`}>
             <>
                 <button
                     type="button"
-                    className="dark_and_light_btn"
+                    className="dark_and_light_btn fixed right-4 top-4 z-[2100] grid h-12 w-12 place-items-center rounded-full border border-white/50 bg-ink text-vellum shadow-button transition duration-300 hover:-translate-y-1"
                     onClick={()=> setDarkMode(!darkMode)}
                     aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
                 >
-                    {darkMode ?
-                    (<i className="fas fa-sun" style={{color: "#c4cfde"}} aria-hidden="true"></i>) :
-                    (<i className="fas fa-moon" style={{color: "#0b2c1f"}} aria-hidden="true"></i>)}
+                    {darkMode ? <Icon icon="sun" /> : <Icon icon="moon" />}
                 </button>
                 {/* == dark mode button end == */}
                 <Tabs selectedIndex={selectedIndex} onSelect={handleTabSelect}>
-                    {isMobileNav && isOpen ? (
-                        <button
-                            type="button"
-                            className="nav_backdrop"
-                            aria-label="Close menu"
-                            onClick={() => setIsOpen(false)}
-                        />
-                    ) : null}
-                    <div className={isOpen===false ? "nav_menu" : "nav_menu active" }>
-                        <TabList>
+                    <div className="nav_menu fixed inset-x-0 top-4 z-[2000] flex justify-center px-3 transition duration-500">
+                        <TabList className="m-0 flex list-none flex-wrap items-center justify-center gap-2 rounded-full border border-white/25 bg-ink/55 p-2 shadow-classic backdrop-blur-xl">
                             {nav_item.map((val, index) => {
                             return(
-                            <Tab key={index} className="nav_item" onClick={openMenu}>
-                                <i className={val.icon} id="icon" aria-hidden="true"></i>
-                                <span className="tooltiptext">{val.menuName}</span>
+                            <Tab key={index} className="nav_item flex h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-white/12 px-4 text-vellum ring-1 ring-white/15 transition duration-300 hover:-translate-y-1 hover:bg-white hover:text-ink">
+                                <Icon icon={val.icon} />
+                                <span className="tooltiptext hidden text-xs font-extrabold uppercase tracking-wide sm:inline">{val.menuName}</span>
                             </Tab>
                             )
                             })}
@@ -143,26 +99,14 @@ const Home = () => {
                     {isBlogDetailsPage ? (
                         <button
                             type="button"
-                            className="nav_blog_back"
+                            className="nav_blog_back fixed left-4 top-4 z-[2100] inline-flex h-12 items-center gap-2 rounded-full bg-ink px-4 text-sm font-bold text-vellum shadow-button"
                             onClick={() => navigate("/blogs")}
                             aria-label="Back to all blogs"
                         >
-                            <i className="fas fa-arrow-left" aria-hidden="true"></i>
+                            <Icon icon="arrow-left" />
                             <span>All blogs</span>
                         </button>
                     ) : null}
-                    <button
-                        type="button"
-                        className={isOpen===false ? "hamburger" : "hamburger active" }
-                        onClick={openMenu}
-                        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-                        aria-expanded={isOpen}
-                    >
-                        <span className="bar"></span>
-                        <span className="bar"></span>
-                        <span className="bar"></span>
-                    </button>
-                    {/* == mobile nev button == */}
                     {/* end menu content == */}
                     <TabPanel>
                         <Hero />

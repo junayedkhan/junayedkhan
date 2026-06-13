@@ -1,0 +1,38 @@
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: #f4f3ee;
+    color: #102a2a;
+    font-family: var(--font-sans);
+  }
+
+  #root {
+    min-height: 100vh;
+    isolation: isolate;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  img {
+    display: block;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid #f4f3ee;
+    border-radius: 999px;
+    background: #0f766e;
+  }
+}

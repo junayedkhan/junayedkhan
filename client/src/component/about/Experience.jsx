@@ -26,24 +26,24 @@ const Job_Experience = [
 
 const Experience = () => {
     return (
-        <div className="col-lg-6 col-md-12 col-12">
+        <div className="min-w-0">
             <div className="inner">
-                <span className="subtitle">2008 - 2015</span>
-                <h3 className="main_title">Job Experience</h3>
-                <div className="inner_list">
+                <span className="subtitle text-xs font-extrabold uppercase tracking-[.18em] text-personal">2008 - 2015</span>
+                <h3 className="main_title mt-2 text-2xl font-black text-ink">Job Experience</h3>
+                <div className="inner_list mt-6 grid gap-4">
                     {Job_Experience.map((val, index) => {
                         return(
-                        <div className="item" key={index}>
-                            <div className="heading">
+                        <div className="item rounded-3xl bg-vellum/80 p-5 shadow-soft ring-1 ring-white/80" key={index}>
+                            <div className="heading flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
                                 <div className="title">
-                                    <h4>{val.title}</h4>
-                                    <span>{val.subtitle}</span>
+                                    <h4 className="text-lg font-black leading-snug text-ink">{val.title}</h4>
+                                    <span className="mt-1 block text-sm text-slate-500">{val.subtitle}</span>
                                 </div>
                                 <div className="date_of_time">
-                                    <span>{val.date_of_time}</span>
+                                    <span className="rounded-full bg-brass/10 px-3 py-1 text-xs font-bold text-brass">{val.date_of_time}</span>
                                 </div>
                             </div>
-                            <p className="description">{val.description}</p>
+                            <p className="description mt-4 text-sm leading-7 text-slate-600">{val.description}</p>
                         </div>
                         )
                     })}

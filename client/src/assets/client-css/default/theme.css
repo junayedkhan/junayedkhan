@@ -1,0 +1,14 @@
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: Poppins, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-ink: #102a2a;
+  --color-personal: #0f766e;
+  --color-brass: #b7791f;
+  --color-vellum: #fffaf0;
+  --color-paper: #f4f3ee;
+  --color-coral: #ff6f61;
+  --shadow-soft: 0 24px 70px rgba(16, 42, 42, 0.14);
+  --shadow-button: 0 16px 36px rgba(15, 118, 110, 0.24);
+  --shadow-classic: 0 30px 90px rgba(16, 42, 42, 0.16);
+}

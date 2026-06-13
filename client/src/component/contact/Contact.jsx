@@ -3,11 +3,16 @@ import { useForm } from 'react-hook-form'
 import Social from '../Social'
 import { ImageWithLoader } from '../ImageWithLoader'
 import img from "../../assets/image/contact1.png"
+import Icon from '../Icon'
 
 const Contact = () => {
 
     const [successMessage, setSuccessMessage] = useState("")
-    const { register, handleSubmit, formState: { errors }, reset } = useForm()
+    const { register, handleSubmit, formState: { errors }, reset, clearErrors } = useForm({ mode: "onChange", reValidateMode: "onChange" })
+    const handleFormChange = (event) => {
+        if (event.target?.name) clearErrors(event.target.name)
+        if (successMessage) setSuccessMessage("")
+    }
     const onSubmit = (data) => {
         const mailtoBody = [
             `Name: ${data.name}`,
@@ -23,18 +28,18 @@ const Contact = () => {
     }
 
     return (
-        <section className="contact">
-            <div className="title_section">
-                <span className="title_bg">contact</span>
-                <h1 className="title" >get in <span>touch</span></h1>
+        <section className="contact min-h-screen pb-16">
+            <div className="title_section relative flex min-h-32 items-center justify-center">
+                <span className="title_bg absolute text-6xl font-black uppercase text-ink/5 md:text-8xl">contact</span>
+                <h1 className="title relative text-3xl font-black uppercase text-ink md:text-5xl" >get in <span className="text-personal">touch</span></h1>
             </div>
             {/* == title area end */}
             <div className="main_content">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-5 col-12 _mb_50">
-                            <div className="contact_about_area">
-                                <div className="thumbnail">
+                <div className="mx-auto max-w-6xl px-4">
+                    <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+                        <div>
+                            <div className="contact_about_area h-full rounded-[1.5rem] bg-vellum/80 p-5 shadow-classic ring-1 ring-white/80 backdrop-blur">
+                                <div className="thumbnail overflow-hidden rounded-[1.25rem]">
                                     <ImageWithLoader src={img} alt="contact" />
                                 </div>
                                 {/* == imgage area end == */}
@@ -54,14 +59,15 @@ const Contact = () => {
                             </div>
                         </div>
                         {/* == contact about area end */}
-                        <div className="col-lg-7 col-12">
-                            <div className="contact_form_wrapper">
-                                <form className="row" id="contact_form" onSubmit={handleSubmit(onSubmit)}>
+                        <div>
+                            <div className="contact_form_wrapper h-full rounded-[1.5rem] bg-vellum/80 p-6 shadow-classic ring-1 ring-white/80 backdrop-blur">
+                                <form className="grid gap-5 md:grid-cols-2" id="contact_form" onChange={handleFormChange} onSubmit={handleSubmit(onSubmit)}>
                                     {/* == name == */}
-                                    <div className="col-lg-6">
+                                    <div>
                                         <div className="form_group">
                                             <label htmlFor="name">Your Name</label>
                                             <input
+                                                className="min-h-12 w-full rounded-2xl border border-personal/10 bg-white/80 px-4 outline-none transition focus:border-personal"
                                                 type="text"
                                                 id="name"
                                                 {...register("name", { required: "Name is required." })}
@@ -70,10 +76,11 @@ const Contact = () => {
                                         </div>
                                     </div>
                                     {/* == phone == */}
-                                    <div className="col-lg-6">
+                                    <div>
                                         <div className="form_group">
                                             <label htmlFor="phone">Phone Number</label>
                                             <input
+                                                className="min-h-12 w-full rounded-2xl border border-personal/10 bg-white/80 px-4 outline-none transition focus:border-personal"
                                                 name="phone"
                                                 id="phone"
                                                 type="text"
@@ -90,10 +97,11 @@ const Contact = () => {
                                         </div>
                                     </div>
                                     {/* == email == */}
-                                    <div className="col-lg-12">
+                                    <div className="md:col-span-2">
                                         <div className="form_group">
                                             <label htmlFor="email">Email</label>
                                             <input
+                                                className="min-h-12 w-full rounded-2xl border border-personal/10 bg-white/80 px-4 outline-none transition focus:border-personal"
                                                 id="email"
                                                 name="email"
                                                 type="email"
@@ -110,10 +118,11 @@ const Contact = () => {
                                         </div>
                                     </div>
                                     {/* == subject == */}
-                                    <div className="col-lg-12">
+                                    <div className="md:col-span-2">
                                         <div className="form_group">
                                             <label htmlFor="subject">Subject</label>
                                             <input
+                                                className="min-h-12 w-full rounded-2xl border border-personal/10 bg-white/80 px-4 outline-none transition focus:border-personal"
                                                 id="subject"
                                                 name="subject"
                                                 type="text"
@@ -123,10 +132,11 @@ const Contact = () => {
                                         </div>
                                     </div>
                                     {/* == message == */}
-                                    <div className="col-lg-12">
+                                    <div className="md:col-span-2">
                                         <div className="form_group">
                                             <label htmlFor="message">Your Message</label>
                                             <textarea
+                                                className="min-h-36 w-full rounded-2xl border border-personal/10 bg-white/80 px-4 py-3 outline-none transition focus:border-personal"
                                                 name="message"
                                                 id="message"
                                                 {...register("message", { required: "Message is required." })}
@@ -135,10 +145,10 @@ const Contact = () => {
                                             {errors.message?.message && <p className="errors">{errors.message.message}</p>}
                                         </div>
                                     </div>
-                                    <div className="col-lg-12">
-                                        <button name="submit" type="submit" id="submit" className="contact_btn">
+                                    <div className="md:col-span-2">
+                                        <button name="submit" type="submit" id="submit" className="contact_btn inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-ink px-6 text-sm font-extrabold uppercase tracking-wide text-vellum shadow-button transition hover:-translate-y-1">
                                             <span>SEND MESSAGE</span>
-                                            <i className="fas fa-arrow-right" aria-hidden="true"></i>
+                                            <Icon icon="arrow-right" />
                                         </button>
                                         {successMessage && <p className="success_message">{successMessage}</p>}
                                         {/* == button area end == */}

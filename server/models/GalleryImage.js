@@ -31,4 +31,6 @@ const galleryImageSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
+galleryImageSchema.index({ createdAt: -1 })
+
 module.exports = mongoose.model('GalleryImage', galleryImageSchema)

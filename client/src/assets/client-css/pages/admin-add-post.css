@@ -1,0 +1,1383 @@
+@layer components {
+  /* Admin add/edit post page */
+  .add_post_page {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 8% 10%, rgba(183, 121, 31, .14), transparent 25%),
+      radial-gradient(circle at 92% 12%, rgba(15, 118, 110, .14), transparent 24%),
+      linear-gradient(120deg, #fffaf0, #f4f3ee);
+    color: #102a2a;
+  }
+
+  .add_post_shell {
+    width: min(100%, 1500px);
+    margin-inline: auto;
+    padding: clamp(1rem, 2.2vw, 2rem);
+  }
+
+  .add_post_header,
+  .add_post_editor,
+  .add_post_panel,
+  .add_post_notice,
+  .add_post_inline_media figure {
+    border: 1px solid rgba(255, 255, 255, .82);
+    border-radius: 1.5rem;
+    background: rgba(255, 250, 240, .78);
+    box-shadow: 0 24px 70px rgba(16, 42, 42, .1);
+    backdrop-filter: blur(16px);
+  }
+
+  .add_post_header {
+    padding: 1.35rem;
+  }
+
+  .add_post_header h1 {
+    margin-top: .35rem;
+    color: #102a2a;
+    font-size: clamp(1.75rem, 4vw, 3.4rem);
+    font-weight: 900;
+    letter-spacing: 0;
+    line-height: 1.02;
+  }
+
+  .add_post_notice {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-top: 1rem;
+    padding: .9rem 1rem;
+    color: #0f766e;
+    font-weight: 900;
+  }
+
+  .add_post_notice.error {
+    color: #dc2626;
+  }
+
+  .add_post_layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 1rem;
+    align-items: start;
+    margin-top: 1rem;
+  }
+
+  .add_post_editor,
+  .add_post_panel {
+    padding: 1rem;
+  }
+
+  .add_post_side {
+    position: sticky;
+    top: 1rem;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .add_post_title,
+  .add_post_excerpt textarea,
+  .add_post_toolbar select,
+  .add_post_content,
+  .add_post_panel input,
+  .add_post_panel select,
+  .add_post_media_caption input {
+    width: 100%;
+    border: 1px solid rgba(16, 42, 42, .1);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, .78);
+    color: #102a2a;
+    outline: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72);
+  }
+
+  .add_post_title {
+    min-height: 4rem;
+    padding: .85rem 1rem;
+    font-size: clamp(1.4rem, 3vw, 2.45rem);
+    font-weight: 900;
+    line-height: 1.15;
+  }
+
+  .add_post_permalink {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+    margin: .8rem 0 1rem;
+    color: #64748b;
+    font-size: .84rem;
+  }
+
+  .add_post_excerpt,
+  .add_post_panel label,
+  .add_post_media_caption {
+    display: grid;
+    gap: .45rem;
+    color: #64748b;
+    font-size: .74rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .add_post_excerpt textarea,
+  .add_post_panel input,
+  .add_post_panel select,
+  .add_post_media_caption input {
+    min-height: 3rem;
+    padding: .8rem 1rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .add_post_toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem;
+    margin: 1rem 0;
+  }
+
+  .add_post_toolbar button,
+  .add_post_media_btn,
+  .add_post_featured_btn,
+  .add_post_panel footer button,
+  .add_post_media_remove,
+  .add_post_media_drag {
+    display: inline-flex;
+    min-height: 2.65rem;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    border-radius: 999px;
+    background: #102a2a;
+    padding: 0 1rem;
+    color: #fffaf0;
+    font-size: .8rem;
+    font-weight: 900;
+    transition: transform .24s ease, background-color .24s ease, box-shadow .24s ease;
+  }
+
+  .add_post_toolbar button:hover,
+  .add_post_media_btn:hover,
+  .add_post_featured_btn:hover,
+  .add_post_panel footer button:hover {
+    transform: translateY(-2px);
+    background: #0f766e;
+  }
+
+  .add_post_media_btn,
+  .add_post_featured_btn {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .add_post_media_btn input,
+  .add_post_featured_btn input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .add_post_content {
+    min-height: 460px;
+    resize: vertical;
+    padding: 1rem;
+    line-height: 1.75;
+  }
+
+  .add_post_inline_media {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .add_post_inline_media figure {
+    position: relative;
+    display: grid;
+    gap: .85rem;
+    overflow: hidden;
+    padding: .85rem;
+  }
+
+  .add_post_inline_media figure.is_dragging {
+    opacity: .7;
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, .12);
+  }
+
+  .add_post_inline_media img,
+  .add_post_inline_media video,
+  .add_post_featured {
+    width: 100%;
+    border-radius: 1rem;
+    background-color: rgba(255, 255, 255, .65);
+    object-fit: cover;
+  }
+
+  .add_post_inline_media img,
+  .add_post_inline_media video {
+    aspect-ratio: 4 / 3;
+  }
+
+  .add_post_media_remove,
+  .add_post_media_drag {
+    position: absolute;
+    z-index: 2;
+    min-height: 2.25rem;
+    width: 2.25rem;
+    padding: 0;
+    box-shadow: 0 10px 24px rgba(16, 42, 42, .16);
+  }
+
+  .add_post_media_remove {
+    top: .65rem;
+    right: .65rem;
+  }
+
+  .add_post_media_drag {
+    top: .65rem;
+    left: .65rem;
+    cursor: grab;
+  }
+
+  .add_post_editor_footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-top: 1rem;
+    color: #64748b;
+    font-size: .82rem;
+    font-weight: 800;
+  }
+
+  .add_post_panel {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .add_post_panel header {
+    color: #102a2a;
+    font-weight: 900;
+  }
+
+  .add_post_panel_body {
+    display: grid;
+    gap: .85rem;
+  }
+
+  .add_post_status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, .62);
+    padding: .8rem .9rem;
+  }
+
+  .add_post_status span,
+  .add_post_status strong {
+    font-size: .84rem;
+    font-weight: 900;
+  }
+
+  .add_post_panel footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .65rem;
+  }
+
+  .add_post_panel footer button:first-child {
+    background: rgba(16, 42, 42, .12);
+    color: #102a2a;
+    box-shadow: none;
+  }
+
+  .add_post_panel footer button.is_saving {
+    opacity: .72;
+    cursor: progress;
+  }
+
+  .add_post_featured {
+    display: grid;
+    min-height: 230px;
+    place-items: center;
+    background-position: center;
+    background-size: cover;
+    box-shadow: inset 0 0 0 1px rgba(16, 42, 42, .08);
+  }
+
+  .add_post_featured span {
+    border-radius: 999px;
+    background: rgba(16, 42, 42, .82);
+    padding: .45rem .75rem;
+    color: #fffaf0;
+    font-size: .75rem;
+    font-weight: 900;
+  }
+
+  /* Add new travel post page refresh */
+  .add_post_page {
+    background:
+      linear-gradient(90deg, rgba(16, 42, 42, .035) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(16, 42, 42, .035) 1px, transparent 1px),
+      radial-gradient(circle at 12% 8%, rgba(15, 118, 110, .13), transparent 28%),
+      radial-gradient(circle at 90% 10%, rgba(183, 121, 31, .12), transparent 26%),
+      linear-gradient(135deg, #f9f6ef 0%, #eef4f1 58%, #f7f8f5 100%);
+    background-size: 42px 42px, 42px 42px, auto, auto, auto;
+  }
+
+  .add_post_shell {
+    max-width: 1480px;
+  }
+
+  .add_post_header {
+    position: relative;
+    overflow: hidden;
+    border: 0;
+    border-radius: 1.2rem;
+    background:
+      linear-gradient(135deg, rgba(16, 42, 42, .98), rgba(15, 118, 110, .88)),
+      radial-gradient(circle at 86% 0%, rgba(255, 250, 240, .28), transparent 30%);
+    color: #fffaf0;
+    padding: clamp(1.15rem, 3vw, 1.75rem);
+  }
+
+  .add_post_header::after {
+    position: absolute;
+    right: 1.3rem;
+    bottom: -4.5rem;
+    width: min(28vw, 15rem);
+    height: min(28vw, 15rem);
+    border: 1px solid rgba(255, 250, 240, .24);
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+  }
+
+  .add_post_header > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .add_post_header .admin_auth_kicker,
+  .add_post_header h1 {
+    color: #fffaf0;
+  }
+
+  .add_post_header .admin_auth_kicker {
+    margin-top: 0;
+    opacity: .78;
+  }
+
+  .add_post_layout {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+    gap: 1rem;
+  }
+
+  .add_post_editor,
+  .add_post_panel,
+  .add_post_notice,
+  .add_post_inline_media figure {
+    border-color: rgba(16, 42, 42, .09);
+    border-radius: 1.05rem;
+    background: rgba(255, 255, 255, .82);
+    box-shadow: 0 20px 58px rgba(16, 42, 42, .1);
+  }
+
+  .add_post_editor {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.2rem);
+  }
+
+  .add_post_title {
+    min-height: 4.4rem;
+    border-radius: .9rem;
+    background: #ffffff;
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+  }
+
+  .add_post_permalink {
+    margin: 0;
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: .85rem;
+    background: rgba(249, 250, 251, .78);
+    padding: .75rem .9rem;
+  }
+
+  .add_post_excerpt {
+    border: 1px solid rgba(16, 42, 42, .07);
+    border-radius: .95rem;
+    background: rgba(249, 250, 251, .72);
+    padding: .8rem;
+  }
+
+  .add_post_excerpt textarea {
+    min-height: 5.5rem;
+    border-radius: .75rem;
+    background: #ffffff;
+  }
+
+  .add_post_toolbar {
+    align-items: center;
+    margin: 0;
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: .95rem;
+    background: rgba(249, 250, 251, .76);
+    padding: .75rem;
+  }
+
+  .add_post_toolbar select {
+    width: min(100%, 210px);
+    min-height: 2.65rem;
+    border-radius: .8rem;
+    background: #ffffff;
+  }
+
+  .add_post_toolbar button,
+  .add_post_media_btn,
+  .add_post_featured_btn,
+  .add_post_panel footer button {
+    border-radius: .8rem;
+  }
+
+  .add_post_content {
+    min-height: 430px;
+    border-radius: .95rem;
+    background:
+      linear-gradient(180deg, #ffffff, rgba(255, 255, 255, .92));
+    line-height: 1.8;
+  }
+
+  .add_post_editor_footer {
+    margin-top: 0;
+    border-top: 1px solid rgba(16, 42, 42, .08);
+    padding-top: .9rem;
+  }
+
+  .add_post_side {
+    top: 1rem;
+  }
+
+  .add_post_panel {
+    gap: .9rem;
+    padding: 1rem;
+  }
+
+  .add_post_panel header {
+    border-bottom: 1px solid rgba(16, 42, 42, .08);
+    padding-bottom: .75rem;
+  }
+
+  .add_post_panel label {
+    border: 1px solid rgba(16, 42, 42, .06);
+    border-radius: .9rem;
+    background: rgba(249, 250, 251, .72);
+    padding: .72rem;
+  }
+
+  .add_post_panel input,
+  .add_post_panel select {
+    border-radius: .72rem;
+    background: #ffffff;
+  }
+
+  .add_post_status {
+    border: 1px solid rgba(16, 42, 42, .07);
+    background: rgba(15, 118, 110, .08);
+  }
+
+  .add_post_panel footer {
+    border-top: 1px solid rgba(16, 42, 42, .08);
+    padding-top: .85rem;
+  }
+
+  .add_post_featured {
+    min-height: 210px;
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: .9rem;
+  }
+
+  .add_post_inline_media {
+    margin-top: 0;
+  }
+
+  .add_post_inline_media figure {
+    border-radius: .95rem;
+    padding: .75rem;
+  }
+
+  .admin_dashboard i,
+  .admin_auth_shell i,
+  .add_post_page i {
+    flex: 0 0 auto;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .admin_dashboard button,
+  .admin_dashboard a,
+  .admin_dashboard label,
+  .admin_auth_shell button,
+  .admin_auth_shell a,
+  .add_post_page button,
+  .add_post_page a,
+  .add_post_page label {
+    min-width: 0;
+  }
+
+  .admin_dashboard button span,
+  .admin_dashboard a span,
+  .admin_dashboard label span,
+  .add_post_page button span,
+  .add_post_page a span,
+  .add_post_page label span {
+    min-width: 0;
+  }
+
+  .admin_gallery_form .admin_gallery_upload_button,
+  .admin_gallery_form .admin_gallery_publish_button,
+  .admin_hero_image_form .admin_hero_upload_button,
+  .admin_blog_block_toolbar .admin_wp_media_button,
+  .admin_wp_box .admin_wp_set_image,
+  .admin_blog_inline_upload,
+  .add_post_toolbar .add_post_media_btn,
+  .add_post_panel .add_post_featured_btn {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: .6rem;
+    border-radius: 999px;
+    background: #102a2a;
+    color: #fffaf0;
+    padding: 0 1.1rem;
+    font-size: .82rem;
+    font-weight: 900;
+    letter-spacing: .02em;
+    line-height: 1.2;
+    text-transform: none;
+    box-shadow: 0 16px 36px rgba(15, 118, 110, .2);
+  }
+
+  .admin_gallery_form .admin_gallery_upload_button {
+    flex: 0 0 auto;
+  }
+
+  .admin_gallery_form .admin_gallery_publish_button {
+    min-width: 10.5rem;
+  }
+
+  .admin_gallery_form .admin_gallery_upload_button:hover,
+  .admin_gallery_form .admin_gallery_publish_button:hover,
+  .admin_hero_image_form .admin_hero_upload_button:hover,
+  .admin_blog_block_toolbar .admin_wp_media_button:hover,
+  .admin_wp_box .admin_wp_set_image:hover,
+  .admin_blog_inline_upload:hover,
+  .add_post_toolbar .add_post_media_btn:hover,
+  .add_post_panel .add_post_featured_btn:hover {
+    transform: translateY(-2px);
+    background: #0f766e;
+  }
+
+  .admin_hero_upload_button > span,
+  .admin_gallery_upload_button > span {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    min-width: 0;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-transform: none;
+  }
+
+  .admin_blog_block_toolbar button,
+  .admin_gallery_publish_button,
+  .admin_gallery_card_actions button,
+  .admin_wp_publish_actions button,
+  .admin_comment_actions button,
+  .admin_comment_reply_actions button,
+  .admin_confirm_actions button,
+  .admin_account_actions button,
+  .add_post_toolbar button,
+  .add_post_panel footer button {
+    white-space: nowrap;
+  }
+
+  .admin_sidebar button span,
+  .admin_header_action span,
+  .admin_profile_logout span,
+  .admin_profile_reset span,
+  .admin_section_edit span,
+  .admin_gallery_upload_button span,
+  .admin_gallery_publish_button span,
+  .admin_hero_upload_button span,
+  .admin_comment_actions button,
+  .admin_comment_reply_actions button {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin_header h1,
+  .admin_editor_intro h2,
+  .admin_profile_identity h2,
+  .add_post_header h1,
+  .admin_blog_card h3,
+  .admin_wp_permalink strong,
+  .add_post_permalink strong,
+  .admin_modal_email strong,
+  .admin_account_info_list strong {
+    overflow-wrap: anywhere;
+  }
+
+  .admin_gallery_form h3,
+  .admin_blog_details_head h3,
+  .admin_gallery_form_head h3,
+  .admin_password_modal h2,
+  .admin_confirm_modal h2 {
+    color: #102a2a;
+    font-weight: 900;
+    letter-spacing: 0;
+    line-height: 1.2;
+  }
+
+  .admin_gallery_empty_state i,
+  .admin_gallery_preview_empty i,
+  .admin_profile_verified_state i,
+  .admin_skeleton i {
+    display: grid;
+    width: 3rem;
+    height: 3rem;
+    place-items: center;
+    border-radius: 1rem;
+    background: rgba(15, 118, 110, .1);
+    color: #0f766e;
+    font-size: 1.2rem;
+  }
+
+  .admin_gallery_form .admin_gallery_publish_button:disabled {
+    opacity: .68;
+    cursor: progress;
+    transform: none;
+  }
+
+  .admin_gallery_form .admin_gallery_upload_button--ready,
+  .admin_gallery_form .admin_gallery_upload_button--saved {
+    background: #0f766e;
+  }
+
+  .admin_gallery_form .admin_gallery_upload_button--error {
+    background: #dc2626;
+    box-shadow: 0 16px 36px rgba(220, 38, 38, .18);
+  }
+
+  .admin_hamburger {
+    gap: .22rem;
+  }
+
+  .admin_hamburger .bar {
+    display: block;
+    width: 1.15rem;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform .24s ease, opacity .24s ease;
+  }
+
+  .admin_hamburger.active .bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .admin_hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .admin_hamburger.active .bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  /* Admin design refinements */
+  .admin_auth_shell,
+  .admin_dashboard {
+    background:
+      linear-gradient(90deg, rgba(16, 42, 42, .035) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(16, 42, 42, .035) 1px, transparent 1px),
+      radial-gradient(circle at 14% 12%, rgba(15, 118, 110, .12), transparent 28%),
+      radial-gradient(circle at 86% 8%, rgba(183, 121, 31, .1), transparent 26%),
+      linear-gradient(135deg, #f9f6ef 0%, #eef4f1 58%, #f7f8f5 100%);
+    background-size: 42px 42px, 42px 42px, auto, auto, auto;
+  }
+
+  .admin_auth_card,
+  .admin_header,
+  .admin_editor_panel,
+  .admin_account_panel,
+  .admin_content_card,
+  .admin_stat_card,
+  .admin_gallery_upload_panel,
+  .admin_gallery_card,
+  .admin_blog_card,
+  .admin_comment_card,
+  .admin_wp_box,
+  .admin_profile_section,
+  .admin_password_modal,
+  .admin_confirm_modal {
+    border-color: rgba(16, 42, 42, .09);
+    border-radius: 1.15rem;
+    background: rgba(255, 255, 255, .78);
+    box-shadow: 0 18px 55px rgba(16, 42, 42, .1);
+  }
+
+  .admin_auth_card {
+    overflow: hidden;
+    padding: clamp(1.35rem, 4vw, 2.15rem);
+  }
+
+  .admin_auth_logo {
+    border-radius: .95rem;
+    background: linear-gradient(135deg, #102a2a, #0f766e);
+  }
+
+  .admin_auth_form input,
+  .admin_verify_form input,
+  .admin_account_form input,
+  .admin_gallery_form input,
+  .admin_hero_image_form input,
+  .admin_hero_image_form textarea,
+  .admin_blog_form input,
+  .admin_blog_form textarea,
+  .admin_blog_form select,
+  .admin_wp_title_input,
+  .admin_blog_full_label input,
+  .admin_blog_full_label textarea,
+  .admin_blog_full_label select {
+    border-radius: .85rem;
+    background: rgba(255, 255, 255, .92);
+  }
+
+  .admin_dashboard {
+    grid-template-columns: 264px minmax(0, 1fr);
+  }
+
+  .admin_sidebar {
+    border-right-color: rgba(16, 42, 42, .1);
+    background: rgba(255, 255, 255, .68);
+    box-shadow: 18px 0 60px rgba(16, 42, 42, .06);
+  }
+
+  .admin_sidebar button {
+    min-height: 3rem;
+    border: 1px solid transparent;
+    border-radius: .9rem;
+    background: transparent;
+    color: rgba(16, 42, 42, .72);
+  }
+
+  .admin_sidebar button i {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border-radius: .75rem;
+    background: rgba(16, 42, 42, .06);
+    color: #0f766e;
+  }
+
+  .admin_sidebar button:hover,
+  .admin_sidebar button.active {
+    transform: none;
+    border-color: rgba(15, 118, 110, .14);
+    background: #102a2a;
+    color: #fffaf0;
+  }
+
+  .admin_sidebar button:hover i,
+  .admin_sidebar button.active i {
+    background: rgba(255, 250, 240, .16);
+    color: #fffaf0;
+  }
+
+  .admin_main {
+    max-width: 1440px;
+    padding: clamp(1rem, 2vw, 1.75rem);
+  }
+
+  .admin_header {
+    min-height: 7.25rem;
+    border: 0;
+    background:
+      linear-gradient(135deg, rgba(16, 42, 42, .98), rgba(15, 118, 110, .88)),
+      radial-gradient(circle at 86% 0%, rgba(255, 250, 240, .32), transparent 28%);
+  }
+
+  .admin_header h1 {
+    font-size: clamp(1.9rem, 4vw, 3.7rem);
+  }
+
+  .admin_header_action,
+  .admin_auth_form button,
+  .admin_profile_reset,
+  .admin_profile_logout,
+  .admin_gallery_card_actions button,
+  .admin_wp_publish_actions button,
+  .admin_confirm_actions button,
+  .admin_section_edit,
+  .admin_blog_new_post_bar a,
+  .admin_blog_new_post_bar button,
+  .admin_blog_block_toolbar button,
+  .admin_blog_block_toolbar label,
+  .admin_comment_actions button,
+  .admin_comment_reply_actions button,
+  .admin_account_actions button,
+  .admin_password_modal header button {
+    border: 0;
+    border-radius: .85rem;
+  }
+
+  .admin_stats {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  }
+
+  .admin_stat_card {
+    min-height: 9.25rem;
+  }
+
+  .admin_content_grid,
+  .admin_gallery_library,
+  .admin_blog_library {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .admin_gallery_toolbar {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  }
+
+  .admin_gallery_upload_panel,
+  .admin_hero_image_editor {
+    grid-template-columns: minmax(250px, .85fr) minmax(0, 1.15fr);
+  }
+
+  .admin_blog_form {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  }
+
+  .admin_wp_sidebar {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .admin_blog_card {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .admin_blog_card_image,
+  .admin_gallery_card_image {
+    min-height: 205px;
+  }
+
+  .admin_comment_card {
+    align-items: start;
+  }
+
+  .admin_profile_hero {
+    flex-wrap: wrap;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, .6);
+    padding: 1rem;
+  }
+
+  .admin_profile_identity {
+    min-width: min(100%, 260px);
+    flex: 1 1 260px;
+  }
+
+  .admin_account_info_list div {
+    align-items: start;
+  }
+
+  .admin_account_info_list strong {
+    text-align: right;
+  }
+
+  /* Gallery admin page refresh */
+  .admin_gallery_manager {
+    display: grid;
+    gap: 1.15rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_toolbar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .9rem;
+    margin: 0;
+  }
+
+  .admin_gallery_manager .admin_gallery_toolbar article {
+    position: relative;
+    min-height: 8.25rem;
+    overflow: hidden;
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: 1rem;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, .88), rgba(249, 246, 239, .72));
+    padding: 1rem;
+    box-shadow: 0 18px 46px rgba(16, 42, 42, .08);
+  }
+
+  .admin_gallery_manager .admin_gallery_toolbar article::after {
+    position: absolute;
+    right: -.9rem;
+    bottom: -.9rem;
+    width: 5.4rem;
+    height: 5.4rem;
+    border-radius: 50%;
+    background: rgba(183, 121, 31, .1);
+    content: "";
+  }
+
+  .admin_gallery_manager .admin_gallery_toolbar article i {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 2.55rem;
+    height: 2.55rem;
+    place-items: center;
+    border-radius: .8rem;
+    background: rgba(15, 118, 110, .1);
+    color: #0f766e;
+  }
+
+  .admin_gallery_manager .admin_gallery_toolbar article span,
+  .admin_gallery_manager .admin_gallery_toolbar article strong {
+    position: relative;
+    z-index: 1;
+  }
+
+  .admin_gallery_manager .admin_gallery_toolbar article span {
+    color: #64748b;
+    font-size: .76rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .admin_gallery_manager .admin_gallery_toolbar article strong {
+    color: #102a2a;
+    font-size: clamp(1.75rem, 3vw, 2.6rem);
+    line-height: 1;
+  }
+
+  .admin_gallery_manager .admin_gallery_upload_panel {
+    display: grid;
+    grid-template-columns: minmax(300px, .95fr) minmax(0, 1.05fr);
+    gap: 1rem;
+    align-items: stretch;
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: 1.2rem;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .74), rgba(255, 250, 240, .42));
+    padding: 1rem;
+    box-shadow: 0 22px 64px rgba(16, 42, 42, .1);
+  }
+
+  .admin_gallery_manager .admin_gallery_preview {
+    position: relative;
+    display: grid;
+    overflow: hidden;
+    place-items: center;
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: 1rem;
+    background:
+      linear-gradient(135deg, rgba(16, 42, 42, .06), rgba(15, 118, 110, .06)),
+      rgba(255, 255, 255, .72);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .55);
+  }
+
+  .admin_gallery_manager .admin_gallery_preview.has_image {
+    background-position: center;
+    background-size: cover;
+  }
+
+  .admin_gallery_manager .admin_gallery_preview.has_image::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(16, 42, 42, 0), rgba(16, 42, 42, .18));
+    content: "";
+    pointer-events: none;
+  }
+
+  .admin_gallery_manager .admin_gallery_preview > span {
+    position: absolute;
+    top: .85rem;
+    left: .85rem;
+    z-index: 1;
+    margin: 0;
+    border-radius: .75rem;
+    background: rgba(16, 42, 42, .82);
+    backdrop-filter: blur(12px);
+  }
+
+  .admin_gallery_manager .admin_gallery_preview_empty {
+    min-height: auto;
+    width: min(100%, 320px);
+    border: 1px dashed rgba(16, 42, 42, .18);
+    border-radius: .9rem;
+    background: rgba(255, 255, 255, .52);
+    padding: 1.2rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_preview_empty p {
+    max-width: 18rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_form {
+    display: grid;
+    min-height: auto;
+    gap: 1rem;
+    margin-top: 0;
+    align-content: stretch;
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, .82);
+    padding: 1rem;
+    box-shadow: none;
+  }
+
+  .admin_gallery_manager .admin_gallery_form_head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(16, 42, 42, .08);
+    padding-bottom: 1rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_form_head h3 {
+    margin-top: .25rem;
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+  }
+
+  .admin_gallery_manager .admin_gallery_form_head .admin_auth_kicker {
+    margin-top: 0;
+  }
+
+  .admin_gallery_manager .admin_gallery_upload_button,
+  .admin_gallery_manager .admin_gallery_publish_button {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    border-radius: .8rem;
+    white-space: nowrap;
+  }
+
+  .admin_gallery_manager .admin_gallery_upload_button {
+    min-width: 7.5rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_publish_button {
+    min-width: 11rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_upload_button--ready,
+  .admin_gallery_manager .admin_gallery_upload_button--saved {
+    background: #0f766e;
+  }
+
+  .admin_gallery_manager .admin_gallery_upload_button--error {
+    background: #dc2626;
+    box-shadow: 0 16px 36px rgba(220, 38, 38, .16);
+  }
+
+  .admin_gallery_manager .admin_gallery_fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .85rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_form label:not(.admin_gallery_upload_button) {
+    display: grid;
+    gap: .45rem;
+    border: 1px solid rgba(16, 42, 42, .06);
+    border-radius: .9rem;
+    background: rgba(249, 250, 251, .76);
+    padding: .72rem;
+    color: #64748b;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+
+  .admin_gallery_manager .admin_gallery_form input {
+    min-height: 2.85rem;
+    border: 1px solid rgba(16, 42, 42, .1);
+    border-radius: .72rem;
+    background: #ffffff;
+    color: #102a2a;
+    font-size: .9rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .admin_gallery_manager .admin_gallery_form input:focus {
+    border-color: rgba(15, 118, 110, .58);
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, .1);
+  }
+
+  .admin_gallery_manager .admin_gallery_form_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .9rem;
+    margin-top: auto;
+    border-top: 1px solid rgba(16, 42, 42, .08);
+    padding-top: 1rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_form_actions > span {
+    flex: 1 1 auto;
+    min-height: 1px;
+  }
+
+  .admin_gallery_manager .admin_gallery_form_actions .admin_profile_message {
+    flex: 1 1 auto;
+    margin: 0;
+    border-radius: .8rem;
+    padding: .75rem .9rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_library {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 0;
+  }
+
+  .admin_gallery_manager .admin_gallery_card {
+    display: grid;
+    gap: .9rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, .78);
+    padding: .8rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_card_image {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+    border-radius: .85rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_card_body {
+    align-items: flex-start;
+    margin-top: 0;
+  }
+
+  .admin_gallery_manager .admin_gallery_card_body strong {
+    display: block;
+    color: #102a2a;
+    line-height: 1.25;
+  }
+
+  .admin_gallery_manager .admin_gallery_card_body p {
+    margin-top: .2rem;
+    color: #64748b;
+    line-height: 1.45;
+  }
+
+  .admin_gallery_manager .admin_gallery_card_actions {
+    align-items: end;
+    margin-top: 0;
+  }
+
+  .admin_gallery_manager .admin_gallery_card_actions label {
+    display: grid;
+    flex: 1 1 8rem;
+    gap: .4rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_card_actions input {
+    min-height: 2.55rem;
+    border-radius: .72rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_card_actions button {
+    flex: 0 0 auto;
+    min-height: 2.55rem;
+    border-radius: .78rem;
+  }
+
+  @media (max-width: 1100px) {
+    .admin_dashboard {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_gallery_upload_panel,
+    .admin_hero_image_editor,
+    .admin_blog_form {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_sidebar {
+      width: min(88vw, 310px);
+      padding-top: 1.25rem;
+    }
+
+    .admin_wp_sidebar {
+      position: static;
+    }
+
+    .admin_gallery_manager .admin_gallery_upload_panel {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_profile_sections {
+      grid-template-columns: 1fr;
+    }
+
+    .add_post_layout {
+      grid-template-columns: 1fr;
+    }
+
+    .add_post_side {
+      position: static;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .admin_auth_shell {
+      place-items: start center;
+      padding: 1rem;
+    }
+
+    .admin_auth_card {
+      width: 100%;
+    }
+
+    .admin_main {
+      padding: 4.25rem .85rem .85rem;
+    }
+
+    .admin_header {
+      min-height: auto;
+      padding: 1.15rem;
+    }
+
+    .admin_editor_intro,
+    .admin_blog_new_post_bar,
+    .admin_profile_hero,
+    .admin_comment_reply {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .admin_gallery_toolbar,
+    .admin_gallery_fields,
+    .admin_hero_fields {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_gallery_manager .admin_gallery_toolbar,
+    .admin_gallery_manager .admin_gallery_fields,
+    .admin_gallery_manager .admin_gallery_library {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_gallery_form_head,
+    .admin_gallery_form_actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .admin_gallery_manager .admin_gallery_upload_panel {
+      padding: .8rem;
+    }
+
+    .admin_gallery_manager .admin_gallery_form_head,
+    .admin_gallery_manager .admin_gallery_form_actions,
+    .admin_gallery_manager .admin_gallery_card_actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .admin_header_action,
+    .admin_editor_intro a,
+    .admin_blog_new_post_bar button,
+    .admin_blog_new_post_bar a,
+    .admin_profile_logout,
+    .admin_profile_reset,
+    .admin_gallery_upload_button,
+    .admin_gallery_publish_button,
+    .admin_gallery_card_actions button,
+    .admin_account_actions button {
+      width: 100%;
+    }
+
+    .admin_gallery_manager .admin_gallery_upload_button,
+    .admin_gallery_manager .admin_gallery_publish_button,
+    .admin_gallery_manager .admin_gallery_card_actions button {
+      width: 100%;
+    }
+
+    .admin_comment_card {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_account_info_list div {
+      display: grid;
+      gap: .25rem;
+    }
+
+    .admin_account_info_list strong {
+      text-align: left;
+    }
+
+    .admin_comment_actions,
+    .admin_comment_reply_actions {
+      width: 100%;
+    }
+
+    .admin_comment_actions button,
+    .admin_comment_reply_actions button {
+      flex: 1 1 8rem;
+    }
+
+    .admin_email_edit_code {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_confirm_actions,
+    .add_post_panel footer {
+      flex-direction: column;
+    }
+
+    .admin_confirm_actions button,
+    .add_post_panel footer button,
+    .add_post_toolbar select,
+    .add_post_media_btn {
+      width: 100%;
+    }
+
+    .add_post_shell {
+      padding: .85rem;
+    }
+
+    .add_post_header,
+    .add_post_editor,
+    .add_post_panel {
+      border-radius: 1.15rem;
+    }
+
+    .add_post_content {
+      min-height: 340px;
+    }
+  }
+}

@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const authMiddleware = require('../middleware/authMiddleware')
 const { sendMail, smtpEnabled } = require('../utils/mailer')
+const { loadServerCss } = require('../utils/cssLoader')
 
 const signToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
@@ -51,6 +52,7 @@ const escapeHtml = (value) =>
 const buildPasswordResetEmail = ({ resetLink, username }) => {
   const safeUsername = escapeHtml(username || 'Admin')
   const safeResetLink = escapeHtml(resetLink)
+  const emailCss = loadServerCss('email.css')
 
   const text = [
     'Password reset requested for your Junayed Khan admin account.',
@@ -68,31 +70,34 @@ const buildPasswordResetEmail = ({ resetLink, username }) => {
   const html = `
     <!doctype html>
     <html>
-      <body style="margin:0;background:#f6f8fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f8fb;padding:32px 12px;">
+      <head>
+        <style>${emailCss}</style>
+      </head>
+      <body class="email_body">
+        <table class="email_shell" role="presentation" width="100%" cellpadding="0" cellspacing="0">
           <tr>
             <td align="center">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+              <table class="email_card" role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="padding:28px 32px 18px;border-bottom:1px solid #eef2f7;">
-                    <div style="font-size:14px;font-weight:700;color:#76c83b;text-transform:uppercase;letter-spacing:.06em;">Admin Security</div>
-                    <h1 style="margin:10px 0 0;font-size:26px;line-height:1.25;color:#111827;">Reset your password</h1>
+                  <td class="email_header">
+                    <div class="email_kicker">Admin Security</div>
+                    <h1 class="email_title">Reset your password</h1>
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding:28px 32px;">
-                    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hello ${safeUsername},</p>
-                    <p style="margin:0 0 22px;font-size:16px;line-height:1.6;">We received a request to reset the password for your Junayed Khan admin account. Use the button below within 30 minutes.</p>
-                    <p style="margin:0 0 24px;">
-                      <a href="${safeResetLink}" style="display:inline-block;background:#76c83b;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;padding:13px 22px;">Reset password</a>
+                  <td class="email_body_cell">
+                    <p class="email_text">Hello ${safeUsername},</p>
+                    <p class="email_text email_text_spaced">We received a request to reset the password for your Junayed Khan admin account. Use the button below within 30 minutes.</p>
+                    <p class="email_button_wrap">
+                      <a class="email_button" href="${safeResetLink}">Reset password</a>
                     </p>
-                    <p style="margin:0 0 10px;font-size:13px;line-height:1.6;color:#6b7280;">If the button does not work, copy this link into your browser:</p>
-                    <p style="margin:0 0 22px;font-size:13px;line-height:1.6;word-break:break-all;color:#2563eb;">${safeResetLink}</p>
-                    <p style="margin:0;font-size:14px;line-height:1.6;color:#6b7280;">If you did not request this, you can safely ignore this email.</p>
+                    <p class="email_muted">If the button does not work, copy this link into your browser:</p>
+                    <p class="email_link_text">${safeResetLink}</p>
+                    <p class="email_note">If you did not request this, you can safely ignore this email.</p>
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding:18px 32px;background:#f9fafb;color:#6b7280;font-size:12px;line-height:1.5;">
+                  <td class="email_footer">
                     Junayed Khan Admin<br />
                     This is an account security email.
                   </td>
@@ -111,6 +116,7 @@ const buildPasswordResetEmail = ({ resetLink, username }) => {
 const buildAccountVerificationEmail = ({ code, username }) => {
   const safeUsername = escapeHtml(username || 'Admin')
   const safeCode = escapeHtml(code)
+  const emailCss = loadServerCss('email.css')
 
   return {
     text: [
@@ -127,18 +133,21 @@ const buildAccountVerificationEmail = ({ code, username }) => {
     html: `
       <!doctype html>
       <html>
-        <body style="margin:0;background:#f6f8fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f8fb;padding:32px 12px;">
+        <head>
+          <style>${emailCss}</style>
+        </head>
+        <body class="email_body">
+          <table class="email_shell" role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td align="center">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+                <table class="email_card email_card_narrow" role="presentation" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding:28px 32px;">
-                      <div style="font-size:14px;font-weight:700;color:#76c83b;text-transform:uppercase;letter-spacing:.06em;">Account Verification</div>
-                      <h1 style="margin:10px 0 12px;font-size:25px;line-height:1.25;color:#111827;">Confirm your email</h1>
-                      <p style="margin:0 0 18px;font-size:16px;line-height:1.6;">Hello ${safeUsername}, use this code to unlock password options in your admin account.</p>
-                      <div style="font-size:32px;letter-spacing:8px;font-weight:800;color:#111827;background:#f3f4f6;border-radius:10px;padding:16px 20px;text-align:center;">${safeCode}</div>
-                      <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:#6b7280;">This code expires in 10 minutes. If you did not request it, ignore this email.</p>
+                    <td class="email_body_cell">
+                      <div class="email_kicker">Account Verification</div>
+                      <h1 class="email_title email_title_compact">Confirm your email</h1>
+                      <p class="email_text">Hello ${safeUsername}, use this code to unlock password options in your admin account.</p>
+                      <div class="email_code">${safeCode}</div>
+                      <p class="email_note email_code_note">This code expires in 10 minutes. If you did not request it, ignore this email.</p>
                     </td>
                   </tr>
                 </table>

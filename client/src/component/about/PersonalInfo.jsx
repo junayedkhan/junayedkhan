@@ -15,12 +15,12 @@ const personalInfo = [
 
 const PersonalInfo = () => {
     return (
-        <ul className="personal_info about_list list-unstyled">
+        <ul className="personal_info about_list grid grid-cols-1 gap-3 sm:grid-cols-2">
             {personalInfo.map((val, index) => {
                 return(
-                <li key={index}>
-                    <span className="title">{val.title}: </span>
-                    <span className="value d-block d-sm-inline-block d-lg-block d-xl-inline-block">
+                <li className="rounded-2xl bg-vellum/80 p-4 shadow-soft ring-1 ring-white/80" key={index}>
+                    <span className="title block text-xs font-extrabold uppercase tracking-wide text-slate-500">{val.title}</span>
+                    <span className="value mt-1 block font-bold text-ink">
                         {val.value}
                     </span>
                 </li>

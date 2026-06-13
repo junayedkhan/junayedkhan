@@ -5,6 +5,12 @@ const authMiddleware = require('../middleware/authMiddleware')
 
 const HERO_IMAGE_KEY = 'heroImage'
 const HERO_CONTENT_KEY = 'heroContent'
+const SERVER_HERO_CONTENT = {
+  name: 'Junayed Khan',
+  designation: ['Travel Explorer', 'Story Keeper', 'Photo Lover'],
+  description: 'I share personal moments, travel stories, and visual memories from places, people, and quiet details that make every journey feel meaningful.',
+  image: 'assets/image/home.png'
+}
 const MAX_DATA_IMAGE_LENGTH = 3_500_000
 const MAX_GALLERY_IMAGE_LENGTH = 4_500_000
 
@@ -47,6 +53,10 @@ const serializeGalleryImage = (image) => ({
   createdAt: image.createdAt
 })
 
+const setPublicDataCache = (res) => {
+  res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
+}
+
 const getHeroImage = async () => {
   const content = await getHeroContent()
   return content?.image || ''
@@ -57,19 +67,20 @@ const getHeroContent = async () => {
   const savedContent = contentSetting?.value || {}
 
   if (!contentSetting) {
-    return null
+    return SERVER_HERO_CONTENT
   }
 
   return {
-    name: normalizeText(savedContent.name),
-    designation: Array.isArray(savedContent.designation) ? savedContent.designation : normalizeRoles(savedContent.designation),
-    description: normalizeText(savedContent.description),
-    image: normalizeImage(savedContent.image)
+    name: normalizeText(savedContent.name) || SERVER_HERO_CONTENT.name,
+    designation: normalizeRoles(savedContent.designation).length ? normalizeRoles(savedContent.designation) : SERVER_HERO_CONTENT.designation,
+    description: normalizeText(savedContent.description) || SERVER_HERO_CONTENT.description,
+    image: normalizeImage(savedContent.image) || SERVER_HERO_CONTENT.image
   }
 }
 
 router.get('/hero', async (req, res) => {
   try {
+    setPublicDataCache(res)
     res.json({ content: await getHeroContent() })
   } catch (err) {
     res.status(500).json({ message: 'Unable to load hero content' })
@@ -135,6 +146,7 @@ router.delete('/admin/hero', authMiddleware, async (req, res) => {
 
 router.get('/gallery', async (req, res) => {
   try {
+    setPublicDataCache(res)
     const images = await GalleryImage.find().sort({ createdAt: -1 }).lean()
     res.json({ images: images.map(serializeGalleryImage) })
   } catch (err) {

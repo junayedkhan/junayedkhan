@@ -2,9 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import api from '../../utils/api';
 import { ImageWithLoader } from '../ImageWithLoader';
+import Icon from '../Icon'
 
 const ITEMS_PER_PAGE = 8;
 const LIKE_STORAGE_KEY = "gallery-likes";
+const GALLERY_CACHE_KEY = "site-gallery-items";
+
+const readGalleryCache = () => {
+    try {
+        const cached = JSON.parse(localStorage.getItem(GALLERY_CACHE_KEY));
+        return Array.isArray(cached?.images) ? cached.images : [];
+    } catch {
+        return [];
+    }
+};
+
+const writeGalleryCache = (images) => {
+    try {
+        localStorage.setItem(GALLERY_CACHE_KEY, JSON.stringify({ images, savedAt: Date.now() }));
+    } catch {
+        // Cache is optional. The live API still drives the final data.
+    }
+};
 
 const requestWithFallback = async (primaryRequest, fallbackRequest) => {
     try {
@@ -22,10 +41,12 @@ const Portfolio = () => {
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
     const [openModel, setopenModel] = useState(false);
     const [data, setData] = useState({});
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [zoom, setZoom] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0, panX: 0, panY: 0 });
+    const [pinchStart, setPinchStart] = useState(null);
     const [savedLikes, setSavedLikes] = useState(() => {
         try {
             const storedLikes = localStorage.getItem(LIKE_STORAGE_KEY);
@@ -34,8 +55,8 @@ const Portfolio = () => {
             return {};
         }
     });
-    const [adminGalleryItems, setAdminGalleryItems] = useState([]);
-    const [isGalleryLoading, setIsGalleryLoading] = useState(true);
+    const [adminGalleryItems, setAdminGalleryItems] = useState(() => readGalleryCache());
+    const [isGalleryLoading, setIsGalleryLoading] = useState(() => !readGalleryCache().length);
 
     const galleryContent = adminGalleryItems;
     const visibleGallery = galleryContent.slice(0, visibleCount);
@@ -45,8 +66,9 @@ const Portfolio = () => {
         setVisibleCount((current) => Math.min(current + ITEMS_PER_PAGE, galleryContent.length));
     };
 
-    const openGalleryImage = (item) => {
+    const openGalleryImage = (item, index = 0) => {
         setData(item);
+        setActiveImageIndex(index);
         setZoom(1);
         setPan({ x: 0, y: 0 });
         setopenModel(true);
@@ -55,9 +77,24 @@ const Portfolio = () => {
     const closeGalleryImage = () => {
         setopenModel(false);
         setIsDragging(false);
+        setPinchStart(null);
         setZoom(1);
         setPan({ x: 0, y: 0 });
     };
+
+    const showGalleryImageAt = (nextIndex) => {
+        if (!galleryContent.length) return;
+        const normalizedIndex = (nextIndex + galleryContent.length) % galleryContent.length;
+        setActiveImageIndex(normalizedIndex);
+        setData(galleryContent[normalizedIndex]);
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
+        setIsDragging(false);
+        setPinchStart(null);
+    };
+
+    const showPreviousImage = () => showGalleryImageAt(activeImageIndex - 1);
+    const showNextImage = () => showGalleryImageAt(activeImageIndex + 1);
 
     useEffect(() => {
         if (!openModel) return undefined;
@@ -74,18 +111,34 @@ const Portfolio = () => {
     }, [openModel]);
 
     useEffect(() => {
+        if (!openModel) return undefined;
+
+        const handleKeyDown = (event) => {
+            if (event.key === "ArrowLeft") showPreviousImage();
+            if (event.key === "ArrowRight") showNextImage();
+            if (event.key === "Escape") closeGalleryImage();
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [openModel, activeImageIndex, galleryContent]);
+
+    useEffect(() => {
         let active = true;
-        setIsGalleryLoading(true);
+        if (!adminGalleryItems.length) setIsGalleryLoading(true);
 
         requestWithFallback(
             () => api.get("/site/gallery"),
             () => api.get("/gallery")
         )
             .then((res) => {
-                if (active) setAdminGalleryItems(res.data.images || []);
+                if (!active) return;
+                const images = res.data.images || [];
+                setAdminGalleryItems(images);
+                writeGalleryCache(images);
             })
             .catch(() => {
-                if (active) setAdminGalleryItems([]);
+                if (active && !adminGalleryItems.length) setAdminGalleryItems([]);
             })
             .finally(() => {
                 if (active) setIsGalleryLoading(false);
@@ -132,6 +185,50 @@ const Portfolio = () => {
     const handlePreviewWheel = (event) => {
         event.preventDefault();
         updateZoom(zoom + (event.deltaY < 0 ? 0.5 : -0.5));
+    };
+
+    const getTouchDistance = (touches) => {
+        const [first, second] = touches;
+        return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+    };
+
+    const getTouchCenter = (touches) => {
+        const [first, second] = touches;
+        return {
+            x: (first.clientX + second.clientX) / 2,
+            y: (first.clientY + second.clientY) / 2
+        };
+    };
+
+    const handlePreviewTouchStart = (event) => {
+        if (event.touches.length === 2) {
+            event.preventDefault();
+            setIsDragging(false);
+            setPinchStart({
+                distance: getTouchDistance(event.touches),
+                zoom,
+                center: getTouchCenter(event.touches),
+                pan
+            });
+        }
+    };
+
+    const handlePreviewTouchMove = (event) => {
+        if (event.touches.length !== 2 || !pinchStart) return;
+        event.preventDefault();
+        const nextDistance = getTouchDistance(event.touches);
+        const nextCenter = getTouchCenter(event.touches);
+        const nextZoom = Math.min(Math.max(pinchStart.zoom * (nextDistance / pinchStart.distance), 1), 100);
+        setZoom(nextZoom);
+        setPan({
+            x: pinchStart.pan.x + nextCenter.x - pinchStart.center.x,
+            y: pinchStart.pan.y + nextCenter.y - pinchStart.center.y
+        });
+    };
+
+    const handlePreviewTouchEnd = () => {
+        setPinchStart(null);
+        setIsDragging(false);
     };
 
     const handleLike = async (event, item) => {
@@ -199,29 +296,29 @@ const Portfolio = () => {
 
 	return (
         <>
-        <section className="portfolio">
-            <div className="title_section">
-                <span className="title_bg">gallery</span>
-                <h1 className="title" >my <span>gallery</span></h1>
+        <section className="portfolio min-h-screen pb-20">
+            <div className="title_section relative flex min-h-32 items-center justify-center">
+                <span className="title_bg absolute text-6xl font-black uppercase text-ink/5 md:text-8xl">gallery</span>
+                <h1 className="title relative text-3xl font-black uppercase text-ink md:text-5xl" >my <span className="text-personal">gallery</span></h1>
             </div>
             <div className="main_content">
-                <div className="container">
-                    <div className="gallery_intro">
+                <div className="mx-auto max-w-7xl px-4">
+                    <div className="gallery_intro classic-frame mx-auto mb-8 max-w-5xl rounded-[1.75rem] border border-white/70 bg-vellum/70 p-8 text-center shadow-classic backdrop-blur">
                         <div>
-                            <span className="gallery_eyebrow">visual diary</span>
-                            <h2>Captured moments from roads, places, and quiet details.</h2>
+                            <span className="gallery_eyebrow inline-flex rounded-full bg-brass/10 px-4 py-2 text-xs font-extrabold uppercase tracking-[.18em] text-brass">visual diary</span>
+                            <h2 className="mt-4 text-3xl font-black leading-tight text-ink md:text-4xl">Captured moments from roads, places, and quiet details.</h2>
                         </div>
-                        <div className="gallery_meta">
-                            <span>{galleryContent.length} photos</span>
-                            <span>Travel memories</span>
-                            <span>Personal frames</span>
+                        <div className="gallery_meta mt-5 flex flex-wrap justify-center gap-2">
+                            <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-bold text-slate-600 ring-1 ring-ink/10">{galleryContent.length} photos</span>
+                            <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-bold text-slate-600 ring-1 ring-ink/10">Travel memories</span>
+                            <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-bold text-slate-600 ring-1 ring-ink/10">Personal frames</span>
                         </div>
                     </div>
 
-                    <div className="row gallery_grid">
+                    <div className="gallery_grid grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                         {isGalleryLoading ? (
                             Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
-                                <div className="col-lg-6 col-xl-4 col-md-6 col-12 _mb_20_" key={`gallery-skeleton-${index}`}>
+                                <div key={`gallery-skeleton-${index}`}>
                                     <article className="gallery_skeleton_card" aria-hidden="true">
                                         <span></span>
                                         <span></span>
@@ -231,13 +328,13 @@ const Portfolio = () => {
                             ))
                         ) : null}
                         {!isGalleryLoading && visibleGallery.map((item, index) => (
-                            <div className="col-lg-6 col-xl-4 col-md-6 col-12 _mb_20_" key={item.id}>
-                                <article className={`card gallery_card gallery_card_${(index % 3) + 1}`}>
-                                    <div className="inner">
+                            <div key={item.id}>
+                                <article className={`card gallery_card gallery_card_${(index % 3) + 1} overflow-hidden rounded-[1.5rem] bg-vellum/80 p-2 shadow-soft ring-1 ring-white/80 transition duration-300 hover:-translate-y-1 hover:shadow-classic`}>
+                                    <div className="inner relative">
                                         <button
                                             type="button"
-                                            className="card_thumbnail gallery_thumbnail"
-                                            onClick={() => openGalleryImage(item)}
+                                            className="card_thumbnail gallery_thumbnail overflow-hidden rounded-[1.25rem]"
+                                            onClick={() => openGalleryImage(item, index)}
                                             aria-label={`Open ${item.alt}`}
                                         >
                                             <ImageWithLoader src={item.img} alt={item.alt} />
@@ -248,11 +345,11 @@ const Portfolio = () => {
                                         </button>
                                         <button
                                             type="button"
-                                            className={isLiked(item) ? "gallery_like active" : "gallery_like"}
+                                            className={`${isLiked(item) ? "gallery_like active" : "gallery_like"} absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-vellum shadow-button`}
                                             onClick={(event) => handleLike(event, item)}
                                             aria-label={isLiked(item) ? "Unlike image" : "Like image"}
                                         >
-                                            <i className={isLiked(item) ? "fas fa-heart" : "far fa-heart"}></i>
+                                            <Icon icon={isLiked(item) ? "heart" : "heart-outline"} />
                                             <span>{getLikeCount(item)}</span>
                                         </button>
                                     </div>
@@ -260,9 +357,9 @@ const Portfolio = () => {
                             </div>
                         ))}
                         {!isGalleryLoading && !galleryContent.length ? (
-                            <div className="col-12">
+                            <div className="col-span-full">
                                 <div className="gallery_empty_state">
-                                    <i className="fas fa-images" aria-hidden="true"></i>
+                                    <Icon icon="images" />
                                     <strong>No gallery images yet</strong>
                                     <span>Uploaded images from the admin panel will appear here.</span>
                                 </div>
@@ -272,12 +369,12 @@ const Portfolio = () => {
 
                     <div className="gallery_actions">
                         {!isGalleryLoading && hasMoreItems ? (
-                            <button type="button" className="gallery_load_more" onClick={handleLoadMore}>
+                            <button type="button" className="gallery_load_more rounded-full bg-ink px-8 py-4 text-sm font-extrabold uppercase tracking-wide text-vellum shadow-button transition hover:-translate-y-1" onClick={handleLoadMore}>
                                 Load More Memories
                             </button>
                         ) : !isGalleryLoading && galleryContent.length ? (
                             <p className="gallery_end">
-                                <i className="fas fa-check" aria-hidden="true"></i>
+                                <Icon icon="check" />
                                 <span>All memories loaded</span>
                             </p>
                         ) : null}
@@ -286,46 +383,27 @@ const Portfolio = () => {
             </div>
         </section>
         {openModel ? createPortal((
-        <section className="react_model">
-            <div onClick={closeGalleryImage} className="react_model_overlay"></div>
-            <div className="react_model_inner">
+        <section className="react_model fixed inset-0 z-[3000] grid place-items-center p-4">
+            <div onClick={closeGalleryImage} className="react_model_overlay absolute inset-0 bg-ink/70 backdrop-blur-md"></div>
+            <div className="react_model_inner gallery_preview_modal relative z-10 max-h-[90vh] w-full max-w-6xl overflow-auto rounded-3xl bg-white p-4 shadow-soft">
                 <article className="gallery_details">
-                    <button type="button" onClick={closeGalleryImage} className="react_model_close" aria-label="Close image preview">
-                        <i className="fas fa-times" aria-hidden="true"></i>
+                    <button type="button" onClick={closeGalleryImage} className="react_model_close absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-full bg-personal text-white shadow-button" aria-label="Close image preview">
+                        <Icon icon="close" />
                     </button>
                     <div className="main_content">
-                        <div className="gallery_zoom_controls">
-                            <button type="button" onClick={() => updateZoom(zoom - 0.25)} aria-label="Zoom out">
-                                <i className="fas fa-search-minus" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" onClick={() => updateZoom(1)} aria-label="Reset zoom">
-                                <i className="fas fa-compress-arrows-alt" aria-hidden="true"></i>
-                            </button>
-                            <span className="gallery_zoom_value">{zoom.toFixed(2)}x / 100x</span>
-                            <label className="gallery_zoom_slider">
-                                <span>Zoom</span>
-                                <input
-                                    type="range"
-                                    min="1"
-                                    max="100"
-                                    step="0.25"
-                                    value={zoom}
-                                    onChange={(event) => updateZoom(event.target.value)}
-                                />
-                            </label>
-                            <button type="button" onClick={() => updateZoom(zoom + 1)} aria-label="Zoom in">
-                                <i className="fas fa-search-plus" aria-hidden="true"></i>
-                            </button>
-                        </div>
                         <div className="thumbnail">
                             <div
-                                className={`inner ${zoom > 1 ? "zoomed" : ""} ${isDragging ? "dragging" : ""}`}
+                                className={`inner gallery_preview_stage flex min-h-[50vh] items-center justify-center overflow-auto rounded-2xl bg-ink ${zoom > 1 ? "zoomed" : ""} ${isDragging ? "dragging" : ""}`}
                                 onPointerDown={handlePreviewPointerDown}
                                 onPointerMove={handlePreviewPointerMove}
                                 onPointerUp={stopPreviewDrag}
                                 onPointerCancel={stopPreviewDrag}
                                 onPointerLeave={stopPreviewDrag}
                                 onWheel={handlePreviewWheel}
+                                onTouchStart={handlePreviewTouchStart}
+                                onTouchMove={handlePreviewTouchMove}
+                                onTouchEnd={handlePreviewTouchEnd}
+                                onTouchCancel={handlePreviewTouchEnd}
                             >
                                 <ImageWithLoader
                                     src={data.img}
@@ -333,6 +411,19 @@ const Portfolio = () => {
                                     style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
                                 />
                             </div>
+                        </div>
+                        <div className="gallery_preview_thumbs" aria-label="Gallery thumbnails">
+                            {galleryContent.map((item, index) => (
+                                <button
+                                    type="button"
+                                    className={index === activeImageIndex ? "active" : ""}
+                                    onClick={() => showGalleryImageAt(index)}
+                                    aria-label={`Open image ${index + 1}`}
+                                    key={item.id || `${item.img}-${index}`}
+                                >
+                                    <img src={item.img} alt={item.alt || `Gallery thumbnail ${index + 1}`} loading="lazy" />
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </article>

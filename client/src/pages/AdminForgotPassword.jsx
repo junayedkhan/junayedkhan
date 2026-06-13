@@ -48,7 +48,13 @@ export default function AdminForgotPassword() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                if (message || resetLink) {
+                  setMessage("");
+                  setResetLink("");
+                }
+                setEmail(e.target.value);
+              }}
               autoComplete="email"
               required
             />

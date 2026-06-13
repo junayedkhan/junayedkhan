@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { authHeaders, clearToken } from "../utils/api";
+import Icon from '../component/Icon'
 
 const adminSections = [
-  { id: "overview", label: "Overview", icon: "fas fa-chart-line" },
-  { id: "hero", label: "Home", icon: "fas fa-home" },
-  { id: "resume", label: "Resume", icon: "fas fa-file-alt" },
-  { id: "gallery", label: "Gallery", icon: "fas fa-images" },
-  { id: "blogs", label: "Travel Blogs", icon: "fas fa-pen-nib" },
-  { id: "contact", label: "Contact", icon: "fas fa-address-card" },
-  { id: "account", label: "Account", icon: "fas fa-user-shield" },
+  { id: "overview", label: "Overview", icon: "chart" },
+  { id: "hero", label: "Home", icon: "home" },
+  { id: "resume", label: "Resume", icon: "file" },
+  { id: "gallery", label: "Gallery", icon: "images" },
+  { id: "blogs", label: "Travel Blogs", icon: "pen" },
+  { id: "contact", label: "Contact", icon: "address" },
+  { id: "account", label: "Account", icon: "user-shield" },
 ];
 
 const contentStats = [
-  { label: "Gallery Items", value: "Live", icon: "fas fa-images", helper: "Loaded from MongoDB" },
-  { label: "Travel Blogs", value: "9", icon: "fas fa-newspaper", helper: "Published article cards" },
-  { label: "Resume Tabs", value: "4", icon: "fas fa-layer-group", helper: "Info, education, skills, experience" },
-  { label: "Social Links", value: "3", icon: "fas fa-share-alt", helper: "Facebook, Twitter, LinkedIn" },
+  { label: "Gallery Items", value: "Live", icon: "images", helper: "Loaded from MongoDB" },
+  { label: "Travel Blogs", value: "Live", icon: "newspaper", helper: "Loaded from MongoDB" },
+  { label: "Resume Tabs", value: "4", icon: "layers", helper: "Info, education, skills, experience" },
+  { label: "Social Links", value: "3", icon: "share", helper: "Facebook, Twitter, LinkedIn" },
 ];
 
 const contentSections = {
@@ -41,8 +42,8 @@ const contentSections = {
   blogs: {
     eyebrow: "Journal page",
     title: "Travel Blog Manager",
-    description: "Travel articles with categories, dates, read time, excerpts, and detail pages.",
-    items: ["9 blog posts", "Categories include Travel Guide, Photography, City Walk", "6 posts shown first", "Slug-based article detail pages"],
+    description: "Create blogs with cover images, rich content blocks, links, comments, and publishing controls.",
+    items: ["MongoDB blog posts", "Cover and inline images", "Paragraph, quote, image, and link blocks", "Comment moderation"],
   },
   contact: {
     eyebrow: "Contact page",
@@ -60,6 +61,8 @@ const DEFAULT_HERO_CONTENT = {
 };
 const MAX_HERO_UPLOAD_SIZE = 2.5 * 1024 * 1024;
 const MAX_GALLERY_UPLOAD_SIZE = 3 * 1024 * 1024;
+const MAX_BLOG_UPLOAD_SIZE = 3 * 1024 * 1024;
+const MAX_BLOG_VIDEO_UPLOAD_SIZE = 5 * 1024 * 1024;
 const ADMIN_ACTIVE_SECTION_KEY = "admin-active-section";
 
 const emptyGalleryForm = {
@@ -68,6 +71,41 @@ const emptyGalleryForm = {
   location: "",
   mood: "",
   likes: 0,
+};
+
+const emptyBlogForm = {
+  title: "",
+  category: "",
+  excerpt: "",
+  coverImage: "",
+  readTime: "5 min read",
+  publishedAt: new Date().toISOString().slice(0, 10),
+  isPublished: true,
+  blocks: [
+    { uid: "block-1", label: 1, type: "paragraph", text: "", url: "", caption: "" },
+  ],
+};
+
+const createBlogBlockId = () => `block-${Date.now()}-${Math.round(Math.random() * 10000)}`;
+const getNextBlogBlockLabel = (blocks) => Math.max(0, ...blocks.map((block) => Number(block.label) || 0)) + 1;
+
+const normalizeBlogBlock = (block, index = 0) => ({
+  uid: block.uid || `block-${index + 1}`,
+  label: block.label || index + 1,
+  type: block.type || "paragraph",
+  text: block.text || "",
+  url: block.url || "",
+  caption: block.caption || "",
+});
+
+const getBlogCardSummary = (blog) => {
+  const blocks = Array.isArray(blog.blocks) ? blog.blocks : [];
+  const paragraph = blocks.find((block) => block.type === "paragraph" && block.text)?.text;
+  const quote = blocks.find((block) => block.type === "quote" && block.text)?.text;
+  const link = blocks.find((block) => block.type === "link" && block.text)?.text;
+  const caption = blocks.find((block) => (block.type === "image" || block.type === "video") && block.caption)?.caption;
+
+  return String(blog.excerpt || paragraph || quote || link || caption || "No summary added yet.").slice(0, 180);
 };
 
 const AdminSkeleton = ({ variant = "panel" }) => (
@@ -79,11 +117,11 @@ const AdminSkeleton = ({ variant = "panel" }) => (
   </div>
 );
 
-const getApiErrorMessage = (error, fallback) => {
+const getApiErrorMessage = (error, fallback, notFoundMessage = "API route not found. Restart or redeploy the backend server.") => {
   const responseMessage = error.response?.data?.message;
 
   if (responseMessage) return responseMessage;
-  if (error.response?.status === 404) return "Gallery API not found. Restart or redeploy the backend server.";
+  if (error.response?.status === 404) return notFoundMessage;
   if (error.response?.status === 413) return "Image is too large for the server. Try a smaller image.";
   if (error.response?.status === 401) return "Admin session expired. Please login again.";
   if (error.message === "Network Error") return "Could not reach the backend server.";
@@ -150,6 +188,19 @@ export default function AdminDashboard() {
   const [isLoadingGallery, setIsLoadingGallery] = useState(false);
   const [isSavingGallery, setIsSavingGallery] = useState(false);
   const [galleryDeleteTarget, setGalleryDeleteTarget] = useState(null);
+  const [blogItems, setBlogItems] = useState([]);
+  const [blogComments, setBlogComments] = useState([]);
+  const [blogForm, setBlogForm] = useState(emptyBlogForm);
+  const [editingBlogId, setEditingBlogId] = useState("");
+  const [blogMessage, setBlogMessage] = useState("");
+  const [blogUploadState, setBlogUploadState] = useState("idle");
+  const [isLoadingBlogs, setIsLoadingBlogs] = useState(false);
+  const [isSavingBlog, setIsSavingBlog] = useState(false);
+  const [pendingCommentVisibility, setPendingCommentVisibility] = useState({});
+  const [activeBlogBlockIndex, setActiveBlogBlockIndex] = useState(0);
+  const [activeBlogSelection, setActiveBlogSelection] = useState({ start: 0, end: 0 });
+  const [draggedBlogBlockIndex, setDraggedBlogBlockIndex] = useState(null);
+  const [blogBlockDropIndex, setBlogBlockDropIndex] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -237,6 +288,31 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
+    let active = true;
+    setIsLoadingBlogs(true);
+
+    Promise.all([
+      api.get("/blogs/admin", { headers: authHeaders() }),
+      api.get("/blogs/admin/comments", { headers: authHeaders() }),
+    ])
+      .then(([blogsRes, commentsRes]) => {
+        if (!active) return;
+        setBlogItems(blogsRes.data.blogs || []);
+        setBlogComments(commentsRes.data.comments || []);
+      })
+      .catch(() => {
+        if (active) setBlogMessage("Unable to load blog data.");
+      })
+      .finally(() => {
+        if (active) setIsLoadingBlogs(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!galleryMessage) return undefined;
 
     const messageTimer = setTimeout(() => {
@@ -248,6 +324,19 @@ export default function AdminDashboard() {
 
     return () => clearTimeout(messageTimer);
   }, [galleryMessage]);
+
+  useEffect(() => {
+    if (!blogMessage) return undefined;
+
+    const messageTimer = setTimeout(() => {
+      setBlogMessage("");
+      setBlogUploadState((current) => (
+        current === "saved" || current === "error" ? "idle" : current
+      ));
+    }, 4500);
+
+    return () => clearTimeout(messageTimer);
+  }, [blogMessage]);
 
   useEffect(() => {
     if (mobileNavOpen || passwordModalOpen || accountModalOpen || emailVerifyModalOpen) {
@@ -324,6 +413,7 @@ export default function AdminDashboard() {
   };
 
   const updateAccountField = (field, value) => {
+    setEmailMessage("");
     setAccountForm((current) => ({
       ...current,
       [field]: value,
@@ -619,6 +709,18 @@ export default function AdminDashboard() {
     reader.readAsDataURL(file);
   };
 
+  const updateHeroField = (field, value) => {
+    setHeroImageMessage("");
+    setHeroUploadState((current) => (current === "error" ? "idle" : current));
+    setHeroForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const updateGalleryField = (field, value) => {
+    setGalleryMessage("");
+    setGalleryUploadState((current) => (current === "error" ? "idle" : current));
+    setGalleryForm((current) => ({ ...current, [field]: value }));
+  };
+
   const uploadGalleryImage = (event) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -686,7 +788,7 @@ export default function AdminDashboard() {
       setGalleryMessage(res.data.message || "Gallery image published.");
     } catch (err) {
       setGalleryUploadState("error");
-      setGalleryMessage(getApiErrorMessage(err, "Unable to publish gallery image."));
+      setGalleryMessage(getApiErrorMessage(err, "Unable to publish gallery image.", "Gallery API not found. Restart or redeploy the backend server."));
     } finally {
       setIsSavingGallery(false);
     }
@@ -703,7 +805,7 @@ export default function AdminDashboard() {
       setGalleryItems((current) => current.filter((item) => item.id !== itemId));
       setGalleryMessage(res.data.message || "Gallery image removed.");
     } catch (err) {
-      setGalleryMessage(getApiErrorMessage(err, "Unable to remove gallery image."));
+      setGalleryMessage(getApiErrorMessage(err, "Unable to remove gallery image.", "Gallery API not found. Restart or redeploy the backend server."));
     } finally {
       setGalleryDeleteTarget(null);
     }
@@ -731,7 +833,386 @@ export default function AdminDashboard() {
       )));
       setGalleryMessage("Like count saved to MongoDB.");
     } catch (err) {
-      setGalleryMessage(getApiErrorMessage(err, "Unable to update likes."));
+      setGalleryMessage(getApiErrorMessage(err, "Unable to update likes.", "Gallery API not found. Restart or redeploy the backend server."));
+    }
+  };
+
+  const readBlogImageFile = (file, onReady) => {
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setBlogMessage("Upload a JPG, PNG, or WebP image.");
+      setBlogUploadState("error");
+      return;
+    }
+
+    if (file.size > MAX_BLOG_UPLOAD_SIZE) {
+      setBlogMessage("Blog image must be under 3 MB.");
+      setBlogUploadState("error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      onReady(String(reader.result || ""));
+      setBlogMessage("Image preview ready.");
+      setBlogUploadState("ready");
+    };
+    reader.onerror = () => {
+      setBlogMessage("Unable to read image file.");
+      setBlogUploadState("error");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const readBlogMediaFile = (file, index = 0) => new Promise((resolve, reject) => {
+    if (!file) {
+      reject(new Error("No file selected."));
+      return;
+    }
+
+    const isImage = ["image/jpeg", "image/png", "image/webp"].includes(file.type);
+    const isVideo = ["video/mp4", "video/webm", "video/ogg"].includes(file.type);
+
+    if (!isImage && !isVideo) {
+      reject(new Error("Upload JPG, PNG, WebP, MP4, WebM, or OGG files."));
+      return;
+    }
+
+    if (isImage && file.size > MAX_BLOG_UPLOAD_SIZE) {
+      reject(new Error("Blog image must be under 3 MB."));
+      return;
+    }
+
+    if (isVideo && file.size > MAX_BLOG_VIDEO_UPLOAD_SIZE) {
+      reject(new Error("Blog video must be under 5 MB."));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => resolve({
+      uid: createBlogBlockId(),
+      label: 0,
+      type: isVideo ? "video" : "image",
+      text: "",
+      url: String(reader.result || ""),
+      caption: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " "),
+      orderIndex: index,
+    });
+    reader.onerror = () => reject(new Error("Unable to read media file."));
+    reader.readAsDataURL(file);
+  });
+
+  const uploadBlogCover = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    setBlogMessage("");
+    readBlogImageFile(file, (image) => {
+      setBlogForm((current) => ({ ...current, coverImage: image }));
+    });
+  };
+
+  const uploadBlogBlockImage = async (event, index) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    setBlogMessage("");
+
+    try {
+      const media = await readBlogMediaFile(file);
+      setBlogForm((current) => ({
+        ...current,
+        blocks: current.blocks.map((block, blockIndex) => (
+          blockIndex === index
+            ? { ...block, type: media.type, url: media.url, caption: block.caption || media.caption }
+            : block
+        )),
+      }));
+      setBlogMessage("Media preview ready.");
+      setBlogUploadState("ready");
+    } catch (error) {
+      setBlogMessage(error.message || "Unable to read media file.");
+      setBlogUploadState("error");
+    }
+  };
+
+  const uploadInlineBlogImage = async (event) => {
+    const files = Array.from(event.target.files || []);
+    event.target.value = "";
+    setBlogMessage("");
+
+    if (!files.length) return;
+
+    try {
+      const results = await Promise.allSettled(files.map((file, index) => readBlogMediaFile(file, index)));
+      const mediaBlocks = results
+        .filter((result) => result.status === "fulfilled")
+        .map((result) => result.value);
+
+      if (!mediaBlocks.length) {
+        setBlogMessage(results.find((result) => result.status === "rejected")?.reason?.message || "Unable to upload selected media.");
+        setBlogUploadState("error");
+        return;
+      }
+
+      setBlogForm((current) => {
+        const targetIndex = Math.min(Math.max(activeBlogBlockIndex, 0), current.blocks.length - 1);
+        const nextBlocks = [...current.blocks];
+        const firstLabel = getNextBlogBlockLabel(current.blocks);
+        nextBlocks.splice(
+          targetIndex + 1,
+          0,
+          ...mediaBlocks.map((block, index) => ({ ...block, label: firstLabel + index }))
+        );
+        return { ...current, blocks: nextBlocks };
+      });
+      setBlogMessage(`${mediaBlocks.length} media item${mediaBlocks.length > 1 ? "s" : ""} added.`);
+      setBlogUploadState("ready");
+    } catch (error) {
+      setBlogMessage(error.message || "Unable to upload selected media.");
+      setBlogUploadState("error");
+    }
+  };
+
+  const getInlineImagesFromText = (text) => {
+    const images = [];
+    const imagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g;
+    let match;
+
+    while ((match = imagePattern.exec(String(text || ""))) !== null) {
+      images.push({ caption: match[1], url: match[2] });
+    }
+
+    return images;
+  };
+
+  const updateBlogBlock = (index, updates) => {
+    setBlogForm((current) => ({
+      ...current,
+      blocks: current.blocks.map((block, blockIndex) => (
+        blockIndex === index ? { ...block, ...updates } : block
+      )),
+    }));
+  };
+
+  const addBlogBlock = (type) => {
+    setBlogForm((current) => {
+      const nextBlock = type === "link"
+        ? { uid: createBlogBlockId(), label: getNextBlogBlockLabel(current.blocks), type, text: "", url: "", caption: "" }
+        : type === "image"
+          ? { uid: createBlogBlockId(), label: getNextBlogBlockLabel(current.blocks), type, text: "", url: "", caption: "" }
+          : { uid: createBlogBlockId(), label: getNextBlogBlockLabel(current.blocks), type, text: "", url: "", caption: "" };
+
+      return { ...current, blocks: [...current.blocks, nextBlock] };
+    });
+  };
+
+  const moveBlogBlock = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex || fromIndex === null) return;
+
+    setBlogForm((current) => {
+      const nextBlocks = [...current.blocks];
+      const [movedBlock] = nextBlocks.splice(fromIndex, 1);
+      const targetIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
+      nextBlocks.splice(targetIndex, 0, movedBlock);
+      return { ...current, blocks: nextBlocks };
+    });
+    setActiveBlogBlockIndex(fromIndex < toIndex ? toIndex - 1 : toIndex);
+  };
+
+  const handleBlogBlockDrag = (event) => {
+    const edgeSize = 120;
+    const scrollSpeed = 18;
+
+    if (event.clientY < edgeSize) {
+      window.scrollBy({ top: -scrollSpeed, behavior: "auto" });
+    }
+
+    if (window.innerHeight - event.clientY < edgeSize) {
+      window.scrollBy({ top: scrollSpeed, behavior: "auto" });
+    }
+  };
+
+  const removeBlogBlock = (index) => {
+    setBlogForm((current) => ({
+      ...current,
+      blocks: current.blocks.length > 1 ? current.blocks.filter((_, blockIndex) => blockIndex !== index) : current.blocks,
+    }));
+  };
+
+  const resetBlogForm = () => {
+    setBlogForm(emptyBlogForm);
+    setEditingBlogId("");
+    setBlogUploadState("idle");
+    setBlogMessage("");
+  };
+
+  const editBlogItem = (blog) => {
+    navigate("/admin/posts/new", { state: { blog } });
+  };
+
+  const saveBlogItem = async (event) => {
+    event.preventDefault();
+    setBlogMessage("");
+
+    if (!blogForm.title.trim()) {
+      setBlogMessage("Add a blog title before publishing.");
+      setBlogUploadState("error");
+      return;
+    }
+
+    if (!blogForm.coverImage) {
+      setBlogMessage("Add a cover image before publishing.");
+      setBlogUploadState("error");
+      return;
+    }
+
+    const hasContentBlock = blogForm.blocks.some((block) => {
+      if (block.type === "image" || block.type === "video") return String(block.url || "").trim();
+      if (block.type === "link") return String(block.text || "").trim() && String(block.url || "").trim();
+      return String(block.text || "").trim();
+    });
+
+    if (!hasContentBlock) {
+      setBlogMessage("Add at least one paragraph, quote, image, or link block before publishing.");
+      setBlogUploadState("error");
+      return;
+    }
+
+    setIsSavingBlog(true);
+
+    try {
+      const payload = {
+        ...blogForm,
+        title: blogForm.title.trim(),
+        category: blogForm.category.trim(),
+        excerpt: blogForm.excerpt.trim(),
+        readTime: blogForm.readTime.trim(),
+        blocks: blogForm.blocks.map((block) => ({
+          type: block.type,
+          text: String(block.text || "").trim(),
+          url: String(block.url || "").trim(),
+          caption: String(block.caption || "").trim(),
+        })),
+      };
+      const res = editingBlogId
+        ? await api.put(`/blogs/admin/${editingBlogId}`, payload, { headers: authHeaders() })
+        : await api.post("/blogs/admin", payload, { headers: authHeaders() });
+
+      setBlogItems((current) => (
+        editingBlogId
+          ? current.map((item) => (item.id === res.data.blog.id ? res.data.blog : item))
+          : [res.data.blog, ...current]
+      ));
+      resetBlogForm();
+      setBlogMessage(res.data.message || "Blog saved.");
+      setBlogUploadState("saved");
+    } catch (err) {
+      const status = err.response?.status;
+      const details = status ? ` Status: ${status}.` : "";
+      setBlogMessage(`${getApiErrorMessage(err, "Unable to save blog.", "Blog API not found. Restart or redeploy the backend server.")}${details}`);
+      setBlogUploadState("error");
+    } finally {
+      setIsSavingBlog(false);
+    }
+  };
+
+  const deleteBlogItem = async (blog) => {
+    if (!window.confirm(`Delete "${blog.title}" and its comments?`)) return;
+
+    try {
+      const res = await api.delete(`/blogs/admin/${blog.id}`, { headers: authHeaders() });
+      setBlogItems((current) => current.filter((item) => item.id !== blog.id));
+      setBlogComments((current) => current.filter((comment) => comment.blogId !== blog.id));
+      if (editingBlogId === blog.id) resetBlogForm();
+      setBlogMessage(res.data.message || "Blog deleted.");
+    } catch (err) {
+      setBlogMessage(getApiErrorMessage(err, "Unable to delete blog.", "Blog API not found. Restart or redeploy the backend server."));
+    }
+  };
+
+  const deleteBlogComment = async (comment) => {
+    if (!window.confirm(`Delete comment from ${comment.name}?`)) return;
+
+    try {
+      const res = await api.delete(`/blogs/admin/comments/${comment.id}`, { headers: authHeaders() });
+      setBlogComments((current) => current.filter((item) => item.id !== comment.id));
+      setBlogItems((current) => current.map((blog) => (
+        blog.id === comment.blogId ? { ...blog, commentCount: Math.max((blog.commentCount || 0) - 1, 0) } : blog
+      )));
+      setBlogMessage(res.data.message || "Comment deleted.");
+    } catch (err) {
+      setBlogMessage(getApiErrorMessage(err, "Unable to delete comment.", "Blog API not found. Restart or redeploy the backend server."));
+    }
+  };
+
+  const updateStoredComment = (updatedComment) => {
+    setBlogComments((current) => current.map((comment) => (
+      comment.id === updatedComment.id
+        ? {
+          ...comment,
+          ...updatedComment,
+          blogTitle: comment.blogTitle,
+          blogSlug: comment.blogSlug,
+        }
+        : comment
+    )));
+  };
+
+  const toggleBlogCommentVisibility = async (comment) => {
+    const nextHidden = !comment.isHidden;
+    const pendingKey = `comment-${comment.id}`;
+    if (pendingCommentVisibility[pendingKey]) return;
+
+    setBlogMessage("");
+    setPendingCommentVisibility((current) => ({ ...current, [pendingKey]: true }));
+
+    try {
+      const res = await api.patch(
+        `/blogs/admin/comments/${comment.id}/visibility`,
+        { isHidden: nextHidden },
+        { headers: authHeaders() }
+      );
+      updateStoredComment(res.data.comment);
+      setBlogMessage(res.data.message || "Comment updated.");
+    } catch (err) {
+      setBlogMessage(getApiErrorMessage(err, "Unable to update comment.", "Blog API not found. Restart or redeploy the backend server."));
+    } finally {
+      setPendingCommentVisibility((current) => ({ ...current, [pendingKey]: false }));
+    }
+  };
+
+  const toggleBlogReplyVisibility = async (comment, reply) => {
+    const nextHidden = !reply.isHidden;
+    const pendingKey = `reply-${reply.id}`;
+    if (pendingCommentVisibility[pendingKey]) return;
+
+    setBlogMessage("");
+    setPendingCommentVisibility((current) => ({ ...current, [pendingKey]: true }));
+
+    try {
+      const res = await api.patch(
+        `/blogs/admin/comments/${comment.id}/replies/${reply.id}/visibility`,
+        { isHidden: nextHidden },
+        { headers: authHeaders() }
+      );
+      updateStoredComment(res.data.comment);
+      setBlogMessage(res.data.message || "Reply updated.");
+    } catch (err) {
+      setBlogMessage(getApiErrorMessage(err, "Unable to update reply.", "Blog API not found. Restart or redeploy the backend server."));
+    } finally {
+      setPendingCommentVisibility((current) => ({ ...current, [pendingKey]: false }));
+    }
+  };
+
+  const deleteBlogReply = async (comment, reply) => {
+    if (!window.confirm("Delete this reply?")) return;
+
+    try {
+      const res = await api.delete(`/blogs/admin/comments/${comment.id}/replies/${reply.id}`, { headers: authHeaders() });
+      updateStoredComment(res.data.comment);
+      setBlogMessage(res.data.message || "Reply deleted.");
+    } catch (err) {
+      setBlogMessage(getApiErrorMessage(err, "Unable to delete reply.", "Blog API not found. Restart or redeploy the backend server."));
     }
   };
 
@@ -780,14 +1261,14 @@ export default function AdminDashboard() {
                 </p>
               </div>
               <button type="button" onClick={closePasswordModal} aria-label="Close">
-                <i className="fas fa-times" aria-hidden="true"></i>
+                <Icon icon="close" />
               </button>
             </header>
 
             {!isEmailVerified ? (
               <div className="admin_modal_body">
                 <div className="admin_modal_email">
-                  <i className="fas fa-envelope-open-text" aria-hidden="true"></i>
+                  <Icon icon="mail-open-text" />
                   <div>
                     <span>Verification email</span>
                     <strong>{user?.email || "No recovery email saved"}</strong>
@@ -800,7 +1281,7 @@ export default function AdminDashboard() {
                   onClick={sendVerificationCode}
                   disabled={isSendingCode || !user?.email}
                 >
-                  <i className="fas fa-paper-plane" aria-hidden="true"></i>
+                  <Icon icon="send" />
                   <span>{isSendingCode ? "Sending..." : "Send verification code"}</span>
                 </button>
 
@@ -812,7 +1293,11 @@ export default function AdminDashboard() {
                       inputMode="numeric"
                       maxLength={6}
                       value={verificationCode}
-                      onChange={(e) => setVerificationCode(e.target.value)}
+                      onChange={(e) => {
+                        setVerificationMessage("");
+                        setResetMessage("");
+                        setVerificationCode(e.target.value);
+                      }}
                       placeholder="123456"
                       required
                     />
@@ -827,7 +1312,7 @@ export default function AdminDashboard() {
             ) : (
               <div className="admin_modal_body">
                 <div className="admin_profile_verified_state">
-                  <i className="fas fa-check-circle" aria-hidden="true"></i>
+                  <Icon icon="check-circle" />
                   <span>Email verified. You can edit the password now.</span>
                 </div>
 
@@ -837,7 +1322,10 @@ export default function AdminDashboard() {
                     <input
                       type="password"
                       value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      onChange={(e) => {
+                        setResetMessage("");
+                        setNewPassword(e.target.value);
+                      }}
                       autoComplete="new-password"
                       minLength={8}
                       required
@@ -848,14 +1336,17 @@ export default function AdminDashboard() {
                     <input
                       type="password"
                       value={confirmNewPassword}
-                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      onChange={(e) => {
+                        setResetMessage("");
+                        setConfirmNewPassword(e.target.value);
+                      }}
                       autoComplete="new-password"
                       minLength={8}
                       required
                     />
                   </label>
                   <button type="submit" disabled={isSavingPassword}>
-                    {isSavingPassword ? "Saving..." : "Set New Password"}
+                    Set New Password
                   </button>
                 </form>
 
@@ -882,7 +1373,7 @@ export default function AdminDashboard() {
                 <p>Update name, email, age, and address. Email changes require verification first.</p>
               </div>
               <button type="button" onClick={cancelAccountEdit} aria-label="Close">
-                <i className="fas fa-times" aria-hidden="true"></i>
+                <Icon icon="close" />
               </button>
             </header>
 
@@ -936,7 +1427,7 @@ export default function AdminDashboard() {
                     Cancel
                   </button>
                   <button type="submit" disabled={isSavingEmail}>
-                    {isSavingEmail ? "Saving..." : "Save Changes"}
+                    Save Changes
                   </button>
                 </div>
               </form>
@@ -961,13 +1452,13 @@ export default function AdminDashboard() {
                 <p>Send a code to your current recovery email before saving the new email address.</p>
               </div>
               <button type="button" onClick={closeEmailVerifyModal} aria-label="Close">
-                <i className="fas fa-times" aria-hidden="true"></i>
+                <Icon icon="close" />
               </button>
             </header>
 
             <div className="admin_modal_body">
               <div className="admin_modal_email">
-                <i className="fas fa-envelope-open-text" aria-hidden="true"></i>
+                <Icon icon="mail-open-text" />
                 <div>
                   <span>Verification email</span>
                   <strong>{user?.email || "No recovery email saved"}</strong>
@@ -989,7 +1480,10 @@ export default function AdminDashboard() {
                     inputMode="numeric"
                     maxLength={6}
                     value={emailEditCode}
-                    onChange={(e) => setEmailEditCode(e.target.value)}
+                    onChange={(e) => {
+                      setEmailEditMessage("");
+                      setEmailEditCode(e.target.value);
+                    }}
                     placeholder="123456"
                     required
                   />
@@ -1015,7 +1509,7 @@ export default function AdminDashboard() {
           />
           <section className="admin_confirm_modal" role="dialog" aria-modal="true" aria-label="Confirm hero action">
             <div className={heroConfirmAction === "reset" ? "admin_confirm_icon danger" : "admin_confirm_icon"}>
-              <i className={heroConfirmAction === "reset" ? "fas fa-rotate-left" : "fas fa-save"} aria-hidden="true"></i>
+              <Icon icon={heroConfirmAction === "reset" ? "reset" : "save"} />
             </div>
             <p className="admin_auth_kicker">Hero section</p>
             <h2>{heroConfirmAction === "reset" ? "Reset content?" : "Save changes?"}</h2>
@@ -1049,7 +1543,7 @@ export default function AdminDashboard() {
           />
           <section className="admin_confirm_modal" role="dialog" aria-modal="true" aria-label="Confirm gallery delete">
             <div className="admin_confirm_icon danger">
-              <i className="fas fa-trash" aria-hidden="true"></i>
+              <Icon icon="trash" />
             </div>
             <p className="admin_auth_kicker">Gallery image</p>
             <h2>Delete image?</h2>
@@ -1076,7 +1570,7 @@ export default function AdminDashboard() {
               onClick={() => selectSection(section.id)}
               key={section.id}
             >
-              <i className={section.icon} aria-hidden="true"></i>
+              <Icon icon={section.icon} />
               <span>{section.label}</span>
             </button>
           ))}
@@ -1089,6 +1583,12 @@ export default function AdminDashboard() {
             <p className="admin_auth_kicker">Content admin</p>
             <h1>{adminSections.find((section) => section.id === activeSection)?.label || "Overview"}</h1>
           </div>
+          {activeSection === "blogs" ? (
+            <button type="button" className="admin_header_action" onClick={() => navigate("/admin/posts/new")}>
+              <Icon icon="plus" />
+              Add New Post
+            </button>
+          ) : null}
         </header>
 
         {activeSection === "overview" ? (
@@ -1099,7 +1599,7 @@ export default function AdminDashboard() {
               <div className="admin_stats">
                 {contentStats.map((card) => (
                   <article className="admin_stat_card" key={card.label}>
-                    <i className={card.icon} aria-hidden="true"></i>
+                    <Icon icon={card.icon} />
                     <span>{card.label}</span>
                     <strong>{card.value}</strong>
                     <p>{card.helper}</p>
@@ -1138,7 +1638,7 @@ export default function AdminDashboard() {
                 <p>{contentSections[activeSection].description}</p>
               </div>
               <a href={activeSection === "hero" ? "/" : `/${activeSection === "resume" ? "about" : activeSection}`} target="_blank" rel="noreferrer">
-                <i className="fas fa-external-link-alt" aria-hidden="true"></i>
+                <Icon icon="external" />
                 <span>View public page</span>
               </a>
             </div>
@@ -1146,7 +1646,7 @@ export default function AdminDashboard() {
             <div className="admin_editor_list">
               {contentSections[activeSection].items.map((item) => (
                 <article key={item}>
-                  <i className="fas fa-check" aria-hidden="true"></i>
+                  <Icon icon="check" />
                   <span>{item}</span>
                 </article>
               ))}
@@ -1164,12 +1664,12 @@ export default function AdminDashboard() {
                 >
                   {heroForm.image ? (
                     <span>
-                      <i className="fas fa-image" aria-hidden="true"></i>
+                      <Icon icon="image" />
                       Live preview
                     </span>
                   ) : (
                     <div className="admin_gallery_preview_empty">
-                      <i className="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                      <Icon icon="cloud-upload" />
                       <strong>Hero image preview</strong>
                       <p>Upload an image to publish the hero section.</p>
                     </div>
@@ -1182,7 +1682,7 @@ export default function AdminDashboard() {
                       <input
                         type="text"
                         value={heroForm.name}
-                        onChange={(e) => setHeroForm((current) => ({ ...current, name: e.target.value }))}
+                        onChange={(e) => updateHeroField("name", e.target.value)}
                         placeholder="Hero display name"
                         required
                       />
@@ -1192,7 +1692,7 @@ export default function AdminDashboard() {
                       <input
                         type="text"
                         value={heroForm.designation}
-                        onChange={(e) => setHeroForm((current) => ({ ...current, designation: e.target.value }))}
+                        onChange={(e) => updateHeroField("designation", e.target.value)}
                         placeholder="Travel Writer, Photographer"
                         required
                       />
@@ -1202,7 +1702,7 @@ export default function AdminDashboard() {
                     <span>Description</span>
                     <textarea
                       value={heroForm.description}
-                      onChange={(e) => setHeroForm((current) => ({ ...current, description: e.target.value }))}
+                      onChange={(e) => updateHeroField("description", e.target.value)}
                       placeholder="Short hero introduction"
                       rows={3}
                       required
@@ -1214,12 +1714,12 @@ export default function AdminDashboard() {
                         <i
                           className={
                             heroUploadState === "ready"
-                              ? "fas fa-check-circle"
+                              ? "check-circle"
                               : heroUploadState === "saved"
-                                ? "fas fa-check-circle"
+                                ? "check-circle"
                                 : heroUploadState === "error"
-                                  ? "fas fa-exclamation-triangle"
-                                  : "fas fa-cloud-upload-alt"
+                                  ? "warning"
+                                  : "cloud-upload"
                           }
                           aria-hidden="true"
                         ></i>
@@ -1228,11 +1728,11 @@ export default function AdminDashboard() {
                       <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadHeroImage} />
                     </label>
                     <button type="submit" disabled={isSavingHeroImage}>
-                      <i className="fas fa-save" aria-hidden="true"></i>
-                      {isSavingHeroImage ? "Saving..." : "Save"}
+                      <Icon icon="save" />
+                      Save
                     </button>
                     <button type="button" onClick={resetHeroImage} disabled={isSavingHeroImage}>
-                      <i className="fas fa-trash-restore" aria-hidden="true"></i>
+                      <Icon icon="trash-restore" />
                       Reset
                     </button>
                   </div>
@@ -1249,17 +1749,17 @@ export default function AdminDashboard() {
               <section className="admin_gallery_manager">
                 <div className="admin_gallery_toolbar">
                   <article>
-                    <i className="fas fa-images" aria-hidden="true"></i>
+                    <Icon icon="images" />
                     <span>Total Images</span>
                     <strong>{galleryItems.length}</strong>
                   </article>
                   <article>
-                    <i className="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                    <Icon icon="cloud-upload" />
                     <span>Uploaded</span>
                     <strong>{galleryItems.length}</strong>
                   </article>
                   <article>
-                    <i className="fas fa-heart" aria-hidden="true"></i>
+                    <Icon icon="heart" />
                     <span>Total Likes</span>
                     <strong>
                       {galleryItems.reduce((total, item) => total + getGalleryLikeCount(item), 0)}
@@ -1274,14 +1774,14 @@ export default function AdminDashboard() {
                   >
                     {!galleryForm.img ? (
                       <div className="admin_gallery_preview_empty">
-                        <i className="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                        <Icon icon="cloud-upload" />
                         <strong>Image preview</strong>
                         <p>Upload a JPG, PNG, or WebP photo.</p>
                       </div>
                     ) : null}
                     {galleryForm.img ? (
                       <span>
-                        <i className="fas fa-image" aria-hidden="true"></i>
+                        <Icon icon="image" />
                         Preview ready
                       </span>
                     ) : null}
@@ -1292,19 +1792,18 @@ export default function AdminDashboard() {
                         <p className="admin_auth_kicker">Upload photo</p>
                         <h3>Publish a gallery image</h3>
                       </div>
-                      <label className="admin_gallery_upload_button">
-                        <i
-                          className={
+                      <label className={`admin_gallery_upload_button admin_gallery_upload_button--${galleryUploadState}`}>
+                        <Icon
+                          icon={
                             galleryUploadState === "ready"
-                              ? "fas fa-check-circle"
+                              ? "check-circle"
                               : galleryUploadState === "saved"
-                                ? "fas fa-check-circle"
+                                ? "check-circle"
                                 : galleryUploadState === "error"
-                                  ? "fas fa-exclamation-triangle"
-                                  : "fas fa-cloud-upload-alt"
+                                  ? "warning"
+                                  : "cloud-upload"
                           }
-                          aria-hidden="true"
-                        ></i>
+                        />
                         <span>{galleryUploadState === "ready" ? "Ready" : galleryUploadState === "saved" ? "Saved" : galleryUploadState === "error" ? "Retry" : "Upload"}</span>
                         <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadGalleryImage} />
                       </label>
@@ -1315,7 +1814,7 @@ export default function AdminDashboard() {
                         <input
                           type="text"
                           value={galleryForm.alt}
-                          onChange={(event) => setGalleryForm((current) => ({ ...current, alt: event.target.value }))}
+                          onChange={(event) => updateGalleryField("alt", event.target.value)}
                           placeholder="Beach sunset frame"
                         />
                       </label>
@@ -1324,7 +1823,7 @@ export default function AdminDashboard() {
                         <input
                           type="text"
                           value={galleryForm.location}
-                          onChange={(event) => setGalleryForm((current) => ({ ...current, location: event.target.value }))}
+                          onChange={(event) => updateGalleryField("location", event.target.value)}
                           placeholder="Coastal light"
                         />
                       </label>
@@ -1333,7 +1832,7 @@ export default function AdminDashboard() {
                         <input
                           type="text"
                           value={galleryForm.mood}
-                          onChange={(event) => setGalleryForm((current) => ({ ...current, mood: event.target.value }))}
+                          onChange={(event) => updateGalleryField("mood", event.target.value)}
                           placeholder="Soft morning"
                         />
                       </label>
@@ -1343,15 +1842,17 @@ export default function AdminDashboard() {
                           type="number"
                           min="0"
                           value={galleryForm.likes}
-                          onChange={(event) => setGalleryForm((current) => ({ ...current, likes: event.target.value }))}
+                          onChange={(event) => updateGalleryField("likes", event.target.value)}
                         />
                       </label>
                     </div>
-                    <button type="submit" disabled={isSavingGallery}>
-                      <i className="fas fa-paper-plane" aria-hidden="true"></i>
-                      {isSavingGallery ? "Publishing..." : "Publish Image"}
-                    </button>
-                    {galleryMessage ? <p className="admin_profile_message">{galleryMessage}</p> : null}
+                    <div className="admin_gallery_form_actions">
+                      {galleryMessage ? <p className="admin_profile_message">{galleryMessage}</p> : <span></span>}
+                      <button type="submit" className="admin_gallery_publish_button" disabled={isSavingGallery}>
+                        <Icon icon="send" />
+                        <span>{isSavingGallery ? "Publishing..." : "Publish Image"}</span>
+                      </button>
+                    </div>
                   </form>
                 </div>
 
@@ -1367,7 +1868,7 @@ export default function AdminDashboard() {
                           <p>{item.mood}</p>
                         </div>
                         <span className="admin_gallery_like_badge">
-                          <i className="fas fa-heart" aria-hidden="true"></i>
+                          <Icon icon="heart" />
                           {getGalleryLikeCount(item)}
                         </span>
                       </div>
@@ -1384,7 +1885,7 @@ export default function AdminDashboard() {
                             />
                           </label>
                           <button type="button" onClick={() => setGalleryDeleteTarget(item)}>
-                            <i className="fas fa-trash" aria-hidden="true"></i>
+                            <Icon icon="trash" />
                             Remove
                           </button>
                         </div>
@@ -1393,7 +1894,7 @@ export default function AdminDashboard() {
                   ))}
                   {!galleryItems.length ? (
                     <div className="admin_gallery_empty_state">
-                      <i className="fas fa-images" aria-hidden="true"></i>
+                      <Icon icon="images" />
                       <strong>No uploaded gallery images</strong>
                       <span>Publish an image above to add it to the website.</span>
                     </div>
@@ -1402,9 +1903,163 @@ export default function AdminDashboard() {
               </section>
             ) : null}
 
+            {activeSection === "blogs" && isLoadingBlogs ? (
+              <AdminSkeleton variant="editor" />
+            ) : null}
+
+            {activeSection === "blogs" && !isLoadingBlogs ? (
+              <section className="admin_blog_manager">
+                <div className="admin_gallery_toolbar">
+                  <article>
+                    <Icon icon="newspaper" />
+                    <span>Total Blogs</span>
+                    <strong>{blogItems.length}</strong>
+                  </article>
+                  <article>
+                    <Icon icon="comment-dots" />
+                    <span>Comments</span>
+                    <strong>{blogComments.length}</strong>
+                  </article>
+                  <article>
+                    <Icon icon="check-circle" />
+                    <span>Published</span>
+                    <strong>{blogItems.filter((blog) => blog.isPublished !== false).length}</strong>
+                  </article>
+                </div>
+
+                <div className="admin_blog_new_post_bar">
+                  <div>
+                    <strong>Classic Add New Post</strong>
+                    <span>Open the WordPress-style editor with title, permalink, featured image, media, draft, and publish panel.</span>
+                  </div>
+                  <button type="button" onClick={() => navigate("/admin/posts/new")}>
+                    <Icon icon="plus" />
+                    Add New Post
+                  </button>
+                </div>
+
+                {blogMessage ? <p className="admin_profile_message admin_blog_top_message">{blogMessage}</p> : null}
+
+                <div className="admin_blog_library">
+                  {blogItems.map((blog, index) => (
+                    <article className="admin_blog_card" key={blog.id}>
+                      <span className="admin_blog_card_number">#{index + 1}</span>
+                      <div className="admin_blog_card_image" style={{ backgroundImage: `url(${blog.coverImage || blog.img})` }}></div>
+                      <div>
+                        <span>{blog.category}</span>
+                        <h3>{blog.title}</h3>
+                        <p>{getBlogCardSummary(blog)}</p>
+                        <div className="admin_blog_card_meta">
+                          <strong>{blog.readTime}</strong>
+                          <strong>{blog.commentCount || 0} comments</strong>
+                          <strong>{blog.isPublished === false ? "Draft" : "Published"}</strong>
+                        </div>
+                        <div className="admin_gallery_card_actions">
+                          <button type="button" onClick={() => editBlogItem(blog)}>
+                            <Icon icon="edit" />
+                            Edit
+                          </button>
+                          <button type="button" onClick={() => deleteBlogItem(blog)}>
+                            <Icon icon="trash" />
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                  {!blogItems.length ? (
+                    <div className="admin_gallery_empty_state">
+                      <Icon icon="newspaper" />
+                      <strong>No blogs yet</strong>
+                      <span>Create your first post above.</span>
+                    </div>
+                  ) : null}
+                </div>
+
+                <section className="admin_blog_comments">
+                  <div className="admin_gallery_form_head">
+                    <div>
+                      <p className="admin_auth_kicker">Comment moderation</p>
+                      <h3>Reader comments</h3>
+                    </div>
+                  </div>
+                  {blogComments.map((comment, index) => (
+                    <article className="admin_comment_card" key={comment.id}>
+                      <span className="admin_comment_number">#{index + 1}</span>
+                      <div>
+                        <div className="admin_comment_card_head">
+                          <strong>{comment.name}</strong>
+                          <span>{comment.dateTime || `${comment.date || ""}${comment.time ? `, ${comment.time}` : ""}`}</span>
+                        </div>
+                        <div className="admin_comment_source">
+                          <Icon icon="newspaper" />
+                          <span>{comment.blogTitle || "Deleted blog"}</span>
+                        </div>
+                        <small>{comment.email}{comment.phone ? ` - ${comment.phone}` : ""}</small>
+                        <p>{comment.message}</p>
+                        <div className="admin_comment_meta_line">
+                          <span>{comment.likes || 0} likes</span>
+                          <span>{(comment.replies || []).length} replies</span>
+                          <span>{comment.isHidden ? "Hidden" : "Visible"}</span>
+                        </div>
+                        {comment.replies?.length ? (
+                          <div className="admin_comment_replies">
+                            {comment.replies.map((reply) => {
+                              const replyPendingKey = `reply-${reply.id}`;
+                              const isReplyVisibilityPending = Boolean(pendingCommentVisibility[replyPendingKey]);
+
+                              return (
+                              <article className={reply.isHidden ? "admin_comment_reply is_hidden" : "admin_comment_reply"} key={reply.id}>
+                                <div>
+                                  <strong>{reply.name}</strong>
+                                  <small>{reply.dateTime || reply.date} - {reply.email}</small>
+                                  <p>{reply.message}</p>
+                                  <div className="admin_comment_meta_line">
+                                    <span>{reply.likes || 0} likes</span>
+                                    <span>{reply.isHidden ? "Hidden" : "Visible"}</span>
+                                  </div>
+                                </div>
+                                <div className="admin_comment_reply_actions">
+                                  <button type="button" disabled={isReplyVisibilityPending} onClick={() => toggleBlogReplyVisibility(comment, reply)}>
+                                    <Icon icon={reply.isHidden ? "eye" : "eye-slash"} />
+                                    {isReplyVisibilityPending ? "Saving..." : reply.isHidden ? "Show" : "Hide"}
+                                  </button>
+                                  <button type="button" onClick={() => deleteBlogReply(comment, reply)}>
+                                    <Icon icon="trash" />
+                                    Delete
+                                  </button>
+                                </div>
+                              </article>
+                            )})}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="admin_comment_actions">
+                        <button type="button" disabled={Boolean(pendingCommentVisibility[`comment-${comment.id}`])} onClick={() => toggleBlogCommentVisibility(comment)}>
+                          <Icon icon={comment.isHidden ? "eye" : "eye-slash"} />
+                          {pendingCommentVisibility[`comment-${comment.id}`] ? "Saving..." : comment.isHidden ? "Show" : "Hide"}
+                        </button>
+                        <button type="button" onClick={() => deleteBlogComment(comment)}>
+                          <Icon icon="trash" />
+                          Delete
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                  {!blogComments.length ? (
+                    <div className="admin_gallery_empty_state">
+                      <Icon icon="comment-dots" />
+                      <strong>No comments yet</strong>
+                      <span>Reader comments will appear here.</span>
+                    </div>
+                  ) : null}
+                </section>
+              </section>
+            ) : null}
+
             <div className="admin_editor_note">
-              <i className="fas fa-info-circle" aria-hidden="true"></i>
-              <p>{activeSection === "hero" ? "Hero changes are saved to the server and shown on the public home page." : activeSection === "gallery" ? "Uploaded gallery images and like totals are saved in this browser and appear on the public gallery page." : "This dashboard section matches the current website content. Editing controls can be connected next when content APIs are added."}</p>
+              <Icon icon="info" />
+              <p>{activeSection === "hero" ? "Hero changes are saved to the server and shown on the public home page." : activeSection === "gallery" ? "Uploaded gallery images and like totals are saved in MongoDB and appear on the public gallery page." : activeSection === "blogs" ? "Blogs, content images, links, and comments are saved in MongoDB and shown on the public blog pages." : "This dashboard section matches the current website content. Editing controls can be connected next when content APIs are added."}</p>
             </div>
           </section>
         ) : null}
@@ -1425,17 +2080,17 @@ export default function AdminDashboard() {
                 <p>{user?.email || "No recovery email saved"}</p>
                 <div className="admin_profile_chips">
                   <span>
-                    <i className="fas fa-user-shield" aria-hidden="true"></i>
+                    <Icon icon="user-shield" />
                     Portfolio Admin
                   </span>
                   <span className={isEmailVerified ? "verified" : ""}>
-                    <i className={isEmailVerified ? "fas fa-check-circle" : "fas fa-clock"} aria-hidden="true"></i>
+                    <Icon icon={isEmailVerified ? "check-circle" : "clock"} />
                     {isEmailVerified ? "Email verified" : "Verification required"}
                   </span>
                 </div>
               </div>
               <button type="button" className="admin_profile_logout" onClick={logout}>
-                <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
+                <Icon icon="logout" />
                 <span>Logout</span>
               </button>
             </div>
@@ -1443,7 +2098,7 @@ export default function AdminDashboard() {
             <div className="admin_profile_sections">
               <article className="admin_profile_section">
                 <div className="admin_profile_section_head">
-                  <i className="fas fa-id-card" aria-hidden="true"></i>
+                  <Icon icon="id-card" />
                   <div>
                     <span>Account Details</span>
                     <strong>Profile information</strong>
@@ -1453,7 +2108,7 @@ export default function AdminDashboard() {
                     className="admin_section_edit"
                     onClick={openAccountModal}
                   >
-                    <i className="fas fa-edit" aria-hidden="true"></i>
+                    <Icon icon="edit" />
                     <span>Edit</span>
                   </button>
                 </div>
@@ -1480,7 +2135,7 @@ export default function AdminDashboard() {
 
               <article className="admin_profile_section">
                 <div className="admin_profile_section_head">
-                  <i className="fas fa-lock" aria-hidden="true"></i>
+                  <Icon icon="lock" />
                   <div>
                     <span>Password</span>
                     <strong>Password Security</strong>
@@ -1490,7 +2145,7 @@ export default function AdminDashboard() {
                   Set a new password after email verification. Your current password is never shown for security.
                 </p>
                 <div className="admin_modal_email">
-                  <i className="fas fa-envelope" aria-hidden="true"></i>
+                  <Icon icon="mail" />
                   <div>
                     <span>Recovery email</span>
                     <strong>{user?.email || "No recovery email saved"}</strong>
@@ -1502,7 +2157,7 @@ export default function AdminDashboard() {
                   onClick={openPasswordModal}
                   disabled={!user?.email}
                 >
-                  <i className="fas fa-key" aria-hidden="true"></i>
+                  <Icon icon="key" />
                   <span>Reset Password</span>
                 </button>
               </article>

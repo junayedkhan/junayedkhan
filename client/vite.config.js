@@ -1,19 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [react()],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        quietDeps: true,
-        silenceDeprecations: [
-          'import',
-          'global-builtin',
-          'color-functions',
-          'if-function'
-        ]
-      }
-    }
-  }
+  plugins: [react(), tailwindcss()]
 });
