@@ -49,6 +49,15 @@ const escapeHtml = (value) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
+const logEmailError = (label, err) => {
+  console.error(label, {
+    message: err.message,
+    code: err.code,
+    command: err.command,
+    responseCode: err.responseCode
+  })
+}
+
 const buildPasswordResetEmail = ({ resetLink, username }) => {
   const safeUsername = escapeHtml(username || 'Admin')
   const safeResetLink = escapeHtml(resetLink)
@@ -290,10 +299,6 @@ router.post('/me/send-verification-code', authMiddleware, async (req, res) => {
     if (!smtpEnabled()) return res.status(503).json({ message: 'Email service is not configured' })
 
     const code = crypto.randomInt(100000, 999999).toString()
-    user.accountVerificationCode = crypto.createHash('sha256').update(code).digest('hex')
-    user.accountVerificationExpires = new Date(Date.now() + 1000 * 60 * 10)
-    await user.save()
-
     const emailContent = buildAccountVerificationEmail({
       code,
       username: user.username
@@ -306,9 +311,13 @@ router.post('/me/send-verification-code', authMiddleware, async (req, res) => {
       html: emailContent.html
     })
 
+    user.accountVerificationCode = crypto.createHash('sha256').update(code).digest('hex')
+    user.accountVerificationExpires = new Date(Date.now() + 1000 * 60 * 10)
+    await user.save()
+
     res.json({ message: 'Verification code sent to your email.' })
   } catch (err) {
-    console.error('Unable to send account verification code:', err.message)
+    logEmailError('Unable to send account verification code:', err)
     res.status(500).json({ message: 'Unable to send verification code' })
   }
 })
@@ -419,10 +428,6 @@ router.post('/forgot-password', async (req, res) => {
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex')
-    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex')
-    user.resetPasswordExpires = new Date(Date.now() + 1000 * 60 * 30)
-    await user.save()
-
     const frontendUrl = getResetBaseUrl(req)
     const resetLink = `${frontendUrl}/reset-password/${resetToken}`
 
@@ -440,12 +445,16 @@ router.post('/forgot-password', async (req, res) => {
       })
     }
 
+    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+    user.resetPasswordExpires = new Date(Date.now() + 1000 * 60 * 30)
+    await user.save()
+
     res.json({
       message: successMessage,
       resetLink: !smtpEnabled() && process.env.RETURN_RESET_LINK === 'true' ? resetLink : undefined
     })
   } catch (err) {
-    console.error('Unable to send password reset email:', err.message)
+    logEmailError('Unable to send password reset email:', err)
     res.status(500).json({ message: 'Unable to send reset link' })
   }
 })

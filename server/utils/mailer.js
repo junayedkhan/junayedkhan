@@ -6,8 +6,13 @@ dns.setDefaultResultOrder?.("ipv4first");
 const getEnv = (key) => process.env[key]?.trim();
 const hasEnv = (key) => Boolean(getEnv(key));
 const getEmailProvider = () => (getEnv("EMAIL_PROVIDER") || "auto").toLowerCase();
+const getEmailFromName = () => getEnv("EMAIL_FROM_NAME") || "Junayed Khan Admin";
 const getEmailFrom = () => getEnv("EMAIL_FROM") || getEnv("RESEND_FROM") || getEnv("SMTP_USER") || getEnv("EMAIL_USER");
-const getResendFrom = () => getEmailFrom() || "onboarding@resend.dev";
+const formatAddress = (email) => `"${getEmailFromName()}" <${email}>`;
+const getResendFrom = () => {
+  const from = getEmailFrom();
+  return from ? formatAddress(from) : "Junayed Khan Admin <onboarding@resend.dev>";
+};
 const lookupIpv4 = (hostname, options, callback) => {
   dns.lookup(hostname, { ...options, family: 4 }, callback);
 };
@@ -51,9 +56,11 @@ const getSmtpStatus = () => {
     secure,
     hasUser: Boolean(user),
     hasPass: Boolean(pass),
-    hasEmailFrom: Boolean(emailFrom),
-    usingSmtpUser: hasEnv("SMTP_USER"),
-    usingEmailUser: hasEnv("EMAIL_USER"),
+      hasEmailFrom: Boolean(emailFrom),
+      emailFromDomain: emailFrom?.includes("@") ? emailFrom.split("@").pop() : undefined,
+      emailFromName: getEmailFromName(),
+      usingSmtpUser: hasEnv("SMTP_USER"),
+      usingEmailUser: hasEnv("EMAIL_USER"),
     usingSmtpPass: hasEnv("SMTP_PASS"),
     usingEmailPass: hasEnv("EMAIL_PASS"),
   };
@@ -154,7 +161,7 @@ const sendMail = async ({ to, subject, text, html }) => {
       await transporter.verify();
 
       await transporter.sendMail({
-        from: `"Junayed Khan Admin" <${emailFrom}>`,
+        from: formatAddress(emailFrom),
         to,
         subject,
         text,
