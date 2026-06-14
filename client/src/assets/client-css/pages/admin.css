@@ -1287,4 +1287,1730 @@
     accent-color: #0f766e;
   }
 
+  /* Final admin polish: page-by-page consistency and responsive hardening */
+  .admin_auth_shell {
+    min-height: 100svh;
+    padding: clamp(1rem, 4vw, 2rem);
+  }
+
+  .admin_auth_card {
+    position: relative;
+    width: min(100%, 460px);
+  }
+
+  .admin_auth_card::before {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(15, 118, 110, .12), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgba(183, 121, 31, .1), transparent 30%);
+    content: "";
+    pointer-events: none;
+  }
+
+  .admin_auth_card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .admin_auth_form button:disabled,
+  .admin_header_action:disabled,
+  .admin_profile_reset:disabled,
+  .admin_profile_logout:disabled,
+  .admin_gallery_publish_button:disabled,
+  .admin_hero_upload_button:disabled,
+  .admin_blog_new_post_bar button:disabled,
+  .admin_wp_publish_actions button:disabled,
+  .admin_account_actions button:disabled {
+    opacity: .64;
+    cursor: progress;
+    transform: none;
+  }
+
+  .admin_auth_form button,
+  .admin_auth_link,
+  .admin_auth_text_button,
+  .admin_header_action,
+  .admin_profile_reset,
+  .admin_profile_logout,
+  .admin_gallery_upload_button,
+  .admin_gallery_publish_button,
+  .admin_hero_upload_button,
+  .admin_section_edit,
+  .admin_blog_new_post_bar a,
+  .admin_blog_new_post_bar button {
+    text-decoration: none;
+  }
+
+  .admin_auth_error,
+  .admin_auth_notice,
+  .admin_profile_message,
+  .admin_blog_top_message {
+    border: 1px solid rgba(15, 118, 110, .12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .58);
+  }
+
+  .admin_auth_error {
+    border-color: rgba(220, 38, 38, .16);
+  }
+
+  .admin_dashboard {
+    min-height: 100svh;
+  }
+
+  .admin_sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 118, 110, .45) transparent;
+  }
+
+  .admin_sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .admin_sidebar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(15, 118, 110, .35);
+  }
+
+  .admin_sidebar .admin_auth_logo {
+    width: 2.85rem;
+    height: 2.85rem;
+    border-radius: .9rem;
+    font-size: 1.25rem;
+  }
+
+  .admin_sidebar button {
+    line-height: 1.2;
+  }
+
+  .admin_header {
+    gap: 1.25rem;
+  }
+
+  .admin_header_action {
+    flex: 0 0 auto;
+    background: rgba(255, 250, 240, .95);
+    color: #102a2a;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, .16);
+  }
+
+  .admin_header_action:hover {
+    background: #fffaf0;
+    color: #102a2a;
+  }
+
+  .admin_editor_panel,
+  .admin_account_panel,
+  .admin_gallery_upload_panel,
+  .admin_hero_image_editor {
+    overflow: hidden;
+  }
+
+  .admin_editor_intro h2,
+  .admin_gallery_form_head h3,
+  .admin_blog_new_post_bar strong,
+  .admin_profile_identity h2,
+  .admin_password_modal h2,
+  .admin_confirm_modal h2 {
+    font-size: clamp(1.35rem, 2.2vw, 2rem);
+  }
+
+  .admin_editor_intro p,
+  .admin_content_card p,
+  .admin_blog_card p,
+  .admin_comment_card p,
+  .admin_comment_reply p,
+  .admin_profile_section_copy {
+    max-width: 68ch;
+  }
+
+  .admin_gallery_preview,
+  .admin_hero_image_preview,
+  .admin_gallery_card_image,
+  .admin_blog_card_image,
+  .admin_wp_featured_image,
+  .admin_blog_block_preview {
+    background-repeat: no-repeat;
+  }
+
+  .admin_gallery_card,
+  .admin_blog_card,
+  .admin_comment_card,
+  .admin_profile_section,
+  .admin_wp_box {
+    min-width: 0;
+  }
+
+  .admin_blog_card_meta,
+  .admin_gallery_card_body,
+  .admin_comment_card_head,
+  .admin_comment_meta_line,
+  .admin_profile_section_head {
+    min-width: 0;
+  }
+
+  .admin_blog_card_meta > *,
+  .admin_comment_meta_line > *,
+  .admin_profile_chips span {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .admin_blog_block_toolbar button,
+  .admin_blog_block_toolbar label,
+  .admin_comment_actions button,
+  .admin_comment_reply_actions button,
+  .admin_account_actions button,
+  .admin_confirm_actions button {
+    min-width: 0;
+  }
+
+  .admin_modal_layer {
+    overflow: auto;
+  }
+
+  .admin_password_modal,
+  .admin_confirm_modal {
+    max-height: calc(100svh - 2rem);
+    overflow: auto;
+  }
+
+  .admin_gallery_form_actions,
+  .admin_account_actions,
+  .admin_confirm_actions,
+  .admin_wp_publish_actions {
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 1100px) {
+    .admin_dashboard {
+      display: block;
+    }
+
+    .admin_sidebar {
+      box-shadow: 28px 0 80px rgba(16, 42, 42, .18);
+    }
+
+    .admin_main {
+      max-width: 100%;
+      padding: 4.75rem 1rem 1rem;
+    }
+
+    .admin_header {
+      min-height: auto;
+      align-items: flex-start;
+      padding: 1.15rem;
+    }
+
+    .admin_header::after {
+      width: 10rem;
+      height: 10rem;
+    }
+
+    .admin_header h1 {
+      font-size: clamp(1.8rem, 7vw, 3rem);
+    }
+
+    .admin_stats,
+    .admin_gallery_manager .admin_gallery_toolbar {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin_content_grid,
+    .admin_gallery_library,
+    .admin_blog_library,
+    .admin_gallery_manager .admin_gallery_library {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .admin_header,
+    .admin_editor_intro,
+    .admin_blog_new_post_bar,
+    .admin_gallery_form_head,
+    .admin_profile_hero,
+    .admin_profile_section_head,
+    .admin_comment_card_head,
+    .admin_wp_box header,
+    .admin_wp_status_row,
+    .admin_wp_publish_actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .admin_stats,
+    .admin_content_grid,
+    .admin_gallery_toolbar,
+    .admin_gallery_manager .admin_gallery_toolbar,
+    .admin_gallery_manager .admin_gallery_library,
+    .admin_blog_library,
+    .admin_profile_sections,
+    .admin_gallery_fields,
+    .admin_hero_fields {
+      grid-template-columns: 1fr !important;
+    }
+
+    .admin_header_action,
+    .admin_editor_intro a,
+    .admin_blog_new_post_bar a,
+    .admin_blog_new_post_bar button,
+    .admin_gallery_upload_button,
+    .admin_gallery_publish_button,
+    .admin_hero_upload_button,
+    .admin_profile_reset,
+    .admin_profile_logout,
+    .admin_section_edit,
+    .admin_account_actions button,
+    .admin_wp_publish_actions button {
+      width: 100%;
+    }
+
+    .admin_gallery_upload_panel,
+    .admin_hero_image_editor,
+    .admin_gallery_manager .admin_gallery_upload_panel,
+    .admin_gallery_form,
+    .admin_hero_image_form,
+    .admin_blog_form,
+    .admin_wp_box,
+    .admin_profile_section {
+      border-radius: 1rem;
+      padding: .9rem;
+    }
+
+    .admin_gallery_preview,
+    .admin_hero_image_preview {
+      min-height: 220px;
+    }
+
+    .admin_blog_card_image,
+    .admin_gallery_card_image {
+      min-height: 0;
+      aspect-ratio: 4 / 3;
+    }
+
+    .admin_comment_card {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_comment_actions,
+    .admin_comment_reply_actions,
+    .admin_confirm_actions,
+    .admin_account_actions {
+      width: 100%;
+    }
+
+    .admin_comment_actions button,
+    .admin_comment_reply_actions button,
+    .admin_confirm_actions button,
+    .admin_account_actions button {
+      flex: 1 1 8rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .admin_auth_shell {
+      padding: .75rem;
+    }
+
+    .admin_auth_card {
+      border-radius: 1rem;
+      padding: 1rem;
+    }
+
+    .admin_auth_card h1 {
+      font-size: clamp(1.75rem, 11vw, 2.25rem);
+    }
+
+    .admin_main {
+      padding: 4.25rem .75rem .75rem;
+    }
+
+    .admin_header,
+    .admin_editor_panel,
+    .admin_account_panel,
+    .admin_content_card,
+    .admin_stat_card,
+    .admin_gallery_card,
+    .admin_blog_card,
+    .admin_comment_card,
+    .admin_password_modal,
+    .admin_confirm_modal {
+      border-radius: 1rem;
+    }
+
+    .admin_stat_card {
+      min-height: auto;
+    }
+
+    .admin_modal_layer {
+      padding: .75rem;
+    }
+
+    .admin_email_edit_code {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_password_modal header button {
+      width: 2.5rem;
+      min-height: 2.5rem;
+      padding: 0;
+    }
+  }
+
+  /* Dashboard section pass: overview, home, gallery, blogs, comments, account */
+  .admin_editor_panel,
+  .admin_account_panel {
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .admin_editor_intro {
+    margin-bottom: 0;
+    border-bottom: 1px solid rgba(16, 42, 42, .08);
+    padding-bottom: 1rem;
+  }
+
+  .admin_editor_intro a,
+  .admin_blog_new_post_bar a,
+  .admin_blog_new_post_bar button {
+    flex: 0 0 auto;
+  }
+
+  .admin_editor_list {
+    margin: 0;
+  }
+
+  .admin_editor_note {
+    margin-top: 0;
+  }
+
+  .admin_content_card {
+    border: 1px solid rgba(16, 42, 42, .08);
+    text-align: left;
+  }
+
+  button.admin_content_card {
+    cursor: pointer;
+  }
+
+  .admin_content_card:focus-visible,
+  .admin_sidebar button:focus-visible,
+  .admin_header_action:focus-visible,
+  .admin_section_edit:focus-visible,
+  .admin_profile_reset:focus-visible,
+  .admin_profile_logout:focus-visible {
+    outline: 3px solid rgba(15, 118, 110, .24);
+    outline-offset: 3px;
+  }
+
+  .admin_hero_image_editor {
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: 1.1rem;
+    box-shadow: 0 18px 50px rgba(16, 42, 42, .09);
+  }
+
+  .admin_hero_image_preview,
+  .admin_gallery_preview {
+    display: grid;
+    place-items: center;
+  }
+
+  .admin_hero_image_preview.has_image,
+  .admin_gallery_preview.has_image {
+    place-items: start;
+  }
+
+  .admin_hero_fields {
+    gap: .85rem;
+  }
+
+  .admin_hero_image_actions {
+    border-top: 1px solid rgba(16, 42, 42, .08);
+    padding-top: 1rem;
+  }
+
+  .admin_gallery_manager,
+  .admin_blog_manager {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .admin_gallery_manager .admin_gallery_upload_panel,
+  .admin_blog_new_post_bar,
+  .admin_blog_comments {
+    margin-top: 0;
+  }
+
+  .admin_gallery_manager .admin_gallery_upload_panel {
+    align-items: start;
+  }
+
+  .admin_gallery_manager .admin_gallery_preview {
+    min-height: clamp(250px, 32vw, 380px);
+  }
+
+  .admin_gallery_manager .admin_gallery_form {
+    min-width: 0;
+  }
+
+  .admin_gallery_manager .admin_gallery_form_actions {
+    min-width: 0;
+  }
+
+  .admin_gallery_manager .admin_gallery_library,
+  .admin_blog_library {
+    align-items: start;
+  }
+
+  .admin_gallery_manager .admin_gallery_card,
+  .admin_blog_card {
+    height: 100%;
+  }
+
+  .admin_gallery_card_body > div,
+  .admin_blog_card > div:not(.admin_blog_card_image) {
+    min-width: 0;
+  }
+
+  .admin_gallery_card_body strong,
+  .admin_gallery_card_body p,
+  .admin_blog_card h3,
+  .admin_blog_card p {
+    overflow-wrap: anywhere;
+  }
+
+  .admin_gallery_card_actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: 100%;
+  }
+
+  .admin_blog_new_post_bar {
+    border-radius: 1rem;
+  }
+
+  .admin_blog_library {
+    gap: 1rem;
+  }
+
+  .admin_blog_card {
+    grid-template-rows: auto 1fr;
+  }
+
+  .admin_blog_card_image {
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+    border-radius: .95rem;
+  }
+
+  .admin_blog_card_meta {
+    margin-top: auto;
+  }
+
+  .admin_blog_comments {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .admin_comment_card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin_comment_card.is_hidden,
+  .admin_comment_reply.is_hidden {
+    border-color: rgba(100, 116, 139, .16);
+    background: rgba(241, 245, 249, .72);
+  }
+
+  .admin_comment_card_head {
+    align-items: flex-start;
+  }
+
+  .admin_comment_actions,
+  .admin_comment_reply_actions {
+    justify-content: flex-end;
+  }
+
+  .admin_comment_replies {
+    grid-column: 2 / -1;
+  }
+
+  .admin_account_panel {
+    gap: 1rem;
+  }
+
+  .admin_profile_hero {
+    border: 1px solid rgba(16, 42, 42, .08);
+  }
+
+  .admin_profile_sections {
+    gap: 1rem;
+  }
+
+  .admin_profile_section {
+    display: grid;
+    gap: .9rem;
+  }
+
+  .admin_profile_section_head {
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(16, 42, 42, .08);
+    padding-bottom: .8rem;
+  }
+
+  .admin_account_info_list {
+    gap: .75rem;
+  }
+
+  .admin_account_info_list div:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .admin_password_modal header button {
+    flex: 0 0 auto;
+  }
+
+  .admin_modal_email,
+  .admin_profile_verified_state {
+    min-width: 0;
+  }
+
+  .admin_modal_email strong,
+  .admin_email_edit_verify strong {
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 1101px) {
+    .admin_gallery_manager .admin_gallery_upload_panel,
+    .admin_hero_image_editor {
+      grid-template-columns: minmax(300px, .9fr) minmax(0, 1.1fr);
+    }
+
+    .admin_blog_comments {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .admin_gallery_card_actions {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_gallery_card_actions button {
+      width: 100%;
+    }
+
+    .admin_comment_replies {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .admin_editor_panel,
+    .admin_account_panel {
+      padding: .9rem;
+    }
+
+    .admin_editor_intro {
+      gap: .75rem;
+    }
+
+    .admin_editor_list {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_gallery_manager .admin_gallery_preview {
+      min-height: 210px;
+    }
+
+    .admin_gallery_manager .admin_gallery_form_actions,
+    .admin_gallery_card_actions,
+    .admin_comment_actions,
+    .admin_comment_reply_actions,
+    .admin_profile_section_head,
+    .admin_account_actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .admin_gallery_manager .admin_gallery_form_actions > span {
+      display: none;
+    }
+
+    .admin_blog_new_post_bar {
+      padding: .9rem;
+    }
+
+    .admin_blog_card_meta,
+    .admin_comment_meta_line,
+    .admin_profile_chips {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .admin_comment_reply {
+      display: grid;
+    }
+
+    .admin_password_modal,
+    .admin_confirm_modal {
+      width: 100%;
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .admin_gallery_manager .admin_gallery_preview,
+    .admin_hero_image_preview {
+      min-height: 180px;
+    }
+
+    .admin_header_action,
+    .admin_editor_intro a,
+    .admin_gallery_upload_button,
+    .admin_gallery_publish_button,
+    .admin_hero_upload_button,
+    .admin_section_edit,
+    .admin_profile_reset,
+    .admin_profile_logout {
+      min-height: 2.55rem;
+      font-size: .76rem;
+    }
+
+    .admin_auth_kicker {
+      font-size: .66rem;
+    }
+  }
+
+  /* Home hero form and account form refinements */
+  .admin_hero_image_form,
+  .admin_account_form {
+    border: 1px solid rgba(16, 42, 42, .08);
+    border-radius: 1rem;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(255, 250, 240, .58));
+    padding: 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72);
+  }
+
+  .admin_hero_fields,
+  .admin_account_form {
+    gap: .85rem;
+  }
+
+  .admin_hero_image_form label,
+  .admin_account_form label {
+    min-width: 0;
+    border: 1px solid rgba(16, 42, 42, .06);
+    border-radius: .9rem;
+    background: rgba(255, 255, 255, .66);
+    padding: .75rem;
+  }
+
+  .admin_hero_image_form label span,
+  .admin_account_form label span {
+    color: #64748b;
+    font-size: .7rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+  }
+
+  .admin_hero_image_form input,
+  .admin_hero_image_form textarea,
+  .admin_account_form input {
+    min-height: 2.85rem;
+    border-radius: .75rem;
+    background: #fff;
+    font-size: .92rem;
+    font-weight: 700;
+  }
+
+  .admin_hero_image_form textarea {
+    min-height: 7rem;
+    line-height: 1.65;
+  }
+
+  .admin_hero_image_actions,
+  .admin_account_actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .65rem;
+    border-top: 1px solid rgba(16, 42, 42, .08);
+    padding-top: .9rem;
+  }
+
+  .admin_hero_image_actions .admin_hero_upload_button,
+  .admin_hero_image_actions button,
+  .admin_account_actions button {
+    min-height: 2.55rem;
+    border-radius: .8rem;
+    padding-inline: 1rem;
+  }
+
+  .admin_hero_image_actions button:last-child,
+  .admin_account_actions button:first-child {
+    background: rgba(16, 42, 42, .08);
+    color: #102a2a;
+    box-shadow: none;
+  }
+
+  .admin_hero_image_actions button:last-child:hover,
+  .admin_account_actions button:first-child:hover {
+    background: rgba(16, 42, 42, .14);
+    color: #102a2a;
+  }
+
+  .admin_account_form > p:not(.admin_profile_message) {
+    margin: 0;
+    border-radius: .85rem;
+    background: rgba(183, 121, 31, .1);
+    color: #8a5a12;
+    padding: .75rem .85rem;
+    font-size: .84rem;
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .admin_account_form > p.admin_profile_message,
+  .admin_hero_image_form > p.admin_profile_message {
+    margin: 0;
+  }
+
+  @media (max-width: 760px) {
+    .admin_hero_image_form,
+    .admin_account_form {
+      padding: .85rem;
+    }
+
+    .admin_hero_fields {
+      grid-template-columns: 1fr;
+    }
+
+    .admin_hero_image_actions,
+    .admin_account_actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .admin_hero_image_actions .admin_hero_upload_button,
+    .admin_hero_image_actions button,
+    .admin_account_actions button {
+      width: 100%;
+    }
+  }
+
+}
+
+@layer components {
+  /* Font Awesome admin icon fixes */
+  .admin_dashboard .app_icon,
+  .add_post_page .app_icon {
+    display: inline-grid !important;
+    width: 1.15em !important;
+    height: 1.15em !important;
+    place-items: center !important;
+    flex: 0 0 auto !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+  }
+
+  .admin_dashboard .app_icon svg,
+  .add_post_page .app_icon svg {
+    display: block !important;
+    width: 1em !important;
+    height: 1em !important;
+    margin: auto !important;
+  }
+
+  .admin_sidebar nav button .app_icon {
+    width: 1.35rem !important;
+    height: 1.35rem !important;
+    color: var(--color-personal) !important;
+    font-size: 1rem !important;
+  }
+
+  .admin_sidebar nav button.active .app_icon {
+    color: var(--color-vellum) !important;
+  }
+
+  .admin_header_action .app_icon,
+  .admin_editor_intro a .app_icon,
+  .admin_profile_reset .app_icon,
+  .admin_profile_logout .app_icon,
+  .admin_gallery_publish_button .app_icon,
+  .admin_hero_image_actions button .app_icon,
+  .admin_gallery_card_actions button .app_icon,
+  .admin_blog_new_post_bar button .app_icon,
+  .admin_comment_actions button .app_icon,
+  .admin_comment_reply_actions button .app_icon,
+  .admin_section_edit .app_icon,
+  .admin_verify_form button .app_icon,
+  .admin_email_edit_code button .app_icon,
+  .add_post_toolbar button .app_icon,
+  .add_post_media_btn .app_icon,
+  .add_post_featured_btn .app_icon,
+  .add_post_panel footer button .app_icon,
+  .add_post_media_remove .app_icon,
+  .add_post_media_drag .app_icon {
+    width: 1rem !important;
+    height: 1rem !important;
+    font-size: .95rem !important;
+  }
+
+  .admin_stat_card > .app_icon,
+  .admin_gallery_toolbar article > .app_icon {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    border-radius: .85rem !important;
+    background: rgba(15, 118, 110, .12) !important;
+    color: var(--color-personal) !important;
+    font-size: 1.2rem !important;
+  }
+
+  .admin_editor_list article > .app_icon,
+  .admin_editor_note > .app_icon,
+  .admin_modal_email > .app_icon,
+  .admin_profile_verified_state > .app_icon,
+  .admin_comment_source > .app_icon,
+  .admin_profile_section_head > .app_icon,
+  .admin_gallery_empty_state > .app_icon,
+  .admin_gallery_preview_empty > .app_icon,
+  .admin_confirm_icon .app_icon {
+    width: 2.15rem !important;
+    height: 2.15rem !important;
+    border-radius: .7rem !important;
+    background: rgba(15, 118, 110, .1) !important;
+    color: var(--color-personal) !important;
+    font-size: 1rem !important;
+  }
+
+  .admin_confirm_icon.danger .app_icon {
+    background: rgba(220, 38, 38, .1) !important;
+    color: #dc2626 !important;
+  }
+
+  .admin_gallery_like_badge .app_icon,
+  .admin_profile_chips .app_icon,
+  .admin_blog_card_meta .app_icon,
+  .admin_comment_meta_line .app_icon {
+    width: .95rem !important;
+    height: .95rem !important;
+  }
+
+  .admin_password_modal header button .app_icon,
+  .admin_hamburger .app_icon {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+}
+
+@layer components {
+  /* Frontend-matched admin palette and blog card repair */
+  .admin_dashboard {
+    background:
+      radial-gradient(circle at 12% 8%, rgba(183, 121, 31, .16), transparent 25%),
+      radial-gradient(circle at 88% 18%, rgba(15, 118, 110, .16), transparent 24%),
+      linear-gradient(120deg, var(--color-vellum), var(--color-paper)) !important;
+    color: var(--color-ink) !important;
+  }
+
+  .admin_sidebar {
+    border-right: 1px solid rgba(16, 42, 42, .08) !important;
+    background: rgba(255, 250, 240, .86) !important;
+    color: var(--color-ink) !important;
+    box-shadow: 0 24px 70px rgba(16, 42, 42, .12) !important;
+    backdrop-filter: blur(18px);
+  }
+
+  .admin_sidebar .admin_auth_logo {
+    border: 1px solid rgba(16, 42, 42, .12) !important;
+    background: var(--color-ink) !important;
+    color: var(--color-vellum) !important;
+    box-shadow: var(--shadow-button) !important;
+  }
+
+  .admin_sidebar nav button {
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    color: rgba(16, 42, 42, .72) !important;
+  }
+
+  .admin_sidebar nav button:hover {
+    border-color: rgba(16, 42, 42, .1) !important;
+    background: rgba(255, 255, 255, .74) !important;
+    color: var(--color-ink) !important;
+  }
+
+  .admin_sidebar nav button svg,
+  .admin_sidebar nav button i {
+    color: var(--color-personal) !important;
+  }
+
+  .admin_sidebar nav button.active {
+    border-color: rgba(16, 42, 42, .12) !important;
+    background: var(--color-ink) !important;
+    color: var(--color-vellum) !important;
+    box-shadow: 0 18px 45px rgba(16, 42, 42, .2) !important;
+  }
+
+  .admin_sidebar nav button.active svg,
+  .admin_sidebar nav button.active i {
+    color: var(--color-vellum) !important;
+  }
+
+  .admin_header,
+  .admin_stat_card,
+  .admin_content_card,
+  .admin_editor_panel,
+  .admin_account_panel,
+  .admin_gallery_upload_panel,
+  .admin_gallery_card,
+  .admin_blog_card,
+  .admin_comment_card,
+  .admin_profile_section,
+  .admin_password_modal,
+  .admin_confirm_modal {
+    border: 1px solid rgba(16, 42, 42, .08) !important;
+    background: rgba(255, 250, 240, .82) !important;
+    box-shadow: var(--shadow-soft) !important;
+  }
+
+  .admin_auth_kicker,
+  .admin_content_card > span,
+  .admin_blog_card > div > span,
+  .admin_comment_source,
+  .admin_stat_card > svg,
+  .admin_stat_card > i {
+    color: var(--color-personal) !important;
+  }
+
+  .admin_header_action,
+  .admin_profile_reset,
+  .admin_gallery_publish_button,
+  .admin_hero_image_actions button[type="submit"],
+  .admin_blog_new_post_bar button,
+  .admin_gallery_card_actions button,
+  .admin_comment_actions button,
+  .admin_comment_reply_actions button,
+  .admin_verify_form button,
+  .admin_email_edit_verify button,
+  .admin_email_edit_code button {
+    border-color: var(--color-ink) !important;
+    background: var(--color-ink) !important;
+    color: var(--color-vellum) !important;
+    box-shadow: var(--shadow-button) !important;
+  }
+
+  .admin_header_action:hover,
+  .admin_profile_reset:hover,
+  .admin_gallery_publish_button:hover,
+  .admin_hero_image_actions button[type="submit"]:hover,
+  .admin_blog_new_post_bar button:hover,
+  .admin_gallery_card_actions button:hover,
+  .admin_comment_actions button:hover,
+  .admin_comment_reply_actions button:hover,
+  .admin_verify_form button:hover,
+  .admin_email_edit_verify button:hover,
+  .admin_email_edit_code button:hover {
+    background: var(--color-personal) !important;
+    border-color: var(--color-personal) !important;
+  }
+
+  .admin_editor_intro a,
+  .admin_section_edit,
+  .admin_account_actions button:first-child,
+  .admin_confirm_actions button:first-child {
+    border-color: rgba(16, 42, 42, .1) !important;
+    background: #fff !important;
+    color: var(--color-ink) !important;
+    box-shadow: 0 14px 30px rgba(16, 42, 42, .08) !important;
+  }
+
+  .admin_gallery_toolbar article,
+  .admin_editor_list article,
+  .admin_editor_note,
+  .admin_modal_email,
+  .admin_profile_verified_state,
+  .admin_blog_new_post_bar,
+  .admin_gallery_like_badge,
+  .admin_profile_chips span,
+  .admin_blog_card_meta strong,
+  .admin_comment_meta_line span {
+    border-color: rgba(16, 42, 42, .08) !important;
+    background: rgba(255, 255, 255, .74) !important;
+    color: var(--color-ink) !important;
+  }
+
+  .admin_profile_hero {
+    background:
+      linear-gradient(135deg, rgba(16, 42, 42, .96), rgba(15, 118, 110, .86)),
+      radial-gradient(circle at 90% 0%, rgba(255, 250, 240, .34), transparent 28%) !important;
+    color: var(--color-vellum) !important;
+  }
+
+  .admin_blog_library {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)) !important;
+    gap: 1.25rem !important;
+    align-items: stretch !important;
+  }
+
+  .admin_blog_card {
+    display: flex !important;
+    min-height: 100% !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+    padding: .75rem !important;
+    border-radius: 1.5rem !important;
+    background: rgba(255, 250, 240, .82) !important;
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease !important;
+  }
+
+  .admin_blog_card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(15, 118, 110, .28) !important;
+    box-shadow: var(--shadow-classic) !important;
+  }
+
+  .admin_blog_card_number {
+    top: 1.25rem !important;
+    right: 1.25rem !important;
+    z-index: 2 !important;
+    border-radius: 999px !important;
+    background: rgba(16, 42, 42, .86) !important;
+    color: var(--color-vellum) !important;
+  }
+
+  .admin_blog_card_image {
+    width: 100% !important;
+    min-height: 220px !important;
+    border-radius: 1.25rem !important;
+    background-color: var(--color-paper) !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin_blog_card_image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 42%, rgba(16, 42, 42, .54));
+    pointer-events: none;
+  }
+
+  .admin_blog_card > div:not(.admin_blog_card_image) {
+    display: flex !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    padding: 1rem .25rem .25rem !important;
+  }
+
+  .admin_blog_card > div:not(.admin_blog_card_image) > span {
+    width: fit-content !important;
+    border-radius: 999px !important;
+    background: rgba(183, 121, 31, .1) !important;
+    padding: .3rem .75rem !important;
+    font-size: .72rem !important;
+    font-weight: 900 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+    color: var(--color-brass) !important;
+  }
+
+  .admin_blog_card h3 {
+    margin-top: .75rem !important;
+    color: var(--color-ink) !important;
+    font-size: 1.2rem !important;
+    line-height: 1.25 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .admin_blog_card p {
+    color: rgba(16, 42, 42, .68) !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .admin_blog_card_meta {
+    margin-top: auto !important;
+    padding-top: 1rem !important;
+  }
+
+  .admin_blog_card_meta strong {
+    border-radius: 999px !important;
+    background: rgba(15, 118, 110, .1) !important;
+    color: var(--color-personal) !important;
+  }
+
+  .admin_blog_card .admin_gallery_card_actions {
+    margin-top: 1rem !important;
+    border-top: 1px solid rgba(16, 42, 42, .08) !important;
+    padding: 1rem 0 0 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .admin_blog_card .admin_gallery_card_actions button {
+    width: 100% !important;
+    min-height: 2.6rem !important;
+    border-radius: 999px !important;
+  }
+
+  .admin_blog_card .admin_gallery_card_actions button:first-child {
+    border-color: rgba(16, 42, 42, .1) !important;
+    background: #fff !important;
+    color: var(--color-ink) !important;
+    box-shadow: 0 14px 30px rgba(16, 42, 42, .08) !important;
+  }
+
+  @media (max-width: 760px) {
+    .admin_blog_library {
+      grid-template-columns: 1fr !important;
+    }
+
+    .admin_blog_card .admin_gallery_card_actions {
+      grid-template-columns: 1fr !important;
+    }
+  }
+}
+
+@layer components {
+  /* Modern classic admin refresh */
+  .admin_dashboard {
+    @apply grid min-h-screen grid-cols-[292px_minmax(0,1fr)] bg-[#f7f3ea] text-[#17211d];
+    background-image:
+      linear-gradient(135deg, rgba(247, 243, 234, .96), rgba(238, 242, 236, .96)),
+      radial-gradient(circle at 18% 8%, rgba(23, 91, 80, .12), transparent 30%),
+      radial-gradient(circle at 86% 12%, rgba(173, 125, 51, .12), transparent 26%);
+  }
+
+  .admin_sidebar {
+    @apply sticky top-0 z-30 flex h-screen flex-col gap-8 border-r border-[#d8d0c0] bg-[#111a17] p-5 text-[#f8f3e8] shadow-2xl shadow-black/10;
+  }
+
+  .admin_sidebar .admin_auth_logo {
+    @apply grid h-12 w-12 place-items-center rounded-lg border border-[#d9b66f]/40 bg-[#f8f3e8] text-xl font-black text-[#111a17] shadow-lg shadow-black/20;
+  }
+
+  .admin_sidebar nav {
+    @apply grid gap-2;
+  }
+
+  .admin_sidebar nav button {
+    @apply flex min-h-11 items-center gap-3 rounded-lg border border-transparent px-3 text-sm font-bold text-[#cfc8ba] transition hover:border-[#d9b66f]/30 hover:bg-white/8 hover:text-white;
+  }
+
+  .admin_sidebar nav button svg,
+  .admin_sidebar nav button i {
+    @apply text-base text-[#d9b66f];
+  }
+
+  .admin_sidebar nav button.active {
+    @apply border-[#d9b66f]/45 bg-[#f8f3e8] text-[#111a17] shadow-lg shadow-black/20;
+  }
+
+  .admin_main {
+    @apply min-w-0 px-6 py-6 lg:px-8;
+  }
+
+  .admin_header {
+    @apply mb-6 flex items-center justify-between gap-4 rounded-xl border border-[#ded7ca] bg-[#fffaf0]/90 px-5 py-4 shadow-sm;
+  }
+
+  .admin_auth_kicker {
+    @apply m-0 text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#176052];
+  }
+
+  .admin_header h1,
+  .admin_editor_intro h2,
+  .admin_profile_identity h2,
+  .admin_password_modal h2,
+  .admin_confirm_modal h2 {
+    @apply mt-1 text-balance text-3xl font-black leading-tight text-[#17211d] md:text-4xl;
+  }
+
+  .admin_header_action,
+  .admin_editor_intro a,
+  .admin_profile_reset,
+  .admin_profile_logout,
+  .admin_gallery_upload_button,
+  .admin_gallery_publish_button,
+  .admin_hero_upload_button,
+  .admin_gallery_card_actions button,
+  .admin_wp_media_button,
+  .admin_wp_set_image,
+  .admin_wp_publish_actions button,
+  .admin_confirm_actions button,
+  .admin_section_edit,
+  .admin_blog_new_post_bar button,
+  .admin_comment_actions button,
+  .admin_comment_reply_actions button,
+  .admin_verify_form button,
+  .admin_account_actions button,
+  .admin_email_edit_verify button,
+  .admin_email_edit_code button {
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-[#111a17] bg-[#111a17] px-4 text-sm font-black text-[#fffaf0] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#176052] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0;
+  }
+
+  .admin_section_edit,
+  .admin_account_actions button:first-child,
+  .admin_confirm_actions button:first-child {
+    @apply border-[#d8d0c0] bg-[#fffaf0] text-[#17211d] hover:bg-[#ebe2d2];
+  }
+
+  .admin_stats {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .admin_stat_card,
+  .admin_content_card,
+  .admin_editor_panel,
+  .admin_account_panel,
+  .admin_gallery_upload_panel,
+  .admin_gallery_card,
+  .admin_blog_card,
+  .admin_comment_card,
+  .admin_profile_section,
+  .admin_password_modal,
+  .admin_confirm_modal {
+    @apply rounded-xl border border-[#ded7ca] bg-[#fffaf0]/95 shadow-sm shadow-[#17211d]/5;
+  }
+
+  .admin_stat_card {
+    @apply grid gap-2 p-4;
+  }
+
+  .admin_stat_card > svg,
+  .admin_stat_card > i,
+  .admin_content_card > span,
+  .admin_blog_card > div > span {
+    @apply text-[#176052];
+  }
+
+  .admin_stat_card span,
+  .admin_gallery_toolbar article span,
+  .admin_profile_section_head span,
+  .admin_account_info_list span,
+  .admin_modal_email span {
+    @apply text-xs font-black uppercase tracking-[0.12em] text-[#6f756d];
+  }
+
+  .admin_stat_card strong,
+  .admin_gallery_toolbar article strong {
+    @apply text-2xl font-black text-[#17211d];
+  }
+
+  .admin_stat_card p,
+  .admin_content_card p,
+  .admin_editor_intro p,
+  .admin_editor_note p,
+  .admin_blog_new_post_bar span,
+  .admin_profile_section_copy {
+    @apply text-sm leading-6 text-[#6f756d];
+  }
+
+  .admin_content_grid {
+    @apply mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .admin_content_card {
+    @apply min-h-40 p-5 text-left transition hover:-translate-y-1 hover:border-[#176052]/45 hover:shadow-lg hover:shadow-[#17211d]/10;
+  }
+
+  .admin_content_card strong {
+    @apply mt-2 block text-xl font-black text-[#17211d];
+  }
+
+  .admin_editor_panel,
+  .admin_account_panel {
+    @apply grid gap-5 p-5;
+  }
+
+  .admin_editor_intro {
+    @apply flex items-start justify-between gap-4 border-b border-[#ded7ca] pb-5;
+  }
+
+  .admin_editor_list {
+    @apply grid gap-3 md:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .admin_editor_list article,
+  .admin_editor_note,
+  .admin_modal_email,
+  .admin_profile_verified_state,
+  .admin_blog_new_post_bar {
+    @apply flex items-center gap-3 rounded-lg border border-[#ded7ca] bg-[#f8f3e8] p-3;
+  }
+
+  .admin_editor_list article svg,
+  .admin_editor_list article i,
+  .admin_editor_note svg,
+  .admin_editor_note i {
+    @apply text-[#176052];
+  }
+
+  .admin_hero_image_editor,
+  .admin_gallery_upload_panel {
+    @apply grid gap-5 lg:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)];
+  }
+
+  .admin_hero_image_preview,
+  .admin_gallery_preview {
+    @apply min-h-72 overflow-hidden rounded-xl border border-[#ded7ca] bg-[#ebe2d2] bg-cover bg-center;
+  }
+
+  .admin_hero_image_preview.has_image,
+  .admin_gallery_preview.has_image {
+    @apply relative shadow-inner;
+  }
+
+  .admin_hero_image_preview.has_image span,
+  .admin_gallery_preview.has_image span {
+    @apply absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-lg bg-[#111a17]/85 px-3 py-2 text-xs font-black uppercase tracking-[0.1em] text-[#fffaf0];
+  }
+
+  .admin_gallery_preview_empty,
+  .admin_gallery_empty_state {
+    @apply grid h-full min-h-56 place-items-center gap-2 p-6 text-center text-[#6f756d];
+  }
+
+  .admin_gallery_preview_empty strong,
+  .admin_gallery_empty_state strong {
+    @apply text-lg font-black text-[#17211d];
+  }
+
+  .admin_hero_image_form,
+  .admin_account_form,
+  .admin_gallery_form {
+    @apply grid gap-4 rounded-xl border border-[#ded7ca] bg-[#fffaf0] p-4 shadow-none;
+  }
+
+  .admin_hero_fields,
+  .admin_gallery_fields {
+    @apply grid gap-3 md:grid-cols-2;
+  }
+
+  .admin_hero_image_form label,
+  .admin_account_form label,
+  .admin_gallery_form label,
+  .admin_verify_form label,
+  .admin_blog_full_label {
+    @apply grid gap-2 rounded-lg border border-[#e5ddcf] bg-white/70 p-3 text-xs font-black uppercase tracking-[0.12em] text-[#6f756d];
+  }
+
+  .admin_hero_image_form input,
+  .admin_hero_image_form textarea,
+  .admin_account_form input,
+  .admin_gallery_form input,
+  .admin_verify_form input,
+  .admin_email_edit_code input,
+  .admin_blog_form input,
+  .admin_blog_form textarea,
+  .admin_blog_form select {
+    @apply min-h-11 w-full rounded-lg border border-[#d8d0c0] bg-[#fffdf8] px-3 py-2 text-sm font-bold normal-case tracking-normal text-[#17211d] outline-none transition focus:border-[#176052] focus:ring-4 focus:ring-[#176052]/10;
+  }
+
+  .admin_hero_image_form textarea,
+  .admin_blog_form textarea {
+    @apply min-h-28 resize-y leading-6;
+  }
+
+  .admin_hero_image_actions,
+  .admin_gallery_form_actions,
+  .admin_account_actions,
+  .admin_confirm_actions,
+  .admin_comment_actions,
+  .admin_comment_reply_actions {
+    @apply flex flex-wrap items-center justify-end gap-3;
+  }
+
+  .admin_gallery_toolbar {
+    @apply grid gap-3 md:grid-cols-3;
+  }
+
+  .admin_gallery_toolbar article {
+    @apply rounded-xl border border-[#ded7ca] bg-[#f8f3e8] p-4 shadow-sm;
+  }
+
+  .admin_gallery_library,
+  .admin_blog_library,
+  .admin_blog_comments {
+    @apply grid gap-4;
+  }
+
+  .admin_gallery_library {
+    @apply md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .admin_gallery_card {
+    @apply overflow-hidden;
+  }
+
+  .admin_gallery_card_image,
+  .admin_blog_card_image {
+    @apply min-h-52 bg-[#ebe2d2] bg-cover bg-center;
+  }
+
+  .admin_gallery_card_image span {
+    @apply m-3 inline-flex rounded-lg bg-[#111a17]/85 px-3 py-1.5 text-xs font-black uppercase tracking-[0.1em] text-[#fffaf0];
+  }
+
+  .admin_gallery_card_body {
+    @apply flex items-start justify-between gap-3 p-4;
+  }
+
+  .admin_gallery_card_body strong,
+  .admin_blog_card h3,
+  .admin_comment_card_head strong,
+  .admin_profile_section_head strong {
+    @apply text-lg font-black text-[#17211d];
+  }
+
+  .admin_gallery_like_badge,
+  .admin_profile_chips span,
+  .admin_blog_card_meta strong,
+  .admin_comment_meta_line span {
+    @apply inline-flex items-center gap-2 rounded-lg border border-[#d8d0c0] bg-[#f8f3e8] px-3 py-1.5 text-xs font-black text-[#17211d];
+  }
+
+  .admin_gallery_card_actions {
+    @apply flex flex-wrap items-end gap-3 border-t border-[#ded7ca] p-4;
+  }
+
+  .admin_gallery_card_actions label {
+    @apply grid min-w-24 gap-1 text-xs font-black uppercase tracking-[0.1em] text-[#6f756d];
+  }
+
+  .admin_gallery_card_actions input {
+    @apply min-h-10 rounded-lg border border-[#d8d0c0] bg-[#fffdf8] px-3 text-sm font-bold text-[#17211d];
+  }
+
+  .admin_blog_new_post_bar {
+    @apply justify-between;
+  }
+
+  .admin_blog_card {
+    @apply relative grid gap-4 overflow-hidden p-4 md:grid-cols-[180px_minmax(0,1fr)];
+  }
+
+  .admin_blog_card_number,
+  .admin_comment_number {
+    @apply absolute right-4 top-4 rounded-lg bg-[#d9b66f] px-2.5 py-1 text-xs font-black text-[#111a17];
+  }
+
+  .admin_blog_card_image {
+    @apply min-h-40 rounded-lg;
+  }
+
+  .admin_blog_card p,
+  .admin_comment_card p,
+  .admin_comment_reply p {
+    @apply mt-2 text-sm leading-6 text-[#6f756d];
+  }
+
+  .admin_blog_card_meta,
+  .admin_comment_meta_line,
+  .admin_profile_chips {
+    @apply mt-3 flex flex-wrap gap-2;
+  }
+
+  .admin_comment_card {
+    @apply relative grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_auto];
+  }
+
+  .admin_comment_card_head,
+  .admin_profile_section_head {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  }
+
+  .admin_comment_source {
+    @apply mt-2 inline-flex items-center gap-2 rounded-lg bg-[#f8f3e8] px-3 py-1.5 text-xs font-black text-[#176052];
+  }
+
+  .admin_comment_card small,
+  .admin_comment_reply small {
+    @apply mt-2 block text-xs font-bold text-[#8b8274];
+  }
+
+  .admin_comment_replies {
+    @apply mt-4 grid gap-3;
+  }
+
+  .admin_comment_reply {
+    @apply flex flex-wrap items-start justify-between gap-3 rounded-lg border border-[#ded7ca] bg-[#f8f3e8] p-3;
+  }
+
+  .admin_comment_reply.is_hidden {
+    @apply opacity-70;
+  }
+
+  .admin_profile_hero {
+    @apply flex flex-wrap items-center gap-4 rounded-xl border border-[#ded7ca] bg-[#111a17] p-5 text-[#fffaf0];
+  }
+
+  .admin_profile_avatar {
+    @apply grid h-16 w-16 place-items-center rounded-lg border border-[#d9b66f]/40 bg-[#fffaf0] text-2xl font-black text-[#111a17];
+  }
+
+  .admin_profile_identity h2,
+  .admin_profile_identity p {
+    @apply text-[#fffaf0];
+  }
+
+  .admin_profile_logout {
+    @apply ml-auto border-[#d9b66f]/40 bg-[#fffaf0] text-[#111a17] hover:bg-[#d9b66f];
+  }
+
+  .admin_profile_sections {
+    @apply grid gap-4 xl:grid-cols-2;
+  }
+
+  .admin_profile_section {
+    @apply grid gap-4 p-5;
+  }
+
+  .admin_account_info_list {
+    @apply grid gap-2;
+  }
+
+  .admin_account_info_list div {
+    @apply flex items-center justify-between gap-4 rounded-lg border border-[#ded7ca] bg-[#f8f3e8] px-3 py-2;
+  }
+
+  .admin_account_info_list strong,
+  .admin_modal_email strong {
+    @apply break-words text-sm font-black text-[#17211d];
+  }
+
+  .admin_profile_message,
+  .admin_blog_top_message {
+    @apply rounded-lg border border-[#176052]/20 bg-[#176052]/10 px-3 py-2 text-sm font-black text-[#176052];
+  }
+
+  .admin_modal_layer {
+    @apply fixed inset-0 z-50 grid place-items-center p-4;
+  }
+
+  .admin_modal_backdrop,
+  .admin_nav_backdrop {
+    @apply fixed inset-0 bg-[#111a17]/55 backdrop-blur-sm;
+  }
+
+  .admin_password_modal,
+  .admin_confirm_modal {
+    @apply relative z-10 w-full max-w-xl p-5;
+  }
+
+  .admin_password_modal header {
+    @apply flex items-start justify-between gap-4 border-b border-[#ded7ca] pb-4;
+  }
+
+  .admin_password_modal header button {
+    @apply grid h-10 w-10 place-items-center rounded-lg border border-[#d8d0c0] bg-[#fffaf0] text-[#17211d];
+  }
+
+  .admin_modal_body {
+    @apply grid gap-4 pt-4;
+  }
+
+  .admin_verify_form,
+  .admin_email_edit_verify,
+  .admin_email_edit_code {
+    @apply grid gap-3;
+  }
+
+  .admin_confirm_modal {
+    @apply grid gap-3 text-center;
+  }
+
+  .admin_confirm_icon {
+    @apply mx-auto grid h-12 w-12 place-items-center rounded-lg bg-[#176052]/10 text-xl text-[#176052];
+  }
+
+  .admin_confirm_icon.danger {
+    @apply bg-red-50 text-red-700;
+  }
+
+  .admin_skeleton {
+    @apply grid gap-3 rounded-xl border border-[#ded7ca] bg-[#fffaf0] p-5;
+  }
+
+  .admin_skeleton span {
+    @apply h-5 animate-pulse rounded-lg bg-[#ded7ca];
+  }
+
+  .admin_hamburger {
+    @apply fixed right-4 top-4 z-40 hidden h-11 w-11 rounded-lg border border-[#d8d0c0] bg-[#111a17] p-2 shadow-lg;
+  }
+
+  .admin_hamburger .bar {
+    @apply my-1 block h-0.5 rounded-full bg-[#fffaf0];
+  }
+
+  @media (max-width: 1100px) {
+    .admin_dashboard {
+      @apply grid-cols-1;
+    }
+
+    .admin_hamburger {
+      @apply block;
+    }
+
+    .admin_sidebar {
+      @apply fixed left-0 top-0 z-50 w-[min(82vw,292px)] -translate-x-full transition-transform;
+    }
+
+    .admin_sidebar.active {
+      @apply translate-x-0;
+    }
+
+    .admin_main {
+      @apply px-4 pt-20;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .admin_header,
+    .admin_editor_intro,
+    .admin_blog_new_post_bar {
+      @apply items-stretch flex-col;
+    }
+
+    .admin_header_action,
+    .admin_editor_intro a,
+    .admin_profile_logout,
+    .admin_gallery_publish_button {
+      @apply w-full;
+    }
+
+    .admin_hero_fields,
+    .admin_gallery_fields,
+    .admin_hero_image_editor,
+    .admin_gallery_upload_panel,
+    .admin_blog_card {
+      @apply grid-cols-1;
+    }
+
+    .admin_gallery_library {
+      @apply grid-cols-1;
+    }
+
+    .admin_account_info_list div,
+    .admin_comment_card_head,
+    .admin_profile_section_head {
+      @apply items-start flex-col;
+    }
+  }
 }

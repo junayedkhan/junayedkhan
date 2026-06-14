@@ -4,7 +4,7 @@ const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const authMiddleware = require('../middleware/authMiddleware')
-const { sendMail, smtpEnabled } = require('../utils/mailer')
+const { sendMail, emailEnabled } = require('../utils/mailer')
 const { loadServerCss } = require('../utils/cssLoader')
 
 const signToken = (userId) => {
@@ -296,7 +296,7 @@ router.post('/me/send-verification-code', authMiddleware, async (req, res) => {
 
     if (!user) return res.status(404).json({ message: 'User not found' })
     if (!user.email) return res.status(400).json({ message: 'Save a recovery email first' })
-    if (!smtpEnabled()) return res.status(503).json({ message: 'Email service is not configured' })
+    if (!emailEnabled()) return res.status(503).json({ message: 'Email service is not configured' })
 
     const code = crypto.randomInt(100000, 999999).toString()
     const emailContent = buildAccountVerificationEmail({
@@ -423,7 +423,7 @@ router.post('/forgot-password', async (req, res) => {
       return res.json({ message: successMessage })
     }
 
-    if (!smtpEnabled() && process.env.RETURN_RESET_LINK !== 'true') {
+    if (!emailEnabled()) {
       return res.status(503).json({ message: 'Email service is not configured' })
     }
 
@@ -431,28 +431,23 @@ router.post('/forgot-password', async (req, res) => {
     const frontendUrl = getResetBaseUrl(req)
     const resetLink = `${frontendUrl}/reset-password/${resetToken}`
 
-    if (smtpEnabled()) {
-      const emailContent = buildPasswordResetEmail({
-        resetLink,
-        username: user.username
-      })
+    const emailContent = buildPasswordResetEmail({
+      resetLink,
+      username: user.username
+    })
 
-      await sendMail({
-        to: user.email,
-        subject: 'Reset your Junayed Khan admin password',
-        text: emailContent.text,
-        html: emailContent.html
-      })
-    }
+    await sendMail({
+      to: user.email,
+      subject: 'Reset your Junayed Khan admin password',
+      text: emailContent.text,
+      html: emailContent.html
+    })
 
     user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex')
     user.resetPasswordExpires = new Date(Date.now() + 1000 * 60 * 30)
     await user.save()
 
-    res.json({
-      message: successMessage,
-      resetLink: !smtpEnabled() && process.env.RETURN_RESET_LINK === 'true' ? resetLink : undefined
-    })
+    res.json({ message: successMessage })
   } catch (err) {
     logEmailError('Unable to send password reset email:', err)
     res.status(500).json({ message: 'Unable to send reset link' })

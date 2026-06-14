@@ -6,17 +6,41 @@
     height: 1em;
     flex: 0 0 auto;
     place-items: center;
+    align-items: center;
+    justify-items: center;
     font-family: var(--font-sans);
     font-size: 1.05em;
     font-weight: 900;
     line-height: 1;
     text-align: center;
+    vertical-align: middle;
+  }
+
+  .app_icon svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+    margin: auto;
   }
 
   button .app_icon,
   a .app_icon,
   label .app_icon {
     pointer-events: none;
+  }
+
+  .social_icon {
+    display: grid !important;
+    place-items: center !important;
+    line-height: 1 !important;
+  }
+
+  .social_icon .app_icon {
+    display: grid;
+    width: 1.15em;
+    height: 1.15em;
+    place-items: center;
+    font-size: 1.05rem;
   }
 
   .react-tabs__tab-panel:not(.react-tabs__tab-panel--selected) {

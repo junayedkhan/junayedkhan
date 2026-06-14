@@ -544,6 +544,10 @@
   }
 
   @media (max-width: 767px) {
+    .hero_panel {
+      width: min(100%, 24rem);
+    }
+
     .websfolio_th.home_active {
       height: 100svh;
       max-height: 100svh;
@@ -584,7 +588,7 @@
     }
 
     .hero_image_card {
-      width: min(58vw, 205px);
+      width: min(76vw, 285px);
       min-height: 0;
       border-width: 5px;
       padding: 0;
@@ -680,7 +684,7 @@
     }
 
     .hero_image_card {
-      width: min(54vw, 180px);
+      width: min(74vw, 255px);
       min-height: 0;
     }
 
