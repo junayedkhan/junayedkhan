@@ -20,8 +20,38 @@ const publicUser = (user) => ({
   username: user.username,
   email: user.email,
   age: user.age,
-  address: user.address
+  address: user.address,
+  accountVerifiedUntil: user.accountVerifiedUntil || null
 })
+
+const validateAdminCredentials = ({ username, email, password }) => {
+  const normalizedUsername = normalizeUsername(username)
+  const normalizedEmail = normalizeEmail(email)
+
+  if (!normalizedUsername || !normalizedEmail || !password) {
+    return { error: 'Username, email, and password are required' }
+  }
+
+  if (!emailPattern.test(normalizedEmail)) {
+    return { error: 'Enter a valid email address' }
+  }
+
+  if (password.length < 8) {
+    return { error: 'Password must be at least 8 characters' }
+  }
+
+  return { username: normalizedUsername, email: normalizedEmail }
+}
+
+const ensureUniqueAdminIdentity = async ({ username, email }) => {
+  const existingUsername = await User.findOne({ username })
+  if (existingUsername) return 'Name is already in use'
+
+  const existingEmail = await User.findOne({ email })
+  if (existingEmail) return 'Email is already in use'
+
+  return ''
+}
 
 const getResetBaseUrl = (req) => {
   const origin = req.get('origin')?.replace(/\/$/, '')
@@ -182,20 +212,9 @@ router.get('/status', async (req, res) => {
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body
-    const normalizedUsername = normalizeUsername(username)
-    const normalizedEmail = normalizeEmail(email)
+    const validated = validateAdminCredentials({ username, email, password })
 
-    if (!normalizedUsername || !normalizedEmail || !password) {
-      return res.status(400).json({ message: 'Username, email, and password are required' })
-    }
-
-    if (!emailPattern.test(normalizedEmail)) {
-      return res.status(400).json({ message: 'Enter a valid email address' })
-    }
-
-    if (password.length < 8) {
-      return res.status(400).json({ message: 'Password must be at least 8 characters' })
-    }
+    if (validated.error) return res.status(400).json({ message: validated.error })
 
     const adminExists = await User.exists({})
     if (adminExists) {
@@ -205,8 +224,8 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const user = new User({
-      username: normalizedUsername,
-      email: normalizedEmail,
+      username: validated.username,
+      email: validated.email,
       password: hashedPassword
     })
 
@@ -214,6 +233,54 @@ router.post('/register', async (req, res) => {
     res.status(201).json({ message: 'Admin created', user: publicUser(user) })
   } catch (err) {
     res.status(500).json({ message: 'Unable to create admin' })
+  }
+})
+
+router.get('/admins', authMiddleware, async (req, res) => {
+  try {
+    const admins = await User.find({}).select('-password').sort({ username: 1 })
+    res.json({ admins: admins.map(publicUser) })
+  } catch (err) {
+    res.status(500).json({ message: 'Unable to load admins' })
+  }
+})
+
+router.post('/admins', authMiddleware, async (req, res) => {
+  try {
+    const currentUser = await User.findOne({
+      _id: req.user.id,
+      accountVerifiedUntil: { $gt: new Date() }
+    })
+
+    if (!currentUser) {
+      return res.status(403).json({ message: 'Verify your email before adding another admin' })
+    }
+
+    const { username, email, password } = req.body
+    const validated = validateAdminCredentials({ username, email, password })
+
+    if (validated.error) return res.status(400).json({ message: validated.error })
+
+    const identityError = await ensureUniqueAdminIdentity(validated)
+    if (identityError) return res.status(409).json({ message: identityError })
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = new User({
+      username: validated.username,
+      email: validated.email,
+      password: hashedPassword
+    })
+
+    await user.save()
+
+    const admins = await User.find({}).select('-password').sort({ username: 1 })
+    res.status(201).json({
+      message: 'Admin added successfully.',
+      user: publicUser(user),
+      admins: admins.map(publicUser)
+    })
+  } catch (err) {
+    res.status(500).json({ message: 'Unable to add admin' })
   }
 })
 
@@ -346,7 +413,7 @@ router.post('/me/verify-code', authMiddleware, async (req, res) => {
     user.accountVerifiedUntil = new Date(Date.now() + 1000 * 60 * 10)
     await user.save()
 
-    res.json({ message: 'Email verified. Password options are unlocked.' })
+    res.json({ message: 'Email verified. Password options are unlocked.', user: publicUser(user) })
   } catch (err) {
     res.status(500).json({ message: 'Unable to verify code' })
   }
@@ -373,7 +440,7 @@ router.patch('/me/password', authMiddleware, async (req, res) => {
     user.accountVerifiedUntil = undefined
     await user.save()
 
-    res.json({ message: 'Password updated successfully.' })
+    res.json({ message: 'Password updated successfully.', user: publicUser(user) })
   } catch (err) {
     res.status(500).json({ message: 'Unable to update password' })
   }

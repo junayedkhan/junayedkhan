@@ -148,13 +148,18 @@ export default function AdminDashboard() {
   const [email, setEmail] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [accountForm, setAccountForm] = useState({ username: "", email: "", age: "", address: "" });
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [isLoadingAdmins, setIsLoadingAdmins] = useState(false);
+  const [newAdminForm, setNewAdminForm] = useState({ username: "", email: "", password: "" });
+  const [adminCreateMessage, setAdminCreateMessage] = useState("");
+  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
+  const [activeAccountOption, setActiveAccountOption] = useState("profile");
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [emailVerifyModalOpen, setEmailVerifyModalOpen] = useState(false);
   const [emailEditCode, setEmailEditCode] = useState("");
   const [emailEditMessage, setEmailEditMessage] = useState("");
   const [isSendingEmailEditCode, setIsSendingEmailEditCode] = useState(false);
   const [isVerifyingEmailEditCode, setIsVerifyingEmailEditCode] = useState(false);
-  const [isEmailEditVerified, setIsEmailEditVerified] = useState(false);
   const [resetMessage, setResetMessage] = useState("");
   const [isSavingEmail, setIsSavingEmail] = useState(false);
   const [activeSection, setActiveSection] = useState(() => {
@@ -171,10 +176,10 @@ export default function AdminDashboard() {
   const [verificationMessage, setVerificationMessage] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [verifiedStateTick, setVerifiedStateTick] = useState(Date.now());
   const [heroForm, setHeroForm] = useState(DEFAULT_HERO_CONTENT);
   const [heroImageMessage, setHeroImageMessage] = useState("");
   const [isSavingHeroImage, setIsSavingHeroImage] = useState(false);
@@ -217,7 +222,6 @@ export default function AdminDashboard() {
             age: res.data.user.age ?? "",
             address: res.data.user.address || "",
           });
-          setIsEmailVerified(false);
         }
       })
       .catch(() => {
@@ -353,16 +357,60 @@ export default function AdminDashboard() {
     };
   }, [mobileNavOpen, passwordModalOpen, accountModalOpen, emailVerifyModalOpen]);
 
+  useEffect(() => {
+    if (!user?.accountVerifiedUntil) return undefined;
+
+    const verifiedUntilTime = new Date(user.accountVerifiedUntil).getTime();
+    if (!Number.isFinite(verifiedUntilTime) || verifiedUntilTime <= verifiedStateTick) return undefined;
+
+    const stateTimer = setTimeout(() => {
+      setVerifiedStateTick(Date.now());
+    }, verifiedUntilTime - verifiedStateTick + 250);
+
+    return () => clearTimeout(stateTimer);
+  }, [user?.accountVerifiedUntil, verifiedStateTick]);
+
+  useEffect(() => {
+    if (activeSection !== "account" || isLoadingUser) return undefined;
+
+    let active = true;
+    setIsLoadingAdmins(true);
+
+    api
+      .get("/auth/admins", { headers: authHeaders() })
+      .then((res) => {
+        if (active) setAdminUsers(res.data.admins || []);
+      })
+      .catch((err) => {
+        if (active) setAdminCreateMessage(err.response?.data?.message || "Unable to load admin list");
+      })
+      .finally(() => {
+        if (active) setIsLoadingAdmins(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [activeSection, isLoadingUser]);
+
   const logout = () => {
     clearToken();
     navigate("/admin-login");
   };
 
+  const accountVerifiedUntilTime = user?.accountVerifiedUntil
+    ? new Date(user.accountVerifiedUntil).getTime()
+    : 0;
+  const isAccountVerified = Number.isFinite(accountVerifiedUntilTime) && accountVerifiedUntilTime > verifiedStateTick;
+  const accountVerifiedUntilLabel = isAccountVerified
+    ? new Date(accountVerifiedUntilTime).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+    : "";
+
   const saveEmail = async (e) => {
     e.preventDefault();
     setEmailMessage("");
 
-    if (emailChanged && !isEmailEditVerified) {
+    if (emailChanged && !isAccountVerified) {
       setEmailVerifyModalOpen(true);
       return;
     }
@@ -390,10 +438,8 @@ export default function AdminDashboard() {
       });
       setEmailMessage(res.data.message);
       setAccountModalOpen(false);
-      setIsEmailEditVerified(false);
       setEmailEditCode("");
       setEmailEditMessage("");
-      setIsEmailVerified(false);
       setVerificationCode("");
       setVerificationMessage("");
       setResetMessage("");
@@ -420,9 +466,47 @@ export default function AdminDashboard() {
     }));
 
     if (field === "email") {
-      setIsEmailEditVerified(false);
       setEmailEditCode("");
       setEmailEditMessage("");
+    }
+  };
+
+  const updateNewAdminField = (field, value) => {
+    setAdminCreateMessage("");
+    setNewAdminForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const createAdmin = async (e) => {
+    e.preventDefault();
+    setAdminCreateMessage("");
+
+    if (!isAccountVerified) {
+      setAdminCreateMessage("Verify your email before adding another admin.");
+      return;
+    }
+
+    setIsCreatingAdmin(true);
+
+    try {
+      const res = await api.post(
+        "/auth/admins",
+        {
+          username: newAdminForm.username.trim(),
+          email: newAdminForm.email.trim(),
+          password: newAdminForm.password,
+        },
+        { headers: authHeaders() }
+      );
+      setAdminUsers(res.data.admins || []);
+      setNewAdminForm({ username: "", email: "", password: "" });
+      setAdminCreateMessage(res.data.message);
+    } catch (err) {
+      setAdminCreateMessage(err.response?.data?.message || "Unable to add admin");
+    } finally {
+      setIsCreatingAdmin(false);
     }
   };
 
@@ -434,7 +518,6 @@ export default function AdminDashboard() {
       address: user?.address || "",
     });
     setAccountModalOpen(false);
-    setIsEmailEditVerified(false);
     setEmailEditCode("");
     setEmailEditMessage("");
     setEmailMessage("");
@@ -453,7 +536,6 @@ export default function AdminDashboard() {
     setEmailMessage("");
     setEmailEditMessage("");
     setEmailEditCode("");
-    setIsEmailEditVerified(false);
     setAccountModalOpen(true);
   };
 
@@ -486,11 +568,11 @@ export default function AdminDashboard() {
         { code: emailEditCode.trim() },
         { headers: authHeaders() }
       );
-      setIsEmailEditVerified(true);
+      setUser(res.data.user);
+      setVerifiedStateTick(Date.now());
       setEmailEditMessage(res.data.message);
       setEmailVerifyModalOpen(false);
     } catch (err) {
-      setIsEmailEditVerified(false);
       setEmailEditMessage(err.response?.data?.message || "Unable to verify code");
     } finally {
       setIsVerifyingEmailEditCode(false);
@@ -516,7 +598,6 @@ export default function AdminDashboard() {
     setResetMessage("");
     setNewPassword("");
     setConfirmNewPassword("");
-    setIsEmailVerified(false);
   };
 
   const sendVerificationCode = async () => {
@@ -550,10 +631,10 @@ export default function AdminDashboard() {
         { code: verificationCode.trim() },
         { headers: authHeaders() }
       );
-      setIsEmailVerified(true);
+      setUser(res.data.user);
+      setVerifiedStateTick(Date.now());
       setVerificationMessage(res.data.message);
     } catch (err) {
-      setIsEmailVerified(false);
       setVerificationMessage(err.response?.data?.message || "Unable to verify code");
     } finally {
       setIsVerifyingCode(false);
@@ -578,6 +659,8 @@ export default function AdminDashboard() {
         { headers: authHeaders() }
       );
       setResetMessage(res.data.message);
+      setUser(res.data.user);
+      setVerifiedStateTick(Date.now());
       setNewPassword("");
       setConfirmNewPassword("");
       setVerificationCode("");
@@ -1253,10 +1336,10 @@ export default function AdminDashboard() {
             <header>
               <div>
                 <p className="admin_auth_kicker">Password security</p>
-                <h2>{isEmailVerified ? "Set New Password" : "Verify Email"}</h2>
+                <h2>{isAccountVerified ? "Set New Password" : "Verify Email"}</h2>
                 <p>
-                  {isEmailVerified
-                    ? "Email verified. Set a new password for this admin account."
+                  {isAccountVerified
+                    ? `Verification is active${accountVerifiedUntilLabel ? ` until ${accountVerifiedUntilLabel}` : ""}. Set a new password for this admin account.`
                     : "Enter the verification code sent to your recovery email to edit your password."}
                 </p>
               </div>
@@ -1265,7 +1348,7 @@ export default function AdminDashboard() {
               </button>
             </header>
 
-            {!isEmailVerified ? (
+            {!isAccountVerified ? (
               <div className="admin_modal_body">
                 <div className="admin_modal_email">
                   <Icon icon="mail-open-text" />
@@ -1313,7 +1396,9 @@ export default function AdminDashboard() {
               <div className="admin_modal_body">
                 <div className="admin_profile_verified_state">
                   <Icon icon="check-circle" />
-                  <span>Email verified. You can edit the password now.</span>
+                  <span>
+                    Verification active{accountVerifiedUntilLabel ? ` until ${accountVerifiedUntilLabel}` : ""}. You can edit the password now.
+                  </span>
                 </div>
 
                 <form className="admin_verify_form admin_verify_form--password" onSubmit={saveNewPassword}>
@@ -1416,7 +1501,7 @@ export default function AdminDashboard() {
                   />
                 </label>
 
-                {emailChanged && !isEmailEditVerified ? (
+                {emailChanged && !isAccountVerified ? (
                   <p>Email change requires verification. Click Save Changes to continue.</p>
                 ) : null}
 
@@ -2083,84 +2168,222 @@ export default function AdminDashboard() {
                     <Icon icon="user-shield" />
                     Portfolio Admin
                   </span>
-                  <span className={isEmailVerified ? "verified" : ""}>
-                    <Icon icon={isEmailVerified ? "check-circle" : "clock"} />
-                    {isEmailVerified ? "Email verified" : "Verification required"}
+                  <span className={isAccountVerified ? "verified" : ""}>
+                    <Icon icon={isAccountVerified ? "check-circle" : "clock"} />
+                    {isAccountVerified
+                      ? `Verified until ${accountVerifiedUntilLabel || "soon"}`
+                      : "Verification required for secure changes"}
                   </span>
                 </div>
               </div>
-              <button type="button" className="admin_profile_logout" onClick={logout}>
-                <Icon icon="logout" />
-                <span>Logout</span>
-              </button>
-            </div>
-
-            <div className="admin_profile_sections">
-              <article className="admin_profile_section">
-                <div className="admin_profile_section_head">
-                  <Icon icon="id-card" />
-                  <div>
-                    <span>Account Details</span>
-                    <strong>Profile information</strong>
-                  </div>
-                  <button
-                    type="button"
-                    className="admin_section_edit"
-                    onClick={openAccountModal}
-                  >
-                    <Icon icon="edit" />
-                    <span>Edit</span>
-                  </button>
-                </div>
-
-                <div className="admin_account_info_list">
-                  <div>
-                    <span>Name</span>
-                    <strong>{user?.username || "Not set"}</strong>
-                  </div>
-                  <div>
-                    <span>Email</span>
-                    <strong>{user?.email || "Not set"}</strong>
-                  </div>
-                  <div>
-                    <span>Age</span>
-                    <strong>{user?.age ?? "Not set"}</strong>
-                  </div>
-                  <div>
-                    <span>Address</span>
-                    <strong>{user?.address || "Not set"}</strong>
-                  </div>
-                </div>
-              </article>
-
-              <article className="admin_profile_section">
-                <div className="admin_profile_section_head">
-                  <Icon icon="lock" />
-                  <div>
-                    <span>Password</span>
-                    <strong>Password Security</strong>
-                  </div>
-                </div>
-                <p className="admin_profile_section_copy">
-                  Set a new password after email verification. Your current password is never shown for security.
-                </p>
-                <div className="admin_modal_email">
-                  <Icon icon="mail" />
-                  <div>
-                    <span>Recovery email</span>
-                    <strong>{user?.email || "No recovery email saved"}</strong>
-                  </div>
-                </div>
+              <div className="admin_account_hero_actions">
                 <button
                   type="button"
-                  className="admin_profile_reset"
-                  onClick={openPasswordModal}
-                  disabled={!user?.email}
+                  className="admin_section_edit"
+                  onClick={openAccountModal}
                 >
-                  <Icon icon="key" />
-                  <span>Reset Password</span>
+                  <Icon icon="edit" />
+                  <span>Edit Profile</span>
                 </button>
-              </article>
+                <button type="button" className="admin_profile_logout" onClick={logout}>
+                  <Icon icon="logout" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="admin_account_workspace">
+              <div className="admin_account_option_list" role="tablist" aria-label="Account options">
+                {[
+                  { id: "profile", label: "Profile", icon: "id-card", meta: user?.email || "Account details" },
+                  {
+                    id: "password",
+                    label: "Password",
+                    icon: "lock",
+                    meta: isAccountVerified ? `Unlocked until ${accountVerifiedUntilLabel || "soon"}` : "Needs verification",
+                  },
+                  { id: "admins", label: "Admins", icon: "user-shield", meta: isLoadingAdmins ? "Loading" : `${adminUsers.length} admins` },
+                ].map((option) => (
+                  <button
+                    type="button"
+                    className={activeAccountOption === option.id ? "active" : ""}
+                    onClick={() => setActiveAccountOption(option.id)}
+                    role="tab"
+                    aria-selected={activeAccountOption === option.id}
+                    key={option.id}
+                  >
+                    <Icon icon={option.icon} />
+                    <span>
+                      <strong>{option.label}</strong>
+                      <small>{option.meta}</small>
+                    </span>
+                    <Icon icon="arrow-right" />
+                  </button>
+                ))}
+              </div>
+
+              <section className="admin_account_option_panel" role="tabpanel">
+                {activeAccountOption === "profile" ? (
+                  <>
+                    <div className="admin_profile_section_head">
+                      <Icon icon="id-card" />
+                      <div>
+                        <span>Account Details</span>
+                        <strong>Profile Information</strong>
+                      </div>
+                    </div>
+                    <div className="admin_account_info_list">
+                      <div>
+                        <span>Name</span>
+                        <strong>{user?.username || "Not set"}</strong>
+                      </div>
+                      <div>
+                        <span>Email</span>
+                        <strong>{user?.email || "Not set"}</strong>
+                      </div>
+                      <div>
+                        <span>Age</span>
+                        <strong>{user?.age ?? "Not set"}</strong>
+                      </div>
+                      <div>
+                        <span>Address</span>
+                        <strong>{user?.address || "Not set"}</strong>
+                      </div>
+                    </div>
+                  </>
+                ) : null}
+
+                {activeAccountOption === "password" ? (
+                  <>
+                    <div className="admin_profile_section_head">
+                      <Icon icon="lock" />
+                      <div>
+                        <span>Password</span>
+                        <strong>New Password</strong>
+                      </div>
+                    </div>
+                    <div className={isAccountVerified ? "admin_verify_status active" : "admin_verify_status"}>
+                      <Icon icon={isAccountVerified ? "check-circle" : "clock"} />
+                      <span>
+                        {isAccountVerified
+                          ? `Unlocked until ${accountVerifiedUntilLabel || "soon"}`
+                          : "Click change to verify your email first"}
+                      </span>
+                    </div>
+                    <form className="admin_password_inline_form" onSubmit={saveNewPassword}>
+                      <label>
+                        <span>New Password</span>
+                        <input
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => {
+                            setResetMessage("");
+                            setNewPassword(e.target.value);
+                          }}
+                          autoComplete="new-password"
+                          minLength={8}
+                          required={isAccountVerified}
+                        />
+                      </label>
+                      <label>
+                        <span>Confirm Password</span>
+                        <input
+                          type="password"
+                          value={confirmNewPassword}
+                          onChange={(e) => {
+                            setResetMessage("");
+                            setConfirmNewPassword(e.target.value);
+                          }}
+                          autoComplete="new-password"
+                          minLength={8}
+                          required={isAccountVerified}
+                        />
+                      </label>
+                      <button
+                        type={isAccountVerified ? "submit" : "button"}
+                        className="admin_profile_reset"
+                        onClick={isAccountVerified ? undefined : openPasswordModal}
+                        disabled={!user?.email || isSavingPassword}
+                      >
+                        <Icon icon="key" />
+                        <span>{isSavingPassword ? "Changing..." : "Change Password"}</span>
+                      </button>
+                    </form>
+                    {resetMessage ? <p className="admin_profile_message">{resetMessage}</p> : null}
+                  </>
+                ) : null}
+
+                {activeAccountOption === "admins" ? (
+                  <>
+                    <div className="admin_profile_section_head">
+                      <Icon icon="user-shield" />
+                      <div>
+                        <span>Admins</span>
+                        <strong>Add Another Admin</strong>
+                      </div>
+                    </div>
+
+                    <form className="admin_new_admin_form" onSubmit={createAdmin}>
+                      <label>
+                        <span>Username</span>
+                        <input
+                          type="text"
+                          value={newAdminForm.username}
+                          onChange={(e) => updateNewAdminField("username", e.target.value)}
+                          placeholder="new-admin"
+                          required
+                        />
+                      </label>
+                      <label>
+                        <span>Email</span>
+                        <input
+                          type="email"
+                          value={newAdminForm.email}
+                          onChange={(e) => updateNewAdminField("email", e.target.value)}
+                          placeholder="admin@example.com"
+                          required
+                        />
+                      </label>
+                      <label>
+                        <span>Password</span>
+                        <input
+                          type="password"
+                          value={newAdminForm.password}
+                          onChange={(e) => updateNewAdminField("password", e.target.value)}
+                          autoComplete="new-password"
+                          minLength={8}
+                          required
+                        />
+                      </label>
+                      <button type="submit" disabled={isCreatingAdmin || !isAccountVerified}>
+                        <Icon icon="plus" />
+                        <span>{isCreatingAdmin ? "Adding..." : "Add Admin"}</span>
+                      </button>
+                    </form>
+
+                    {adminCreateMessage ? <p className="admin_profile_message">{adminCreateMessage}</p> : null}
+
+                    <div className="admin_admin_list">
+                      <div className="admin_admin_list_head">
+                        <span>Current admins</span>
+                        <strong>{isLoadingAdmins ? "Loading..." : adminUsers.length}</strong>
+                      </div>
+                      {adminUsers.map((admin) => (
+                        <article className="admin_admin_item" key={admin.id}>
+                          <div className="admin_admin_avatar">
+                            {admin.username?.charAt(0)?.toUpperCase() || "A"}
+                          </div>
+                          <div>
+                            <strong>{admin.username}</strong>
+                            <span>{admin.email}</span>
+                          </div>
+                          {admin.id === user?.id ? <small>You</small> : null}
+                        </article>
+                      ))}
+                    </div>
+                  </>
+                ) : null}
+              </section>
             </div>
           </section>
         ) : null}
