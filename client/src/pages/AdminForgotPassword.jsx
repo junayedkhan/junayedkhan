@@ -1,12 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../utils/api";
+
+const MESSAGE_TIMEOUT_MS = 5000;
 
 export default function AdminForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [resetLink, setResetLink] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!message && !resetLink) return undefined;
+    const messageTimer = setTimeout(() => {
+      setMessage("");
+      setResetLink("");
+    }, MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [message, resetLink]);
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();

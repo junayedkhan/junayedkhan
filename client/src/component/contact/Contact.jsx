@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Social from '../Social'
 import { ImageWithLoader } from '../ImageWithLoader'
 import img from "../../assets/image/contact1.png"
 import Icon from '../Icon'
+
+const MESSAGE_TIMEOUT_MS = 5000
 
 const Contact = () => {
 
@@ -13,6 +15,13 @@ const Contact = () => {
         if (event.target?.name) clearErrors(event.target.name)
         if (successMessage) setSuccessMessage("")
     }
+
+    useEffect(() => {
+        if (!successMessage) return undefined
+        const messageTimer = setTimeout(() => setSuccessMessage(""), MESSAGE_TIMEOUT_MS)
+        return () => clearTimeout(messageTimer)
+    }, [successMessage])
+
     const onSubmit = (data) => {
         const mailtoBody = [
             `Name: ${data.name}`,

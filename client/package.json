@@ -34,10 +34,10 @@
     "vite": "^7.1.4"
   },
   "scripts": {
-    "start": "vite",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "node ../server/node_modules/vite/bin/vite.js",
+    "dev": "node ../server/node_modules/vite/bin/vite.js",
+    "build": "node ../server/node_modules/vite/bin/vite.js build",
+    "preview": "node ../server/node_modules/vite/bin/vite.js preview"
   },
   "browserslist": {
     "production": [

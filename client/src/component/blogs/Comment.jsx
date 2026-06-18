@@ -4,6 +4,7 @@ import api from '../../utils/api'
 import Icon from '../Icon'
 
 const COMMENTS_PER_PAGE = 3;
+const MESSAGE_TIMEOUT_MS = 5000;
 
 const Comment = ({ blogId }) => {
     const [successMessage, setSuccessMessage] = useState("")
@@ -26,6 +27,12 @@ const Comment = ({ blogId }) => {
         if (event.target?.name) clearErrors(event.target.name)
         if (successMessage) setSuccessMessage("")
     }
+
+    useEffect(() => {
+        if (!successMessage) return undefined;
+        const messageTimer = setTimeout(() => setSuccessMessage(""), MESSAGE_TIMEOUT_MS);
+        return () => clearTimeout(messageTimer);
+    }, [successMessage]);
 
     useEffect(() => {
         if (!blogId) return undefined;

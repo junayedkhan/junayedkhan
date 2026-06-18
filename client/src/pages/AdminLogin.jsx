@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api, { setToken } from "../utils/api";
 
+const MESSAGE_TIMEOUT_MS = 5000;
+
 export default function AdminLogin() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -35,6 +37,12 @@ export default function AdminLogin() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!message) return undefined;
+    const messageTimer = setTimeout(() => setMessage(""), MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [message]);
 
   const handleAuth = async (e) => {
     e.preventDefault();

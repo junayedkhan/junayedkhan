@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../utils/api";
+
+const MESSAGE_TIMEOUT_MS = 5000;
 
 export default function AdminResetPassword() {
   const navigate = useNavigate();
@@ -9,6 +11,12 @@ export default function AdminResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!message) return undefined;
+    const messageTimer = setTimeout(() => setMessage(""), MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [message]);
 
   const handleResetPassword = async (e) => {
     e.preventDefault();

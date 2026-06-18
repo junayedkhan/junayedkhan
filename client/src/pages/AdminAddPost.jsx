@@ -7,6 +7,7 @@ const MAX_POST_IMAGE_SIZE = 3 * 1024 * 1024;
 const MAX_POST_VIDEO_SIZE = 5 * 1024 * 1024;
 const MAX_POST_PAYLOAD_SIZE = 14 * 1024 * 1024;
 const ADMIN_ACTIVE_SECTION_KEY = "admin-active-section";
+const MESSAGE_TIMEOUT_MS = 5000;
 
 const createSlug = (title) => (
   title
@@ -133,14 +134,14 @@ export default function AdminAddPost() {
   };
 
   useEffect(() => {
-    if (!message || messageType !== "error") return undefined;
+    if (!message) return undefined;
 
     const messageTimer = setTimeout(() => {
       setMessage("");
-    }, 4500);
+    }, MESSAGE_TIMEOUT_MS);
 
     return () => clearTimeout(messageTimer);
-  }, [message, messageType]);
+  }, [message]);
 
   useEffect(() => {
     if (!editingBlog?.id) return;

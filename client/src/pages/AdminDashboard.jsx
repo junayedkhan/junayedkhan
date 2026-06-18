@@ -6,7 +6,7 @@ import Icon from '../component/Icon'
 const adminSections = [
   { id: "overview", label: "Overview", icon: "chart" },
   { id: "hero", label: "Home", icon: "home" },
-  { id: "resume", label: "Resume", icon: "file" },
+  { id: "resume", label: "About", icon: "file" },
   { id: "gallery", label: "Gallery", icon: "images" },
   { id: "blogs", label: "Travel Blogs", icon: "pen" },
   { id: "contact", label: "Contact", icon: "address" },
@@ -16,7 +16,7 @@ const adminSections = [
 const contentStats = [
   { label: "Gallery Items", value: "Live", icon: "images", helper: "Loaded from MongoDB" },
   { label: "Travel Blogs", value: "Live", icon: "newspaper", helper: "Loaded from MongoDB" },
-  { label: "Resume Tabs", value: "4", icon: "layers", helper: "Info, education, skills, experience" },
+  { label: "About Content", value: "Live", icon: "layers", helper: "Loaded from MongoDB" },
   { label: "Social Links", value: "3", icon: "share", helper: "Facebook, Twitter, LinkedIn" },
 ];
 
@@ -29,9 +29,9 @@ const contentSections = {
   },
   resume: {
     eyebrow: "About page",
-    title: "Resume Content",
-    description: "Personal information, achievements, education, design skills, development skills, and job experience.",
-    items: ["10 personal info fields", "4 achievement counters", "3 education entries", "3 experience entries", "10 skill bars"],
+    title: "About Content",
+    description: "Image, short description, personal info, expertise, skills, education, and connect button are loaded from the backend.",
+    items: ["Profile image", "Short bio", "Personal info", "Skills and education", "Connect button"],
   },
   gallery: {
     eyebrow: "Portfolio page",
@@ -59,11 +59,33 @@ const DEFAULT_HERO_CONTENT = {
   description: "",
   image: "",
 };
+const DEFAULT_ABOUT_CONTENT = {
+  image: "",
+  name: "Junayed Khan",
+  label: "About Me",
+  title: "Hi, I am Junayed Khan",
+  description: "I am focused on building a clean personal portfolio where my travel moments, creative ideas, and personal brand can be presented in a professional way. My goal is to make the page feel simple, visual, and easy to explore.",
+  status: "Available",
+  personalInfoText: "Name: Junayed Khan\nFocus: Creative Portfolio\nLocation: Dhaka, Bangladesh\nLanguage: Bangla, English\nAvailability: Open to collaborate\nProject Type: Travel, portfolio, personal brand",
+  expertiseText: "Travel Storytelling | Sharing places, moments, and experiences through clean visuals and simple storytelling.\nPortfolio Presentation | Organizing photos, work, and personal identity into a polished modern portfolio.\nCreative Direction | Choosing layout, mood, color, and content flow so the page feels professional and personal.",
+  skillsText: "Travel Content, Portfolio Design, Photo Gallery, Personal Branding, Figma, Canva, Basic Web, Visual Story",
+  educationText: "2024 - Present | Creative Portfolio Building | Learning how to present personal work, travel content, and visual stories professionally.\n2022 - 2024 | Creative Design Practice | Focused on layout, color, typography, portfolio design, and clean user experience.",
+  ctaText: "Connect With Me",
+  ctaPath: "/contact",
+};
+const DEFAULT_ABOUT_TABS = [
+  { id: "expertise", type: "expertise", title: "What I Work With", visible: true },
+  { id: "personalInfo", type: "info", title: "Personal Info", visible: true },
+  { id: "skills", type: "skills", title: "Skills & Tools", visible: true },
+  { id: "education", type: "education", title: "Education", visible: true },
+];
 const MAX_HERO_UPLOAD_SIZE = 2.5 * 1024 * 1024;
+const MAX_ABOUT_UPLOAD_SIZE = 3 * 1024 * 1024;
 const MAX_GALLERY_UPLOAD_SIZE = 3 * 1024 * 1024;
 const MAX_BLOG_UPLOAD_SIZE = 3 * 1024 * 1024;
 const MAX_BLOG_VIDEO_UPLOAD_SIZE = 5 * 1024 * 1024;
 const ADMIN_ACTIVE_SECTION_KEY = "admin-active-section";
+const MESSAGE_TIMEOUT_MS = 5000;
 
 const emptyGalleryForm = {
   img: "",
@@ -141,6 +163,120 @@ const requestWithFallback = async (primaryRequest, fallbackRequest) => {
   }
 };
 
+const aboutArrayToInfoText = (items = []) => (
+  items.map((item) => `${item.label || ""}: ${item.value || ""}`).join("\n")
+);
+
+const aboutInfoTextToArray = (text = "") => (
+  text
+    .split("\n")
+    .map((line) => {
+      const [label, ...valueParts] = line.split(":");
+      return { label: (label || "").trim(), value: valueParts.join(":").trim() };
+    })
+    .filter((item) => item.label && item.value)
+);
+
+const aboutArrayToPipeText = (items = [], fields = []) => (
+  items.map((item) => fields.map((field) => item[field] || "").join(" | ")).join("\n")
+);
+
+const aboutPipeTextToArray = (text = "", fields = []) => (
+  text
+    .split("\n")
+    .map((line) => {
+      const parts = line.split("|").map((part) => part.trim());
+      return fields.reduce((item, field, index) => ({ ...item, [field]: parts[index] || "" }), {});
+    })
+    .filter((item) => fields.every((field) => item[field]))
+);
+
+const aboutSkillsTextToArray = (text = "") => (
+  text.split(",").map((item) => item.trim()).filter(Boolean)
+);
+
+const aboutTabToText = (tab = {}, content = {}) => {
+  if (tab.type === "info") return aboutArrayToInfoText(tab.items || content.personalInfo || []);
+  if (tab.type === "expertise") return aboutArrayToPipeText(tab.items || content.expertise || [], ["title", "text"]);
+  if (tab.type === "skills") return (tab.items || content.skills || []).join(", ");
+  if (tab.type === "education") return aboutArrayToPipeText(tab.items || content.education || [], ["year", "title", "text"]);
+  return tab.text || "";
+};
+
+const getDefaultAboutTabText = (tab) => {
+  if (tab.type === "info") return DEFAULT_ABOUT_CONTENT.personalInfoText;
+  if (tab.type === "expertise") return DEFAULT_ABOUT_CONTENT.expertiseText;
+  if (tab.type === "skills") return DEFAULT_ABOUT_CONTENT.skillsText;
+  if (tab.type === "education") return DEFAULT_ABOUT_CONTENT.educationText;
+  return "";
+};
+
+const normalizeAboutTabs = (content = {}) => {
+  const savedTabs = Array.isArray(content.tabs) ? content.tabs : [];
+  const normalizedDefaults = DEFAULT_ABOUT_TABS.map((defaultTab) => {
+    const savedTab = savedTabs.find((tab) => tab.id === defaultTab.id || tab.type === defaultTab.type) || {};
+    return {
+      ...defaultTab,
+      title: savedTab.title || defaultTab.title,
+      visible: savedTab.visible !== false,
+      text: aboutTabToText({ ...defaultTab, ...savedTab }, content) || getDefaultAboutTabText(defaultTab),
+    };
+  });
+  const customTabs = savedTabs
+    .filter((tab) => tab.type === "custom")
+    .map((tab, index) => ({
+      id: tab.id || `custom-${Date.now()}-${index}`,
+      type: "custom",
+      title: tab.title || "New Tab",
+      visible: tab.visible !== false,
+      text: tab.text || "",
+    }));
+
+  return [...normalizedDefaults, ...customTabs];
+};
+
+const serializeAboutTabs = (tabs = []) => (
+  tabs.map((tab) => {
+    if (tab.type === "info") {
+      return { id: tab.id, type: tab.type, title: tab.title.trim() || "Personal Info", visible: tab.visible !== false, items: aboutInfoTextToArray(tab.text) };
+    }
+    if (tab.type === "expertise") {
+      return { id: tab.id, type: tab.type, title: tab.title.trim() || "What I Work With", visible: tab.visible !== false, items: aboutPipeTextToArray(tab.text, ["title", "text"]) };
+    }
+    if (tab.type === "skills") {
+      return { id: tab.id, type: tab.type, title: tab.title.trim() || "Skills & Tools", visible: tab.visible !== false, items: aboutSkillsTextToArray(tab.text) };
+    }
+    if (tab.type === "education") {
+      return { id: tab.id, type: tab.type, title: tab.title.trim() || "Education", visible: tab.visible !== false, items: aboutPipeTextToArray(tab.text, ["year", "title", "text"]) };
+    }
+    return { id: tab.id, type: "custom", title: tab.title.trim() || "New Tab", visible: tab.visible !== false, text: tab.text.trim() };
+  })
+);
+
+const normalizeAboutForm = (content = {}) => ({
+  image: content.image || DEFAULT_ABOUT_CONTENT.image,
+  name: content.name || DEFAULT_ABOUT_CONTENT.name,
+  label: content.label || DEFAULT_ABOUT_CONTENT.label,
+  title: content.title || DEFAULT_ABOUT_CONTENT.title,
+  description: content.description || DEFAULT_ABOUT_CONTENT.description,
+  status: content.status || DEFAULT_ABOUT_CONTENT.status,
+  personalInfoText: Array.isArray(content.personalInfo)
+    ? aboutArrayToInfoText(content.personalInfo)
+    : DEFAULT_ABOUT_CONTENT.personalInfoText,
+  expertiseText: Array.isArray(content.expertise)
+    ? aboutArrayToPipeText(content.expertise, ["title", "text"])
+    : DEFAULT_ABOUT_CONTENT.expertiseText,
+  skillsText: Array.isArray(content.skills)
+    ? content.skills.join(", ")
+    : DEFAULT_ABOUT_CONTENT.skillsText,
+  educationText: Array.isArray(content.education)
+    ? aboutArrayToPipeText(content.education, ["year", "title", "text"])
+    : DEFAULT_ABOUT_CONTENT.educationText,
+  tabs: normalizeAboutTabs(content),
+  ctaText: content.ctaText || DEFAULT_ABOUT_CONTENT.ctaText,
+  ctaPath: content.ctaPath || DEFAULT_ABOUT_CONTENT.ctaPath,
+});
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -186,6 +322,13 @@ export default function AdminDashboard() {
   const [heroUploadState, setHeroUploadState] = useState("idle");
   const [heroConfirmAction, setHeroConfirmAction] = useState(null);
   const [isLoadingHero, setIsLoadingHero] = useState(true);
+  const [aboutForm, setAboutForm] = useState(() => normalizeAboutForm({}));
+  const [aboutMessage, setAboutMessage] = useState("");
+  const [aboutUploadState, setAboutUploadState] = useState("idle");
+  const [aboutSaveState, setAboutSaveState] = useState("idle");
+  const [isLoadingAbout, setIsLoadingAbout] = useState(true);
+  const [isSavingAbout, setIsSavingAbout] = useState(false);
+  const [activeAboutTabId, setActiveAboutTabId] = useState(DEFAULT_ABOUT_TABS[0].id);
   const [galleryItems, setGalleryItems] = useState([]);
   const [galleryForm, setGalleryForm] = useState(emptyGalleryForm);
   const [galleryMessage, setGalleryMessage] = useState("");
@@ -270,6 +413,30 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     let active = true;
+
+    api
+      .get("/site/admin/about", { headers: authHeaders() })
+      .then((res) => {
+        if (!active) return;
+        const content = Object.prototype.hasOwnProperty.call(res.data || {}, "content")
+          ? res.data.content
+          : res.data;
+        setAboutForm(normalizeAboutForm(content));
+      })
+      .catch(() => {
+        if (active) setAboutMessage("Unable to load about content.");
+      })
+      .finally(() => {
+        if (active) setIsLoadingAbout(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
     setIsLoadingGallery(true);
 
     requestWithFallback(
@@ -317,28 +484,69 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    if (!galleryMessage) return undefined;
+    if (!emailMessage) return undefined;
+    const messageTimer = setTimeout(() => setEmailMessage(""), MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [emailMessage]);
 
+  useEffect(() => {
+    if (!adminCreateMessage) return undefined;
+    const messageTimer = setTimeout(() => setAdminCreateMessage(""), MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [adminCreateMessage]);
+
+  useEffect(() => {
+    if (!emailEditMessage) return undefined;
+    const messageTimer = setTimeout(() => setEmailEditMessage(""), MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [emailEditMessage]);
+
+  useEffect(() => {
+    if (!resetMessage) return undefined;
+    const messageTimer = setTimeout(() => setResetMessage(""), MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [resetMessage]);
+
+  useEffect(() => {
+    if (!verificationMessage) return undefined;
+    const messageTimer = setTimeout(() => setVerificationMessage(""), MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [verificationMessage]);
+
+  useEffect(() => {
+    if (!heroImageMessage) return undefined;
+    const messageTimer = setTimeout(() => {
+      setHeroImageMessage("");
+      setHeroUploadState((current) => (current === "saved" || current === "error" ? "idle" : current));
+    }, MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [heroImageMessage]);
+
+  useEffect(() => {
+    if (!aboutMessage) return undefined;
+    const messageTimer = setTimeout(() => {
+      setAboutMessage("");
+      setAboutUploadState((current) => (current === "error" ? "idle" : current));
+      setAboutSaveState((current) => (current === "saved" || current === "error" ? "idle" : current));
+    }, MESSAGE_TIMEOUT_MS);
+    return () => clearTimeout(messageTimer);
+  }, [aboutMessage]);
+
+  useEffect(() => {
+    if (!galleryMessage) return undefined;
     const messageTimer = setTimeout(() => {
       setGalleryMessage("");
-      setGalleryUploadState((current) => (
-        current === "saved" || current === "error" ? "idle" : current
-      ));
-    }, 4000);
-
+      setGalleryUploadState((current) => (current === "saved" || current === "error" ? "idle" : current));
+    }, MESSAGE_TIMEOUT_MS);
     return () => clearTimeout(messageTimer);
   }, [galleryMessage]);
 
   useEffect(() => {
     if (!blogMessage) return undefined;
-
     const messageTimer = setTimeout(() => {
       setBlogMessage("");
-      setBlogUploadState((current) => (
-        current === "saved" || current === "error" ? "idle" : current
-      ));
-    }, 4500);
-
+      setBlogUploadState((current) => (current === "saved" || current === "error" ? "idle" : current));
+    }, MESSAGE_TIMEOUT_MS);
     return () => clearTimeout(messageTimer);
   }, [blogMessage]);
 
@@ -796,6 +1004,136 @@ export default function AdminDashboard() {
     setHeroImageMessage("");
     setHeroUploadState((current) => (current === "error" ? "idle" : current));
     setHeroForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const updateAboutField = (field, value) => {
+    setAboutMessage("");
+    setAboutUploadState((current) => (current === "error" ? "idle" : current));
+    setAboutSaveState("idle");
+    setAboutForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const updateAboutTab = (tabId, updates) => {
+    setAboutMessage("");
+    setAboutSaveState("idle");
+    setAboutForm((current) => ({
+      ...current,
+      tabs: current.tabs.map((tab) => (tab.id === tabId ? { ...tab, ...updates } : tab)),
+    }));
+  };
+
+  const addAboutTab = () => {
+    const id = `custom-${Date.now()}`;
+    setAboutSaveState("idle");
+    setAboutForm((current) => ({
+      ...current,
+      tabs: [...current.tabs, { id, type: "custom", title: "New Tab", visible: true, text: "" }],
+    }));
+    setActiveAboutTabId(id);
+  };
+
+  const removeAboutTab = (tabId) => {
+    setAboutSaveState("idle");
+    setAboutForm((current) => {
+      const nextTabs = current.tabs.filter((tab) => tab.id !== tabId || tab.type !== "custom");
+      return { ...current, tabs: nextTabs };
+    });
+    setActiveAboutTabId(DEFAULT_ABOUT_TABS[0].id);
+  };
+
+  const uploadAboutImage = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    setAboutMessage("");
+    setAboutUploadState("idle");
+    setAboutSaveState("idle");
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setAboutMessage("Upload a JPG, PNG, or WebP image.");
+      setAboutUploadState("error");
+      return;
+    }
+
+    if (file.size > MAX_ABOUT_UPLOAD_SIZE) {
+      setAboutMessage("About image must be under 3 MB.");
+      setAboutUploadState("error");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAboutForm((current) => ({ ...current, image: String(reader.result || "") }));
+      setAboutMessage("Preview ready. Save changes to publish it.");
+      setAboutUploadState("ready");
+    };
+    reader.onerror = () => {
+      setAboutMessage("Unable to read image file.");
+      setAboutUploadState("error");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const saveAboutContent = async (event) => {
+    event.preventDefault();
+    setAboutMessage("");
+    setIsSavingAbout(true);
+
+    try {
+      const tabs = serializeAboutTabs(Array.isArray(aboutForm.tabs) ? aboutForm.tabs : normalizeAboutTabs(aboutForm));
+      const tabByType = (type) => tabs.find((tab) => tab.type === type);
+      const payload = {
+        image: aboutForm.image.trim(),
+        name: aboutForm.name.trim(),
+        label: aboutForm.label.trim(),
+        title: aboutForm.title.trim(),
+        description: aboutForm.description.trim(),
+        status: aboutForm.status.trim(),
+        personalInfo: tabByType("info")?.items || aboutInfoTextToArray(aboutForm.personalInfoText),
+        expertise: tabByType("expertise")?.items || aboutPipeTextToArray(aboutForm.expertiseText, ["title", "text"]),
+        skills: tabByType("skills")?.items || aboutSkillsTextToArray(aboutForm.skillsText),
+        education: tabByType("education")?.items || aboutPipeTextToArray(aboutForm.educationText, ["year", "title", "text"]),
+        tabs,
+        ctaText: aboutForm.ctaText.trim(),
+        ctaPath: aboutForm.ctaPath.trim(),
+      };
+
+      const res = await api.put("/site/admin/about", payload, { headers: authHeaders() });
+      const content = Object.prototype.hasOwnProperty.call(res.data || {}, "content")
+        ? res.data.content
+        : res.data;
+      setAboutForm(normalizeAboutForm(content));
+      setAboutMessage(res.data.message || "About content updated");
+      setAboutUploadState("idle");
+      setAboutSaveState("saved");
+    } catch (err) {
+      setAboutMessage(getApiErrorMessage(err, "Unable to update about content."));
+      setAboutSaveState("error");
+    } finally {
+      setIsSavingAbout(false);
+    }
+  };
+
+  const resetAboutContent = async () => {
+    setAboutMessage("");
+    setIsSavingAbout(true);
+
+    try {
+      const res = await api.delete("/site/admin/about", { headers: authHeaders() });
+      const content = Object.prototype.hasOwnProperty.call(res.data || {}, "content")
+        ? res.data.content
+        : {};
+      setAboutForm(normalizeAboutForm(content));
+      setAboutMessage(res.data.message || "About content reset");
+      setAboutUploadState("idle");
+      setAboutSaveState("idle");
+    } catch (err) {
+      setAboutMessage(getApiErrorMessage(err, "Unable to reset about content."));
+      setAboutUploadState("error");
+    } finally {
+      setIsSavingAbout(false);
+    }
   };
 
   const updateGalleryField = (field, value) => {
@@ -1301,6 +1639,9 @@ export default function AdminDashboard() {
 
   const getGalleryLikeCount = (item) => item.likes;
 
+  const aboutTabs = Array.isArray(aboutForm.tabs) ? aboutForm.tabs : normalizeAboutTabs(aboutForm);
+  const activeAboutTab = aboutTabs.find((tab) => tab.id === activeAboutTabId) || aboutTabs[0];
+
   return (
     <main className="admin_dashboard">
       {mobileNavOpen ? (
@@ -1742,25 +2083,31 @@ export default function AdminDashboard() {
             ) : null}
 
             {activeSection === "hero" && !isLoadingHero ? (
-              <section className="admin_hero_image_editor">
+              <section className="admin_hero_image_editor admin_hero_image_editor--home">
                 <div
                   className={heroForm.image ? "admin_hero_image_preview has_image" : "admin_hero_image_preview"}
                   style={heroForm.image ? { backgroundImage: `url(${heroForm.image})` } : undefined}
                 >
                   {heroForm.image ? (
-                    <span>
-                      <Icon icon="image" />
-                      Live preview
-                    </span>
+                    <label className="admin_hero_preview_upload_button">
+                      <Icon icon="upload" />
+                      <span className="admin_hero_preview_upload_text">Upload image</span>
+                      <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadHeroImage} />
+                    </label>
                   ) : (
                     <div className="admin_gallery_preview_empty">
                       <Icon icon="cloud-upload" />
                       <strong>Hero image preview</strong>
                       <p>Upload an image to publish the hero section.</p>
+                      <label className="admin_hero_preview_upload_button">
+                        <Icon icon="upload" />
+                        <span className="admin_hero_preview_upload_text">Upload image</span>
+                        <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadHeroImage} />
+                      </label>
                     </div>
                   )}
                 </div>
-                <form className="admin_hero_image_form" onSubmit={saveHeroImage}>
+                <form className="admin_hero_image_form admin_hero_image_form--home" onSubmit={saveHeroImage}>
                   <div className="admin_hero_fields">
                     <label>
                       <span>Name field</span>
@@ -1794,34 +2141,227 @@ export default function AdminDashboard() {
                     />
                   </label>
                   <div className="admin_hero_image_actions">
-                    <label className="admin_hero_upload_button">
-                      <span>
-                        <i
-                          className={
-                            heroUploadState === "ready"
-                              ? "check-circle"
-                              : heroUploadState === "saved"
-                                ? "check-circle"
-                                : heroUploadState === "error"
-                                  ? "warning"
-                                  : "cloud-upload"
-                          }
-                          aria-hidden="true"
-                        ></i>
-                        {heroUploadState === "ready" ? "Ready" : heroUploadState === "saved" ? "Saved" : heroUploadState === "error" ? "Retry" : "Upload"}
-                      </span>
-                      <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadHeroImage} />
-                    </label>
                     <button type="submit" disabled={isSavingHeroImage}>
                       <Icon icon="save" />
-                      Save
+                      <span className="admin_hero_action_text">Save</span>
                     </button>
                     <button type="button" onClick={resetHeroImage} disabled={isSavingHeroImage}>
                       <Icon icon="trash-restore" />
-                      Reset
+                      <span className="admin_hero_action_text">Reset</span>
                     </button>
                   </div>
                   {heroImageMessage ? <p className="admin_profile_message">{heroImageMessage}</p> : null}
+                </form>
+              </section>
+            ) : null}
+
+            {activeSection === "resume" && isLoadingAbout ? (
+              <AdminSkeleton variant="editor" />
+            ) : null}
+
+            {activeSection === "resume" && !isLoadingAbout ? (
+              <section className="admin_hero_image_editor admin_hero_image_editor--about">
+                <div
+                  className={aboutForm.image ? "admin_hero_image_preview has_image" : "admin_hero_image_preview"}
+                  style={aboutForm.image ? { backgroundImage: `url(${aboutForm.image})` } : undefined}
+                >
+                  {aboutForm.image ? (
+                    <label className={`admin_gallery_upload_button admin_gallery_upload_button--${aboutUploadState}`}>
+                      <Icon
+                        icon={
+                          aboutUploadState === "ready"
+                            ? "check-circle"
+                            : aboutUploadState === "saved"
+                              ? "check-circle"
+                              : aboutUploadState === "error"
+                                ? "warning"
+                                : "cloud-upload"
+                        }
+                      />
+                      <span>{aboutUploadState === "ready" ? "Ready" : aboutUploadState === "saved" ? "Saved" : aboutUploadState === "error" ? "Retry" : "Upload"}</span>
+                      <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadAboutImage} />
+                    </label>
+                  ) : (
+                    <div className="admin_gallery_preview_empty">
+                      <Icon icon="cloud-upload" />
+                      <strong>About image preview</strong>
+                      <p>Upload a JPG, PNG, or WebP photo.</p>
+                      <label className={`admin_gallery_upload_button admin_gallery_upload_button--${aboutUploadState}`}>
+                        <Icon
+                          icon={
+                            aboutUploadState === "ready"
+                              ? "check-circle"
+                              : aboutUploadState === "saved"
+                                ? "check-circle"
+                                : aboutUploadState === "error"
+                                  ? "warning"
+                                  : "cloud-upload"
+                          }
+                        />
+                        <span>{aboutUploadState === "ready" ? "Ready" : aboutUploadState === "saved" ? "Saved" : aboutUploadState === "error" ? "Retry" : "Upload"}</span>
+                        <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadAboutImage} />
+                      </label>
+                    </div>
+                  )}
+                </div>
+
+                <form className="admin_hero_image_form" onSubmit={saveAboutContent}>
+                  <div className="admin_hero_fields">
+                    <label>
+                      <span>Name</span>
+                      <input
+                        type="text"
+                        value={aboutForm.name}
+                        onChange={(e) => updateAboutField("name", e.target.value)}
+                        placeholder="Junayed Khan"
+                      />
+                    </label>
+                    <label>
+                      <span>Badge label</span>
+                      <input
+                        type="text"
+                        value={aboutForm.label}
+                        onChange={(e) => updateAboutField("label", e.target.value)}
+                        placeholder="About Me"
+                      />
+                    </label>
+                    <label>
+                      <span>Headline</span>
+                      <input
+                        type="text"
+                        value={aboutForm.title}
+                        onChange={(e) => updateAboutField("title", e.target.value)}
+                        placeholder="Hi, I am Junayed Khan"
+                      />
+                    </label>
+                    <label>
+                      <span>Status badge</span>
+                      <input
+                        type="text"
+                        value={aboutForm.status}
+                        onChange={(e) => updateAboutField("status", e.target.value)}
+                        placeholder="Available"
+                      />
+                    </label>
+                  </div>
+
+                  <label>
+                    <span>Short description</span>
+                    <textarea
+                      value={aboutForm.description}
+                      onChange={(e) => updateAboutField("description", e.target.value)}
+                      rows={4}
+                      placeholder="Short about description"
+                    />
+                  </label>
+
+                  <div className="admin_about_tab_editor">
+                    <div className="admin_about_tab_header">
+                      <div>
+                        <span>About tabs</span>
+                        <strong>Show, hide, and add sections</strong>
+                      </div>
+                      <button type="button" className="admin_gallery_publish_button" onClick={addAboutTab}>
+                        <Icon icon="plus" />
+                        <span>Add Tab</span>
+                      </button>
+                    </div>
+
+                    <div className="admin_about_tab_list">
+                      {aboutTabs.map((tab) => (
+                        <button
+                          type="button"
+                          className={tab.id === activeAboutTab?.id ? "active" : ""}
+                          onClick={() => setActiveAboutTabId(tab.id)}
+                          key={tab.id}
+                        >
+                          <span>{tab.title}</span>
+                          <small>{tab.visible === false ? "Hidden" : "Visible"}</small>
+                        </button>
+                      ))}
+                    </div>
+
+                    {activeAboutTab ? (
+                      <div className="admin_about_tab_panel">
+                        <div className="admin_hero_fields">
+                          <label>
+                            <span>Tab title</span>
+                            <input
+                              type="text"
+                              value={activeAboutTab.title}
+                              onChange={(e) => updateAboutTab(activeAboutTab.id, { title: e.target.value })}
+                            />
+                          </label>
+                          <label className="admin_about_visibility_toggle">
+                            <input
+                              type="checkbox"
+                              checked={activeAboutTab.visible !== false}
+                              onChange={(e) => updateAboutTab(activeAboutTab.id, { visible: e.target.checked })}
+                            />
+                            <span>Show this tab on About page</span>
+                          </label>
+                        </div>
+
+                        <label>
+                          <span>
+                            {activeAboutTab.type === "info"
+                              ? "Content, one per line: Label: Value"
+                              : activeAboutTab.type === "expertise"
+                                ? "Content, one per line: Title | Description"
+                                : activeAboutTab.type === "education"
+                                  ? "Content, one per line: Year | Title | Description"
+                                  : activeAboutTab.type === "skills"
+                                    ? "Skills and tools, comma separated"
+                                    : "Custom tab content"}
+                          </span>
+                          <textarea
+                            value={activeAboutTab.text}
+                            onChange={(e) => updateAboutTab(activeAboutTab.id, { text: e.target.value })}
+                            rows={activeAboutTab.type === "skills" ? 3 : 6}
+                          />
+                        </label>
+
+                        {activeAboutTab.type === "custom" ? (
+                          <button type="button" className="admin_about_remove_tab" onClick={() => removeAboutTab(activeAboutTab.id)}>
+                            <Icon icon="trash" />
+                            <span>Remove Tab</span>
+                          </button>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div className="admin_hero_fields">
+                    <label>
+                      <span>Connect button text</span>
+                      <input
+                        type="text"
+                        value={aboutForm.ctaText}
+                        onChange={(e) => updateAboutField("ctaText", e.target.value)}
+                      />
+                    </label>
+                    <label>
+                      <span>Connect button link</span>
+                      <input
+                        type="text"
+                        value={aboutForm.ctaPath}
+                        onChange={(e) => updateAboutField("ctaPath", e.target.value)}
+                        placeholder="/contact"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="admin_hero_image_actions">
+                    <button type="submit" className="admin_gallery_publish_button" disabled={isSavingAbout}>
+                      <Icon icon={aboutSaveState === "saved" ? "check-circle" : aboutSaveState === "error" ? "warning" : "save"} />
+                      <span>{isSavingAbout ? "Saving..." : aboutSaveState === "saved" ? "Saved" : aboutSaveState === "error" ? "Retry Save" : "Save"}</span>
+                    </button>
+                    <button type="button" className="admin_gallery_publish_button" onClick={resetAboutContent} disabled={isSavingAbout}>
+                      <Icon icon="trash-restore" />
+                      <span>Reset</span>
+                    </button>
+                  </div>
+                  {aboutMessage ? <p className="admin_profile_message">{aboutMessage}</p> : null}
                 </form>
               </section>
             ) : null}
@@ -2144,7 +2684,7 @@ export default function AdminDashboard() {
 
             <div className="admin_editor_note">
               <Icon icon="info" />
-              <p>{activeSection === "hero" ? "Hero changes are saved to the server and shown on the public home page." : activeSection === "gallery" ? "Uploaded gallery images and like totals are saved in MongoDB and appear on the public gallery page." : activeSection === "blogs" ? "Blogs, content images, links, and comments are saved in MongoDB and shown on the public blog pages." : "This dashboard section matches the current website content. Editing controls can be connected next when content APIs are added."}</p>
+              <p>{activeSection === "hero" ? "Hero changes are saved to the server and shown on the public home page." : activeSection === "resume" ? "About content is saved to MongoDB and shown on the public about page." : activeSection === "gallery" ? "Uploaded gallery images and like totals are saved in MongoDB and appear on the public gallery page." : activeSection === "blogs" ? "Blogs, content images, links, and comments are saved in MongoDB and shown on the public blog pages." : "This dashboard section matches the current website content. Editing controls can be connected next when content APIs are added."}</p>
             </div>
           </section>
         ) : null}

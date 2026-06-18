@@ -119,4 +119,99 @@
     background: #0f766e !important;
   }
 
+  /* Match every public-facing form to the contact form treatment */
+  .comment_form_panel {
+    border: 1px solid rgba(255, 255, 255, .82) !important;
+    background: rgba(255, 250, 240, .78) !important;
+    color: #102a2a !important;
+    box-shadow: 0 24px 70px rgba(16, 42, 42, .1) !important;
+    backdrop-filter: blur(16px);
+  }
+
+  .comment_form_panel .comment_label {
+    color: #0f766e !important;
+  }
+
+  .comment_form_panel .title {
+    color: #102a2a !important;
+  }
+
+  .comment_form_panel p {
+    color: #64748b !important;
+  }
+
+  .comment_form_panel form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .comment_form_grid {
+    gap: 1rem !important;
+  }
+
+  .comment_form_panel .form_group {
+    margin-bottom: 1rem;
+  }
+
+  .comment_form_panel .form_group input,
+  .comment_form_panel .form_group textarea,
+  .comment_reply_form input {
+    min-height: 3rem;
+    width: 100%;
+    border: 1px solid rgba(16, 42, 42, .1) !important;
+    border-radius: 1rem !important;
+    background: rgba(255, 255, 255, .78) !important;
+    padding: .8rem 1rem !important;
+    color: #102a2a !important;
+    outline: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7);
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+
+  .comment_form_panel .form_group textarea {
+    min-height: 9rem;
+    resize: vertical;
+  }
+
+  .comment_form_panel .form_group input::placeholder,
+  .comment_form_panel .form_group textarea::placeholder,
+  .comment_reply_form input::placeholder {
+    color: rgba(100, 116, 139, .82) !important;
+  }
+
+  .comment_form_panel .form_group input:focus,
+  .comment_form_panel .form_group textarea:focus,
+  .comment_reply_form input:focus {
+    border-color: rgba(15, 118, 110, .55) !important;
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, .1);
+  }
+
+  .comment_form_panel button[type="submit"],
+  .comment_reply_form button,
+  .comment_load_more {
+    min-height: 2.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
+    border-radius: 999px !important;
+    background: #102a2a !important;
+    color: #fffaf0 !important;
+    padding-inline: 1.15rem !important;
+    box-shadow: 0 16px 36px rgba(15, 118, 110, .2);
+    transition: transform .28s cubic-bezier(.16, 1, .3, 1), background-color .28s ease, box-shadow .28s ease;
+  }
+
+  .comment_form_panel button[type="submit"]:hover,
+  .comment_reply_form button:hover,
+  .comment_load_more:hover {
+    transform: translateY(-2px);
+    background: #0f766e !important;
+    box-shadow: 0 18px 42px rgba(15, 118, 110, .26);
+  }
+
+  .comment_form_panel .success_message {
+    color: #0f766e !important;
+  }
+
 }
